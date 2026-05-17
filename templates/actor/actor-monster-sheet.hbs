@@ -1,0 +1,22 @@
+<form class="{{cssClass}} flexcol ss1e-monster-sheet" autocomplete="off">
+    {{> "systems/seventh-sea-1e/templates/actor/parts/actor-header.hbs"}}
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="traits">{{localize "SS1E.UI.TraitsTab"}}</a>
+        <a class="item" data-tab="skills">{{localize "SS1E.UI.SkillsAndKnacks"}}</a>
+        <a class="item" data-tab="biography">{{localize "SS1E.UI.Biography"}}</a>
+    </nav>
+
+    <section class="sheet-body">
+        {{> "systems/seventh-sea-1e/templates/actor/parts/actor-traits.hbs"}}
+        {{> "systems/seventh-sea-1e/templates/actor/parts/actor-skills.hbs"}}
+
+        <section class="tab biography" data-group="primary" data-tab="biography">
+            <h2>{{localize "SS1E.UI.MonstrousAbilities"}}</h2>
+            <textarea name="system.monstrous.abilities" rows="6">{{system.monstrous.abilities}}</textarea>
+
+            <h3>{{localize "SS1E.UI.Notes"}}</h3>
+            {{editor system.notes target="system.notes" button=true editable=editable}}
+        </section>
+    </section>
+</form>

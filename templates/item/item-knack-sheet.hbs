@@ -1,0 +1,30 @@
+<form class="{{cssClass}} flexcol ss1e-item-sheet" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" />
+        <div class="header-fields">
+            <h1><input name="name" type="text" value="{{item.name}}" /></h1>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.Skill"}}</label>
+                <input type="text" name="system.skill" value="{{system.skill}}" />
+
+                <label>{{localize "SS1E.UI.Trait"}}</label>
+                <select name="system.trait">
+                    {{#each config.traits as |label key|}}
+                        <option value="{{key}}" {{#if (ss1e-eq ../system.trait key)}}selected{{/if}}>{{localize label}}</option>
+                    {{/each}}
+                </select>
+
+                <label>{{localize "SS1E.UI.Rank"}}</label>
+                <input type="number" name="system.rank" value="{{system.rank}}" min="0" max="10" />
+            </div>
+            <div class="header-row">
+                <label><input type="checkbox" name="system.isAdvanced" {{checked system.isAdvanced}}/> {{localize "SS1E.UI.Advanced"}}</label>
+                <label><input type="checkbox" name="system.isMastered" {{checked system.isMastered}}/> {{localize "SS1E.UI.Mastered"}}</label>
+            </div>
+        </div>
+    </header>
+    <section class="sheet-body">
+        <h3>{{localize "SS1E.UI.Description"}}</h3>
+        {{editor enriched.description target="system.description" button=true editable=editable}}
+    </section>
+</form>

@@ -1,0 +1,38 @@
+<form class="{{cssClass}} flexcol ss1e-item-sheet" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" />
+        <div class="header-fields">
+            <h1><input name="name" type="text" value="{{item.name}}" /></h1>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.Nation"}}</label>
+                <input type="text" name="system.nation" value="{{system.nation}}" />
+                <label>{{localize "SS1E.UI.SchoolRank"}}</label>
+                <select name="system.rank">
+                    {{#each config.schoolRanks as |label key|}}
+                        <option value="{{key}}" {{#if (ss1e-eq ../system.rank key)}}selected{{/if}}>{{localize label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.SchoolKnacks"}}</label>
+                <textarea name="system.knacks" rows="2">{{system.knacks}}</textarea>
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.ApprenticeTech"}}</label>
+                <textarea name="system.apprentice" rows="2">{{system.apprentice}}</textarea>
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.JourneymanTech"}}</label>
+                <textarea name="system.journeyman" rows="2">{{system.journeyman}}</textarea>
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.MasterTech"}}</label>
+                <textarea name="system.master" rows="2">{{system.master}}</textarea>
+            </div>
+        </div>
+    </header>
+    <section class="sheet-body">
+        <h3>{{localize "SS1E.UI.Description"}}</h3>
+        {{editor enriched.description target="system.description" button=true editable=editable}}
+    </section>
+</form>

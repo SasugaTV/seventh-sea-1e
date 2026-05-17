@@ -1,0 +1,10 @@
+<div class="wounds">
+    <div class="wound-row">
+        <label>{{localize "SS1E.UI.FleshWounds"}}</label>
+        <input type="number" name="system.wounds.flesh.value" value="{{system.wounds.flesh.value}}" min="0" />
+    </div>
+    <div class="wound-row">
+        <label>{{localize "SS1E.UI.DramaticWounds"}}</label>
+        <span>{{lookup system.wounds.dramatic.cols 0}} / {{lookup system.wounds.dramatic.cols 1}} (max {{system.wounds.dramatic.max}})</span>
+    </div>
+</div>

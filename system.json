@@ -1,0 +1,46 @@
+{
+  "id": "seventh-sea-1e",
+  "title": "7th Sea (1st Edition)",
+  "description": "An unofficial Foundry VTT game system for AEG's 7th Sea 1st Edition. Implements the Roll & Keep dice mechanic, Heroes/Villains/Brute Squads/Monsters, Traits, Skills & Knacks, Advantages, Backgrounds, Swordsman Schools, and Sorceries.",
+  "version": "0.1.0",
+  "compatibility": { "minimum": "12", "verified": "13" },
+  "authors": [
+    { "name": "SasugaTV", "url": "https://github.com/SasugaTV", "email": "jeremyglassford@gmail.com" }
+  ],
+  "esmodules": [ "module/seventh-sea.mjs" ],
+  "styles":    [ "css/seventh-sea.css" ],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "lang/en.json" }
+  ],
+  "packs": [],
+  "documentTypes": {
+    "Actor": {
+      "hero":    { "htmlFields": ["biography", "notes"] },
+      "villain": { "htmlFields": ["biography", "notes"] },
+      "brute":   { "htmlFields": ["notes"] },
+      "monster": { "htmlFields": ["notes"] }
+    },
+    "Item": {
+      "skill":      { "htmlFields": ["description"] },
+      "knack":      { "htmlFields": ["description"] },
+      "advantage":  { "htmlFields": ["description"] },
+      "background": { "htmlFields": ["description"] },
+      "story":      { "htmlFields": ["description"] },
+      "weapon":     { "htmlFields": ["description"] },
+      "armor":      { "htmlFields": ["description"] },
+      "gear":       { "htmlFields": ["description"] },
+      "school":     { "htmlFields": ["description"] },
+      "sorcery":    { "htmlFields": ["description"] }
+    }
+  },
+  "grid": { "distance": 1, "units": "pace" },
+  "primaryTokenAttribute": "wounds.flesh",
+  "secondaryTokenAttribute": "wounds.dramatic",
+  "url":      "https://github.com/SasugaTV/seventh-sea-1e",
+  "manifest": "https://github.com/SasugaTV/seventh-sea-1e/releases/latest/download/system.json",
+  "download": "https://github.com/SasugaTV/seventh-sea-1e/releases/latest/download/seventh-sea-1e.zip",
+  "license":  "LICENSE",
+  "readme":   "README.md",
+  "bugs":     "https://github.com/SasugaTV/seventh-sea-1e/issues",
+  "changelog":"https://github.com/SasugaTV/seventh-sea-1e/blob/main/CHANGELOG.md"
+}

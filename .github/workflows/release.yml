@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Substitute version and URLs in system.json
+        env:
+          VERSION: ${{ steps.get_version.outputs.version }}
+          REPO:    ${{ github.repository }}
+          TAG:     ${{ steps.get_version.outputs.tag }}
+        run: |
+          python - <<'PY'
+          import json, os
+          path = "system.json"
+          with open(path) as f:
+              data = json.load(f)
+          data["version"] = os.environ["VERSION"]
+          repo = os.environ["REPO"]
+          data["url"]      = f"https://github.com/{repo}"
+          data["manifest"] = f"https://github.com/{repo}/releases/latest/download/system.json"
+          data["download"] = f"https://github.com/{repo}/releases/download/{os.environ['TAG']}/seventh-sea-1e.zip"
+          with open(path, "w") as f:
+              json.dump(data, f, indent=2)
+          PY
+
+      - name: Build system zip
+        run: |
+          mkdir -p dist
+          zip -r dist/seventh-sea-1e.zip . \
+            -x ".git/*" ".github/*" "dist/*" "*.zip"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          name: ${{ steps.get_version.outputs.tag }}
+          draft: false
+          prerelease: false
+          files: |
+            system.json
+            dist/seventh-sea-1e.zip

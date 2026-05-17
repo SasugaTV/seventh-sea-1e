@@ -1,0 +1,45 @@
+<form class="{{cssClass}} flexcol ss1e-item-sheet" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" />
+        <div class="header-fields">
+            <h1><input name="name" type="text" value="{{item.name}}" /></h1>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.WeaponType"}}</label>
+                <select name="system.weaponType">
+                    {{#each config.weaponTypes as |label key|}}
+                        <option value="{{key}}" {{#if (ss1e-eq ../system.weaponType key)}}selected{{/if}}>{{localize label}}</option>
+                    {{/each}}
+                </select>
+                <label>{{localize "SS1E.UI.Trait"}}</label>
+                <select name="system.trait">
+                    {{#each config.traits as |label key|}}
+                        <option value="{{key}}" {{#if (ss1e-eq ../system.trait key)}}selected{{/if}}>{{localize label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.AttackKnack"}}</label>
+                <input type="text" name="system.knack" value="{{system.knack}}" />
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.DamageRoll"}}</label>
+                <input type="number" name="system.damage.roll" value="{{system.damage.roll}}" min="0" />
+                <label>{{localize "SS1E.UI.DamageKeep"}}</label>
+                <input type="number" name="system.damage.keep" value="{{system.damage.keep}}" min="0" max="10" />
+                <label>{{localize "SS1E.UI.Range"}}</label>
+                <input type="number" name="system.rangeIncrement" value="{{system.rangeIncrement}}" min="0" />
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.AtkBonus"}}</label>
+                <input type="number" name="system.atkBonus" value="{{system.atkBonus}}" />
+                <label>{{localize "SS1E.UI.DmgBonus"}}</label>
+                <input type="number" name="system.dmgBonus" value="{{system.dmgBonus}}" />
+                <label><input type="checkbox" name="system.equipped" {{checked system.equipped}}/> {{localize "SS1E.UI.Equipped"}}</label>
+            </div>
+        </div>
+    </header>
+    <section class="sheet-body">
+        <h3>{{localize "SS1E.UI.Description"}}</h3>
+        {{editor enriched.description target="system.description" button=true editable=editable}}
+    </section>
+</form>

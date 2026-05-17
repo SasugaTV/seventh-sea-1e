@@ -1,0 +1,16 @@
+# Foundry build artefacts
+dist/
+*.zip
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Node (if you later add tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

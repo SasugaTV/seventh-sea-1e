@@ -1,0 +1,422 @@
+<form class="{{cssClass}} ss1e-villain-sheet ss1e-hero-sheet" autocomplete="off">
+  <div class="villainy-bar">
+    <label>{{localize "SS1E.UI.Villainy"}}</label>
+    <input type="number" name="system.villainy.value" value="{{system.villainy.value}}" min="0" />
+    <label>{{localize "SS1E.UI.HenchmenLimit"}}</label>
+    <input type="number" name="system.henchmenLimit" value="{{system.henchmenLimit}}" min="0" />
+  </div>
+
+
+  <div class="sheet">
+
+    {{!-- ── ROW 1 : Traits | Char Info + XP ─────────────────────────── --}}
+    <div class="row row1">
+      <div class="box box-traits">
+        <div class="traits-title">{{localize "SS1E.UI.Traits"}}</div>
+        {{#each system.traits as |trait key|}}
+          <div class="trait-row">
+            <span class="trait-name ss1e-rollable"
+                  data-action="roll-trait" data-trait="{{key}}"
+                  title="{{localize 'SS1E.UI.RollTrait'}}">{{localize (lookup ../config.traits key)}}</span>
+            <span class="dots ss1e-dot-tracker"
+                  data-path="system.traits.{{key}}.value"
+                  data-max="7" data-gap="5" data-current="{{trait.value}}"></span>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="right-stack">
+        <div class="box box-charinfo">
+          <div class="charinfo-row">
+            <label>{{localize "SS1E.UI.Name"}}</label>
+            <input type="text" class="charinfo-input charinfo-full" name="name" value="{{actor.name}}" />
+          </div>
+          <div class="charinfo-row">
+            <label>{{localize "SS1E.UI.Nationality"}}</label>
+            <input type="text" class="charinfo-input" name="system.charInfo.nationality" value="{{system.charInfo.nationality}}" />
+            <label>{{localize "SS1E.UI.Arcana"}}</label>
+            <input type="text" class="charinfo-input" name="system.charInfo.arcana" value="{{system.charInfo.arcana}}" />
+          </div>
+          <div class="charinfo-row">
+            <label>{{localize "SS1E.UI.Membership"}}</label>
+            <input type="text" class="charinfo-input" name="system.charInfo.membership" value="{{system.charInfo.membership}}" />
+            <label>{{localize "SS1E.UI.Profession"}}</label>
+            <input type="text" class="charinfo-input" name="system.charInfo.profession" value="{{system.charInfo.profession}}" />
+          </div>
+        </div>
+
+        <div class="box box-xp">
+          <div class="xp-row">
+            <label>{{localize "SS1E.UI.Income"}}</label>
+            <input type="text" class="income-num" name="system.resources.income" value="{{system.resources.income}}" />
+
+            <label>{{localize "SS1E.UI.XP"}}</label>
+            <input type="number" class="xp-input" name="system.resources.xp.value" value="{{system.resources.xp.value}}" />
+            <span>/</span>
+            <input type="number" class="xp-input" name="system.resources.xp.total" value="{{system.resources.xp.total}}" />
+
+            <label>{{localize "SS1E.UI.DramaDice"}}</label>
+            <input type="number" class="xp-input" name="system.resources.dramaDice.value" value="{{system.resources.dramaDice.value}}" min="0" max="{{system.resources.dramaDice.max}}" />
+            <span class="xp-max">/ {{system.resources.dramaDice.max}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- ── ROW 2 : Reputation | Backgrounds | Accoutrements | Contacts | Languages | Wealth ── --}}
+    <div class="row2-seed">
+
+      <div class="box box-reputation">
+        <div class="rep-title-row">
+          <span>{{localize "SS1E.UI.Reputation"}}</span>
+          <input type="number" class="rep-title-num" name="system.reputation.cap" min="0" max="999" value="{{system.reputation.cap}}" />
+          <span>/</span>
+          <input type="text" class="rep-total" readonly value="{{system.reputation.total}}" />
+        </div>
+        {{#each system.reputation.entries as |entry i|}}
+          <div class="rep-row">
+            <input type="text"   class="rep-text" name="system.reputation.entries.{{i}}.text"  value="{{entry.text}}" />
+            <input type="number" class="rep-num rep-num-tracked" name="system.reputation.entries.{{i}}.value" min="-999" max="999" value="{{entry.value}}" />
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="box box-backgrounds">
+        <p>{{localize "SS1E.UI.Backgrounds"}}</p>
+        {{#each system.backgrounds.rows as |row i|}}
+          <div class="rep-row">
+            <input type="text"   class="rep-text" name="system.backgrounds.rows.{{i}}.text"  value="{{row.text}}" />
+            <input type="number" class="bg-num"   name="system.backgrounds.rows.{{i}}.value" min="0" max="9" value="{{row.value}}" />
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="box box-accoutrements">
+        <p>{{localize "SS1E.UI.Accoutrements"}}</p>
+        <div class="wealth-cols">
+          <div class="wealth-col">
+            {{#each system.accoutrements.rows as |row i|}}
+              {{#if (ss1e-lt i 5)}}
+                <div class="rep-row">
+                  <input type="text"   class="rep-text" name="system.accoutrements.rows.{{i}}.text"  value="{{row.text}}" />
+                  <input type="number" class="rep-num"  name="system.accoutrements.rows.{{i}}.value" min="0" max="999" value="{{row.value}}" />
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+          <div class="wealth-col">
+            {{#each system.accoutrements.rows as |row i|}}
+              {{#if (ss1e-gte i 5)}}
+                <div class="rep-row">
+                  <input type="text"   class="rep-text" name="system.accoutrements.rows.{{i}}.text"  value="{{row.text}}" />
+                  <input type="number" class="rep-num"  name="system.accoutrements.rows.{{i}}.value" min="0" max="999" value="{{row.value}}" />
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+
+      <div class="box contacts-box">
+        <div class="contacts-header">{{localize "SS1E.UI.Contacts"}}</div>
+        {{#each system.contacts.rows as |row i|}}
+          <div class="contacts-row">
+            <input type="text"   class="contacts-text" name="system.contacts.rows.{{i}}.name"  value="{{row.name}}" />
+            <input type="number" class="contacts-num"  name="system.contacts.rows.{{i}}.favor" min="0" max="9" value="{{row.favor}}" />
+            <input type="text"   class="contacts-text" name="system.contacts.rows.{{i}}.role"  value="{{row.role}}" />
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="box lang-box">
+        <div class="lang-header">
+          <span class="lang-header-left"></span>
+          <span class="lang-title">{{localize "SS1E.UI.Languages"}}</span>
+          <input type="text" class="lang-extra-input" name="system.languages.extraLabel" value="{{system.languages.extraLabel}}" />
+          <span class="lang-num-spacer"></span>
+          <span class="lang-rw">{{localize "SS1E.UI.RW"}}</span>
+        </div>
+        {{#each system.languages.rows as |row i|}}
+          <div class="lang-row">
+            <input type="text"   class="lang-text" name="system.languages.rows.{{i}}.name"  value="{{row.name}}" />
+            <input type="number" class="lang-num"  name="system.languages.rows.{{i}}.rank"  value="{{row.rank}}" />
+            <span class="dots ss1e-dot-tracker lang-dot"
+                  data-path="system.languages.rows.{{i}}.rw"
+                  data-max="1" data-current="{{row.rw}}"></span>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="box box-wealth">
+        <p>{{localize "SS1E.UI.Wealth"}}</p>
+        <div class="wealth-cols">
+          <div class="wealth-col">
+            {{#each system.wealth.rows as |row i|}}
+              {{#if (ss1e-lt i 5)}}
+                <div class="rep-row">
+                  <input type="text"   class="rep-text" name="system.wealth.rows.{{i}}.text"  value="{{row.text}}" />
+                  <input type="number" class="rep-num"  name="system.wealth.rows.{{i}}.value" min="0" max="999" value="{{row.value}}" />
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+          <div class="wealth-col">
+            {{#each system.wealth.rows as |row i|}}
+              {{#if (ss1e-gte i 5)}}
+                <div class="rep-row">
+                  <input type="text"   class="rep-text" name="system.wealth.rows.{{i}}.text"  value="{{row.text}}" />
+                  <input type="number" class="rep-num"  name="system.wealth.rows.{{i}}.value" min="0" max="999" value="{{row.value}}" />
+                </div>
+              {{/if}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {{!-- ── ROW 3 : Weapons | Defense | Wounds + Composure ──────────── --}}
+    <div class="civil-skills">
+      <div id="cs-rows">
+        <div class="cs-row cs-row-wd">
+
+          <div class="box cs-cell weapons-box">
+            <div class="box-title">{{localize "SS1E.UI.Weapons"}}</div>
+            <div class="weapons-major-cols">
+              <div class="weapons-left">
+                <div class="weapons-left-grid">
+                  <span class="w-header"></span>
+                  <span class="w-header">{{localize "SS1E.UI.ATKRoll"}}</span>
+                  <span class="w-header">{{localize "SS1E.UI.DMG"}}</span>
+                  {{#each system.weapons.rows as |w i|}}
+                    <input type="text" class="w-input" name="system.weapons.rows.{{i}}.name" value="{{w.name}}" />
+                    <div class="atk-cell">
+                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.atk1.roll" value="{{w.atk1.roll}}" />
+                      <span class="atk-k">k</span>
+                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.atk1.keep" value="{{w.atk1.keep}}" />
+                      <a class="ss1e-rollable atk-roll-btn" data-action="roll-weapon"
+                         data-row="{{i}}" data-which="atk1" title="{{localize 'SS1E.UI.RollAttack'}}">⚔</a>
+                    </div>
+                    <div class="atk-cell">
+                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.roll" value="{{w.dmg1.roll}}" />
+                      <span class="atk-k">k</span>
+                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.keep" value="{{w.dmg1.keep}}" />
+                      <a class="ss1e-rollable atk-roll-btn" data-action="roll-weapon"
+                         data-row="{{i}}" data-which="dmg1" title="{{localize 'SS1E.UI.RollDamage'}}">★</a>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+              <div class="weapons-right">
+                <div class="weapons-right-grid">
+                  <span class="w-header">{{localize "SS1E.UI.Notes"}}</span>
+                  <span class="w-header">{{localize "SS1E.UI.Range"}}</span>
+                  <span class="w-header">{{localize "SS1E.UI.ShortMod"}}</span>
+                  <span class="w-header">{{localize "SS1E.UI.LongMod"}}</span>
+                  <span class="w-header">{{localize "SS1E.UI.Reload"}}</span>
+                  {{#each system.weapons.rows as |w i|}}
+                    <input type="text" class="w-input"          name="system.weapons.rows.{{i}}.notes"  value="{{w.notes}}" />
+                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.range"  value="{{w.range}}" />
+                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.shtMod" value="{{w.shtMod}}" />
+                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.lngMod" value="{{w.lngMod}}" />
+                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.reload" value="{{w.reload}}" />
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box cs-cell defense-box">
+            <div class="box-title">{{localize "SS1E.UI.Defense"}}</div>
+            <div class="defense-grid">
+              <span class="w-header">{{localize "SS1E.UI.Which"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.PassiveTN"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.ActiveTN"}}</span>
+              {{#each system.defense.rows as |d i|}}
+                <input type="text"   class="w-input"               name="system.defense.rows.{{i}}.label"   value="{{d.label}}" />
+                <input type="number" class="w-input w-center defense-num" name="system.defense.rows.{{i}}.passive" value="{{d.passive}}" />
+                <input type="number" class="w-input w-center defense-num" name="system.defense.rows.{{i}}.active"  value="{{d.active}}" />
+              {{/each}}
+            </div>
+          </div>
+
+          <div class="box cs-cell wounds-box">
+            <div class="box-title">{{localize "SS1E.UI.Wounds"}}</div>
+
+            <div class="wound-check-row">
+              <span class="wounds-label ss1e-rollable" data-action="roll-wound-check"
+                    title="{{localize 'SS1E.UI.RollWoundCheck'}}">⚔ {{localize "SS1E.UI.WoundCheck"}}:</span>
+              <div class="atk-cell">
+                <input type="number" class="wound-check-num" name="system.wounds.check.roll" value="{{system.wounds.check.roll}}" />
+                <span class="atk-k">k</span>
+                <span class="wound-check-brawn">{{system.wounds.check.keep}}</span>
+              </div>
+            </div>
+
+            <div class="flesh-row">
+              <span class="wounds-label">{{localize "SS1E.UI.FleshWounds"}}:</span>
+              <input type="number" class="flesh-num" name="system.wounds.flesh.value" value="{{system.wounds.flesh.value}}" />
+            </div>
+
+            <div class="dramatic-row">
+              <span class="wounds-label">{{localize "SS1E.UI.DramaticWounds"}}:</span>
+              <div class="dramatic-dots">
+                <span class="dots ss1e-dot-tracker dramatic-col"
+                      data-path="system.wounds.dramatic.cols.0"
+                      data-max="{{system.wounds.dramatic.max}}" data-current="{{lookup system.wounds.dramatic.cols 0}}"></span>
+                <span class="dramatic-gap"></span>
+                <span class="dots ss1e-dot-tracker dramatic-col"
+                      data-path="system.wounds.dramatic.cols.1"
+                      data-max="{{system.wounds.dramatic.max}}" data-current="{{lookup system.wounds.dramatic.cols 1}}"></span>
+              </div>
+            </div>
+
+            <div class="wounds-subheader">{{localize "SS1E.UI.Composure"}}</div>
+
+            <div class="wound-check-row">
+              <span class="wounds-label ss1e-rollable" data-action="roll-composure-check"
+                    title="{{localize 'SS1E.UI.RollComposureCheck'}}">⚔ {{localize "SS1E.UI.ComposureCheck"}}:</span>
+              <div class="atk-cell">
+                <input type="number" class="wound-check-num" name="system.composure.check.roll" value="{{system.composure.check.roll}}" />
+                <span class="atk-k">k</span>
+                <span class="wound-check-brawn">{{system.composure.check.keep}}</span>
+              </div>
+            </div>
+
+            <div class="flesh-row">
+              <span class="wounds-label">{{localize "SS1E.UI.Embarrassment"}}:</span>
+              <input type="number" class="flesh-num" name="system.composure.embarrassment.value" value="{{system.composure.embarrassment.value}}" />
+            </div>
+
+            <div class="dramatic-row">
+              <span class="wounds-label">{{localize "SS1E.UI.Humiliations"}}:</span>
+              <div class="dramatic-dots">
+                <span class="dots ss1e-dot-tracker dramatic-col"
+                      data-path="system.composure.humiliations.cols.0"
+                      data-max="{{system.composure.humiliations.max}}" data-current="{{lookup system.composure.humiliations.cols 0}}"></span>
+                <span class="dramatic-gap"></span>
+                <span class="dots ss1e-dot-tracker dramatic-col"
+                      data-path="system.composure.humiliations.cols.1"
+                      data-max="{{system.composure.humiliations.max}}" data-current="{{lookup system.composure.humiliations.cols 1}}"></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="section-heading">{{localize "SS1E.UI.SkillsAndKnacks"}}</div>
+
+        {{!-- Skills/Knacks: render owned Skill items as cells, 3 per row, with their knacks. --}}
+        {{#each skillCellRows as |row rowIdx|}}
+          <div class="cs-row">
+            {{#each row as |cell|}}
+              <div class="box cs-cell skill-box" data-item-id="{{cell.skillId}}">
+                {{#if cell.skillId}}
+                  <input type="text" class="skill-title-input" data-action="rename-skill" data-item-id="{{cell.skillId}}" value="{{cell.skillName}}" />
+                {{else}}
+                  <button class="skill-create-btn" data-action="create-skill">+ {{localize "SS1E.ItemType.Skill"}}</button>
+                {{/if}}
+                {{#each cell.knacks as |k|}}
+                  <div class="sorcery-row" data-item-id="{{k._id}}">
+                    <span class="sorcery-text ss1e-rollable knack-name" data-action="roll-knack" data-item-id="{{k._id}}" title="{{localize 'SS1E.UI.RollKnack'}}">{{k.name}}</span>
+                    <span class="dots ss1e-dot-tracker sorcery-dot"
+                          data-item-id="{{k._id}}"
+                          data-path="system.rank"
+                          data-max="6" data-gap="5" data-current="{{k.system.rank}}"></span>
+                    <a class="knack-edit" data-action="edit-item" data-item-id="{{k._id}}"><i class="fas fa-edit"></i></a>
+                  </div>
+                {{/each}}
+                {{#if cell.skillId}}
+                  <button class="knack-create-btn" data-action="create-knack" data-skill="{{cell.skillName}}" data-skill-id="{{cell.skillId}}">+ {{localize "SS1E.ItemType.Knack"}}</button>
+                {{/if}}
+              </div>
+            {{/each}}
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="cs-buttons">
+        <button type="button" class="btn-add"    data-action="create-skill">+ {{localize "SS1E.ItemType.Skill"}}</button>
+        <button type="button" class="btn-roll"   data-action="generic-roll">🎲 {{localize "SS1E.UI.GenericRoll"}}</button>
+        <button type="button" class="btn-init"   data-action="roll-initiative">⚔ {{localize "SS1E.UI.RollInitiative"}}</button>
+      </div>
+    </div>
+
+    {{!-- ── Misc Items (Advantages, Sorceries, Schools, Stories) ──── --}}
+    <details class="ss1e-items-drawer">
+      <summary>{{localize "SS1E.UI.OtherItems"}}</summary>
+      <div class="other-items-grid">
+
+        <div class="oi-section">
+          <header><h3>{{localize "SS1E.UI.Advantages"}}</h3><button type="button" class="oi-add" data-action="create-advantage">+</button></header>
+          <ol>
+          {{#each advantages as |a|}}
+            <li data-item-id="{{a._id}}">
+              <a data-action="edit-item">{{a.name}}</a>
+              <span class="oi-cost">({{a.system.cost}} HP)</span>
+              <a class="oi-del" data-action="delete-item">×</a>
+            </li>
+          {{/each}}
+          </ol>
+        </div>
+
+        <div class="oi-section">
+          <header><h3>{{localize "SS1E.UI.Flaws"}}</h3><button type="button" class="oi-add" data-action="create-flaw">+</button></header>
+          <ol>
+          {{#each flaws as |a|}}
+            <li data-item-id="{{a._id}}">
+              <a data-action="edit-item">{{a.name}}</a>
+              <span class="oi-cost">(+{{a.system.cost}} HP)</span>
+              <a class="oi-del" data-action="delete-item">×</a>
+            </li>
+          {{/each}}
+          </ol>
+        </div>
+
+        <div class="oi-section">
+          <header><h3>{{localize "SS1E.UI.Schools"}}</h3><button type="button" class="oi-add" data-action="create-school">+</button></header>
+          <ol>
+          {{#each schools as |s|}}
+            <li data-item-id="{{s._id}}">
+              <a data-action="edit-item">{{s.name}}</a>
+              <a class="oi-del" data-action="delete-item">×</a>
+            </li>
+          {{/each}}
+          </ol>
+        </div>
+
+        <div class="oi-section">
+          <header><h3>{{localize "SS1E.UI.Sorceries"}}</h3><button type="button" class="oi-add" data-action="create-sorcery">+</button></header>
+          <ol>
+          {{#each sorceries as |s|}}
+            <li data-item-id="{{s._id}}">
+              <a data-action="edit-item">{{s.name}}</a>
+              <a class="oi-del" data-action="delete-item">×</a>
+            </li>
+          {{/each}}
+          </ol>
+        </div>
+
+        <div class="oi-section">
+          <header><h3>{{localize "SS1E.UI.Stories"}}</h3><button type="button" class="oi-add" data-action="create-story">+</button></header>
+          <ol>
+          {{#each stories as |s|}}
+            <li data-item-id="{{s._id}}">
+              <a data-action="edit-item">{{s.name}}</a>
+              {{#if s.system.isComplete}}<span class="oi-cost">✓</span>{{/if}}
+              <a class="oi-del" data-action="delete-item">×</a>
+            </li>
+          {{/each}}
+          </ol>
+        </div>
+
+      </div>
+    </details>
+
+    {{!-- Biography editor at the bottom --}}
+    <details class="ss1e-bio-drawer">
+      <summary>{{localize "SS1E.UI.Biography"}}</summary>
+      {{editor enriched.biography target="system.biography" button=true editable=editable}}
+    </details>
+
+  </div>
+</form>

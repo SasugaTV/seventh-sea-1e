@@ -1,0 +1,32 @@
+<section class="tab sorcery" data-group="primary" data-tab="sorcery">
+    <header class="section-header">
+        <h2>{{localize "SS1E.UI.SorceryAndSchools"}}</h2>
+        <button class="item-create" data-type="sorcery">+ {{localize "SS1E.ItemType.Sorcery"}}</button>
+        <button class="item-create" data-type="school">+ {{localize "SS1E.ItemType.School"}}</button>
+    </header>
+
+    <h3>{{localize "SS1E.UI.Schools"}}</h3>
+    <ol class="items-list">
+        {{#each schools as |s|}}
+        <li data-item-id="{{s._id}}">
+            <strong>{{s.name}}</strong>
+            <span>[{{localize (lookup ../config.schoolRanks s.system.rank)}}]</span>
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+
+    <h3>{{localize "SS1E.UI.Sorceries"}}</h3>
+    <ol class="items-list">
+        {{#each sorceries as |s|}}
+        <li data-item-id="{{s._id}}">
+            <strong>{{s.name}}</strong>
+            <span>{{localize (lookup ../config.sorceries s.system.tradition)}}</span>
+            <span>{{#if s.system.isHalfBlooded}}½{{else if s.system.isTwistedBlooded}}⚹{{else}}●{{/if}}</span>
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+</section>

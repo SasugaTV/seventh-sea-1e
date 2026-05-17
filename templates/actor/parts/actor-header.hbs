@@ -1,0 +1,43 @@
+<header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="header-fields">
+        <h1 class="charname">
+            <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'SS1E.UI.Name'}}" />
+        </h1>
+        <div class="header-row">
+            <label>{{localize "SS1E.UI.Nation"}}</label>
+            <select name="system.nation">
+                <option value=""></option>
+                {{#each config.nations as |label key|}}
+                    <option value="{{key}}" {{#if (ss1e-eq ../system.nation key)}}selected{{/if}}>{{localize label}}</option>
+                {{/each}}
+            </select>
+
+            <label>{{localize "SS1E.UI.Gender"}}</label>
+            <input type="text" name="system.gender" value="{{system.gender}}" />
+
+            <label>{{localize "SS1E.UI.Age"}}</label>
+            <input type="text" name="system.age" value="{{system.age}}" />
+        </div>
+        {{#if isHero}}
+        <div class="header-row resources">
+            <div class="resource">
+                <label>{{localize "SS1E.UI.Reputation"}}</label>
+                <input type="number" name="system.reputation.value" value="{{system.reputation.value}}" />
+            </div>
+            <div class="resource">
+                <label>{{localize "SS1E.UI.DramaDice"}}</label>
+                <a class="drama-adjust" data-delta="-1">−</a>
+                <input type="number" name="system.dramaDice.value" value="{{system.dramaDice.value}}" min="0" max="{{system.dramaDice.max}}" />
+                <span class="separator">/</span>
+                <span class="max">{{system.dramaDice.max}}</span>
+                <a class="drama-adjust" data-delta="1">+</a>
+            </div>
+            <div class="resource">
+                <label>{{localize "SS1E.UI.XP"}}</label>
+                <input type="number" name="system.experience.value" value="{{system.experience.value}}" />
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</header>

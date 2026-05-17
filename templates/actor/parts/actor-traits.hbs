@@ -1,0 +1,24 @@
+<section class="tab traits" data-group="primary" data-tab="traits">
+    <h2>{{localize "SS1E.UI.Traits"}}</h2>
+    <ol class="traits-list">
+        {{#each system.traits as |trait key|}}
+        <li class="trait">
+            <a class="trait-roll ss1e-rollable" data-action="roll-trait" data-trait="{{key}}" title="{{localize 'SS1E.UI.RollTrait'}}">
+                <span class="trait-name">{{localize (lookup ../config.traits key)}}</span>
+            </a>
+            <input type="number" name="system.traits.{{key}}.value" value="{{trait.value}}" min="1" max="6" />
+        </li>
+        {{/each}}
+    </ol>
+
+    <h2>{{localize "SS1E.UI.Defense"}}</h2>
+    <div class="defense-row">
+        <label>{{localize "SS1E.UI.PassiveDefense"}}</label>
+        <span>{{system.defense.bestPassive}}</span>
+        <label>{{localize "SS1E.UI.ActiveDefense"}}</label>
+        <span>{{system.defense.bestActive}}</span>
+        <button type="button" data-action="roll-initiative">{{localize "SS1E.UI.RollInitiative"}}</button>
+    </div>
+
+    <button type="button" data-action="generic-roll">{{localize "SS1E.UI.GenericRoll"}}</button>
+</section>

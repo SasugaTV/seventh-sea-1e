@@ -1,0 +1,35 @@
+<form class="{{cssClass}} flexcol ss1e-item-sheet" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" />
+        <div class="header-fields">
+            <h1><input name="name" type="text" value="{{item.name}}" /></h1>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.Tradition"}}</label>
+                <select name="system.tradition">
+                    <option value=""></option>
+                    {{#each config.sorceries as |label key|}}
+                        <option value="{{key}}" {{#if (ss1e-eq ../system.tradition key)}}selected{{/if}}>{{localize label}}</option>
+                    {{/each}}
+                </select>
+                <label>{{localize "SS1E.UI.SorceryRank"}}</label>
+                <input type="number" name="system.rank" value="{{system.rank}}" min="0" max="5" />
+            </div>
+            <div class="header-row">
+                <label><input type="checkbox" name="system.isHalfBlooded" {{checked system.isHalfBlooded}}/> {{localize "SS1E.UI.HalfBlooded"}}</label>
+                <label><input type="checkbox" name="system.isTwistedBlooded" {{checked system.isTwistedBlooded}}/> {{localize "SS1E.UI.TwistedBlooded"}}</label>
+            </div>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.HalfBloodedKnack"}}</label>
+                <input type="number" name="system.knacks.halfBlooded" value="{{system.knacks.halfBlooded}}" min="0" max="5" />
+                <label>{{localize "SS1E.UI.FullBloodedKnack"}}</label>
+                <input type="number" name="system.knacks.fullBlooded" value="{{system.knacks.fullBlooded}}" min="0" max="5" />
+                <label>{{localize "SS1E.UI.TwistedKnack"}}</label>
+                <input type="number" name="system.knacks.twistedBlooded" value="{{system.knacks.twistedBlooded}}" min="0" max="5" />
+            </div>
+        </div>
+    </header>
+    <section class="sheet-body">
+        <h3>{{localize "SS1E.UI.Description"}}</h3>
+        {{editor enriched.description target="system.description" button=true editable=editable}}
+    </section>
+</form>

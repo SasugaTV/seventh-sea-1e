@@ -1,0 +1,181 @@
+{
+  "Actor": {
+    "types": ["hero", "villain", "brute", "monster"],
+    "templates": {
+      "common": {
+        "biography": "",
+        "notes": "",
+        "charInfo": {
+          "nationality": "",
+          "arcana": "",
+          "membership": "",
+          "profession": "",
+          "gender": "",
+          "age": "",
+          "appearance": ""
+        }
+      },
+      "combatant": {
+        "traits": {
+          "brawn":   { "value": 2 },
+          "finesse": { "value": 2 },
+          "wits":    { "value": 2 },
+          "resolve": { "value": 2 },
+          "panache": { "value": 2 }
+        },
+        "wounds": {
+          "check":    { "roll": 0, "keep": 0 },
+          "flesh":    { "value": 0 },
+          "dramatic": { "cols": [0, 0], "max": 0 }
+        },
+        "composure": {
+          "check":         { "roll": 0, "keep": 0 },
+          "embarrassment": { "value": 0 },
+          "humiliations":  { "cols": [0, 0], "max": 0 }
+        },
+        "defense": {
+          "rows": [
+            { "label": "Footwork",  "passive": 5, "active": 5 },
+            { "label": "Parry",     "passive": 5, "active": 5 },
+            { "label": "Balance",   "passive": 5, "active": 5 },
+            { "label": "Climbing",  "passive": 5, "active": 5 },
+            { "label": "Riding",    "passive": 5, "active": 5 },
+            { "label": "Leaping",   "passive": 5, "active": 5 },
+            { "label": "Sprinting", "passive": 5, "active": 5 },
+            { "label": "Swinging",  "passive": 5, "active": 5 }
+          ]
+        },
+        "initiative": { "bonus": 0 }
+      },
+      "heroic": {
+        "resources": {
+          "income":     "",
+          "xp":         { "value": 0, "total": 0 },
+          "dramaDice":  { "value": 0, "max": 0 }
+        },
+        "reputation": {
+          "cap":     0,
+          "total":   0,
+          "entries": [
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 }
+          ]
+        },
+        "backgrounds": {
+          "rows": [
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 }
+          ]
+        },
+        "accoutrements": {
+          "rows": [
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 }
+          ]
+        },
+        "wealth": {
+          "rows": [
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 },
+            { "text": "", "value": 0 }
+          ]
+        },
+        "contacts": {
+          "rows": [
+            { "name": "", "favor": 0, "role": "" },
+            { "name": "", "favor": 0, "role": "" },
+            { "name": "", "favor": 0, "role": "" },
+            { "name": "", "favor": 0, "role": "" },
+            { "name": "", "favor": 0, "role": "" }
+          ]
+        },
+        "languages": {
+          "extraLabel": "",
+          "rows": [
+            { "name": "", "rank": 0, "rw": 0 },
+            { "name": "", "rank": 0, "rw": 0 },
+            { "name": "", "rank": 0, "rw": 0 },
+            { "name": "", "rank": 0, "rw": 0 },
+            { "name": "", "rank": 0, "rw": 0 }
+          ]
+        },
+        "weapons": {
+          "rows": [
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" },
+            { "name": "", "atk1": { "roll": 0, "keep": 0 }, "atk2": { "roll": 0, "keep": 0 }, "dmg1": { "roll": 0, "keep": 0 }, "dmg2": { "roll": 0, "keep": 0 }, "notes": "", "range": "", "shtMod": "", "lngMod": "", "reload": "" }
+          ]
+        }
+      }
+    },
+    "hero":    { "templates": ["common", "combatant", "heroic"] },
+    "villain": {
+      "templates": ["common", "combatant", "heroic"],
+      "villainy":      { "value": 0 },
+      "henchmenLimit": 0
+    },
+    "brute": {
+      "templates": ["common"],
+      "threat":  1,
+      "brutes":  { "value": 6, "max": 6 },
+      "weapon":  "",
+      "tn":      5
+    },
+    "monster": {
+      "templates": ["common", "combatant"],
+      "monstrous": { "abilities": "" },
+      "size":      "medium"
+    }
+  },
+  "Item": {
+    "types": [
+      "skill", "knack", "advantage", "background",
+      "story", "weapon", "armor", "gear",
+      "school", "sorcery"
+    ],
+    "templates": {
+      "describable": { "description": "" },
+      "carriable":   {
+        "quantity": 1,
+        "weight": 0,
+        "price": { "value": 0, "currency": "guilders" }
+      }
+    },
+    "skill":      { "templates": ["describable"], "category": "civil",   "knacks": {} },
+    "knack":      { "templates": ["describable"], "skill": "", "skillId": "", "trait": "finesse", "rank": 0, "isAdvanced": false, "isMastered": false },
+    "advantage":  { "templates": ["describable"], "cost": 1, "isFlaw": false },
+    "background": { "templates": ["describable"], "points": 1, "story": "" },
+    "story":      { "templates": ["describable"], "goal": "", "reward": "", "progress": 0, "isComplete": false },
+    "weapon":     { "templates": ["describable", "carriable"], "weaponType": "melee", "damage": { "keep": 1, "roll": 0 }, "trait": "brawn", "knack": "Attack (Fencing)", "rangeIncrement": 0, "atkBonus": 0, "dmgBonus": 0, "equipped": false },
+    "armor":      { "templates": ["describable", "carriable"], "soak": 0, "fleshReduction": 0, "equipped": false },
+    "gear":       { "templates": ["describable", "carriable"] },
+    "school":     { "templates": ["describable"], "nation": "", "knacks": "", "apprentice": "", "journeyman": "", "master": "", "rank": "student" },
+    "sorcery":    { "templates": ["describable"], "tradition": "", "knacks": { "halfBlooded": 0, "fullBlooded": 0, "twistedBlooded": 0 }, "isHalfBlooded": false, "isTwistedBlooded": false, "rank": 1 }
+  }
+}

@@ -1,0 +1,421 @@
+/* =====================================================
+   7th Sea 1st Edition — Foundry VTT v12 system styling.
+   Mirrors the standalone HTML character sheet's look:
+   white background, black ink, sans-serif, transparent
+   inputs with single-line underlines, hollow/filled dots.
+   ===================================================== */
+
+.seventh-sea-1e.sheet .window-content {
+    background: #fff;
+    color: #000;
+    padding: 0.75rem;
+    overflow-y: auto;
+}
+
+.seventh-sea-1e .ss1e-hero-sheet,
+.seventh-sea-1e .ss1e-hero-sheet * {
+    box-sizing: border-box;
+}
+
+.seventh-sea-1e .ss1e-hero-sheet {
+    font-family: "Signika", sans-serif;
+    color: #000;
+}
+
+.seventh-sea-1e .ss1e-hero-sheet .sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+/* ── Box base ─────────────────────────────────────── */
+.seventh-sea-1e .box {
+    border: 2px solid #000;
+    padding: 0.4rem 0.6rem;
+    background: #fff;
+}
+.seventh-sea-1e .box p {
+    margin: 0.2rem 0;
+    text-align: center;
+    font-weight: bold;
+}
+.seventh-sea-1e .box-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid #000;
+}
+
+/* ── Inputs ───────────────────────────────────────── */
+.seventh-sea-1e .ss1e-hero-sheet input[type="text"],
+.seventh-sea-1e .ss1e-hero-sheet input[type="number"] {
+    border: none;
+    border-bottom: 1px solid #000;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: #000;
+    padding: 0 2px;
+}
+.seventh-sea-1e .ss1e-hero-sheet input[readonly] {
+    border-bottom-style: dashed;
+    color: #444;
+}
+.seventh-sea-1e .ss1e-hero-sheet input::-webkit-outer-spin-button,
+.seventh-sea-1e .ss1e-hero-sheet input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.seventh-sea-1e .ss1e-hero-sheet input[type=number] { appearance: textfield; }
+
+/* ── Row 1: Traits + Charinfo ─────────────────────── */
+.seventh-sea-1e .row1 {
+    display: flex;
+    gap: 0.6rem;
+    align-items: stretch;
+}
+.seventh-sea-1e .box-traits {
+    flex: 0 0 220px;
+}
+.seventh-sea-1e .traits-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+.seventh-sea-1e .trait-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.2rem 0;
+}
+.seventh-sea-1e .trait-name {
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+.seventh-sea-1e .right-stack {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+}
+.seventh-sea-1e .box-charinfo .charinfo-row,
+.seventh-sea-1e .xp-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.2rem 0;
+    flex-wrap: wrap;
+}
+.seventh-sea-1e .charinfo-row label,
+.seventh-sea-1e .xp-row label {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+.seventh-sea-1e .charinfo-input { flex: 1 1 6rem; min-width: 0; }
+.seventh-sea-1e .charinfo-full  { flex: 1 1 100%; }
+.seventh-sea-1e .income-num     { width: 7rem; text-align: right; }
+.seventh-sea-1e .xp-input       { width: 3rem; text-align: center; }
+.seventh-sea-1e .xp-max         { font-size: 0.85rem; color: #444; }
+
+/* ── Dot tracker ──────────────────────────────────── */
+.seventh-sea-1e .dots {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 0.5rem;
+}
+.seventh-sea-1e .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: inline-block;
+}
+.seventh-sea-1e .dot.filled { background: #000; }
+
+/* ── Row 2: 6-col seed grid ───────────────────────── */
+.seventh-sea-1e .row2-seed {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr 1.1fr 1.4fr 1.2fr 1.1fr;
+    gap: 0.5rem;
+}
+.seventh-sea-1e .rep-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+    border-bottom: 1px solid #000;
+}
+.seventh-sea-1e .rep-title-row span:first-child { flex: 0 0 auto; }
+.seventh-sea-1e .rep-title-num { width: 2.5rem; text-align: center; }
+.seventh-sea-1e .rep-total     { width: 2.5rem; text-align: center; }
+
+.seventh-sea-1e .rep-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 2px 0;
+}
+.seventh-sea-1e .rep-text  { flex: 1; min-width: 0; font-size: 0.85rem; }
+.seventh-sea-1e .rep-num   { width: 2.2rem; text-align: center; flex: 0 0 auto; }
+.seventh-sea-1e .bg-num    { width: 1.8rem; text-align: center; flex: 0 0 auto; }
+
+.seventh-sea-1e .wealth-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+.seventh-sea-1e .wealth-col .rep-row { gap: 2px; }
+.seventh-sea-1e .wealth-col .rep-num { width: 2rem; }
+
+.seventh-sea-1e .contacts-box .contacts-header,
+.seventh-sea-1e .lang-box .lang-header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+    border-bottom: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+.seventh-sea-1e .lang-header { display: flex; }
+.seventh-sea-1e .lang-extra-input { width: 4rem; }
+.seventh-sea-1e .lang-rw { font-size: 0.8rem; }
+.seventh-sea-1e .contacts-row {
+    display: flex; gap: 3px; margin: 2px 0;
+}
+.seventh-sea-1e .contacts-text { flex: 1; min-width: 0; font-size: 0.85rem; }
+.seventh-sea-1e .contacts-num  { width: 1.8rem; text-align: center; flex: 0 0 auto; }
+.seventh-sea-1e .lang-row { display: flex; align-items: center; gap: 4px; margin: 2px 0; }
+.seventh-sea-1e .lang-text { flex: 1; min-width: 0; font-size: 0.85rem; }
+.seventh-sea-1e .lang-num  { width: 2rem; text-align: center; }
+.seventh-sea-1e .lang-dot  { margin-left: 4px; }
+
+/* ── Row 3: Weapons / Defense / Wounds ────────────── */
+.seventh-sea-1e .civil-skills { display: flex; flex-direction: column; gap: 0.6rem; }
+.seventh-sea-1e .cs-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+}
+.seventh-sea-1e .cs-row-wd {
+    grid-template-columns: 2fr 0.9fr 0.9fr;
+}
+.seventh-sea-1e .cs-cell { padding: 0.3rem 0.5rem; }
+.seventh-sea-1e .weapons-major-cols { display: grid; grid-template-columns: 1.1fr 1.2fr; gap: 0.4rem; }
+.seventh-sea-1e .weapons-left-grid {
+    display: grid;
+    grid-template-columns: 1fr 95px 95px;
+    gap: 2px;
+    align-items: center;
+}
+.seventh-sea-1e .weapons-right-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 0.7fr 0.7fr 0.7fr 0.7fr;
+    gap: 2px;
+    align-items: center;
+}
+.seventh-sea-1e .w-header {
+    font-weight: bold;
+    font-size: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #000;
+}
+.seventh-sea-1e .w-input { font-size: 0.8rem; }
+.seventh-sea-1e .w-center { text-align: center; }
+.seventh-sea-1e .atk-cell {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    justify-content: center;
+}
+.seventh-sea-1e .atk-num { width: 2.2rem; text-align: center; }
+.seventh-sea-1e .atk-k { font-size: 0.85rem; }
+.seventh-sea-1e .atk-roll-btn {
+    margin-left: 2px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #000;
+    text-decoration: none;
+}
+.seventh-sea-1e .atk-roll-btn:hover { color: #8b1a1a; }
+
+.seventh-sea-1e .defense-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.6fr 0.6fr;
+    gap: 2px;
+    align-items: center;
+}
+.seventh-sea-1e .defense-num { width: 100%; }
+
+.seventh-sea-1e .wounds-box .wound-check-row,
+.seventh-sea-1e .wounds-box .flesh-row,
+.seventh-sea-1e .wounds-box .dramatic-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.2rem 0;
+    flex-wrap: wrap;
+}
+.seventh-sea-1e .wounds-label { font-size: 0.85rem; cursor: default; }
+.seventh-sea-1e .wounds-label.ss1e-rollable { cursor: pointer; }
+.seventh-sea-1e .wounds-label.ss1e-rollable:hover { color: #8b1a1a; }
+.seventh-sea-1e .wound-check-num { width: 2.2rem; text-align: center; }
+.seventh-sea-1e .wound-check-brawn { font-size: 0.9rem; font-weight: bold; }
+.seventh-sea-1e .flesh-num { width: 3rem; text-align: center; }
+.seventh-sea-1e .dramatic-dots { display: flex; gap: 6px; align-items: center; }
+.seventh-sea-1e .dramatic-gap { display: inline-block; width: 6px; }
+.seventh-sea-1e .wounds-subheader {
+    margin-top: 0.4rem;
+    font-weight: bold;
+    border-top: 1px dashed #000;
+    padding-top: 0.3rem;
+    text-align: center;
+}
+
+/* ── Section heading / Skill cells ────────────────── */
+.seventh-sea-1e .section-heading {
+    font-weight: bold;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    padding: 0.2rem 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0.4rem 0 0.2rem;
+}
+.seventh-sea-1e .skill-box { display: flex; flex-direction: column; gap: 2px; }
+.seventh-sea-1e .skill-title-input {
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+    border-bottom: 1px solid #000 !important;
+}
+.seventh-sea-1e .sorcery-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 2px 0;
+}
+.seventh-sea-1e .sorcery-text {
+    flex: 1;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px dotted #000;
+}
+.seventh-sea-1e .sorcery-dot { margin-left: 4px; }
+.seventh-sea-1e .knack-edit, .seventh-sea-1e .oi-del {
+    cursor: pointer;
+    color: #444;
+    font-size: 0.75rem;
+    padding: 0 3px;
+}
+.seventh-sea-1e .knack-edit:hover, .seventh-sea-1e .oi-del:hover { color: #8b1a1a; }
+
+.seventh-sea-1e .skill-create-btn,
+.seventh-sea-1e .knack-create-btn {
+    background: transparent;
+    border: 1px dashed #000;
+    color: #000;
+    cursor: pointer;
+    padding: 2px 4px;
+    font-size: 0.75rem;
+    margin: 4px 0;
+}
+.seventh-sea-1e .skill-create-btn:hover,
+.seventh-sea-1e .knack-create-btn:hover { background: #f0f0f0; }
+
+/* ── Bottom buttons ───────────────────────────────── */
+.seventh-sea-1e .cs-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0.4rem 0;
+}
+.seventh-sea-1e .cs-buttons button {
+    background: transparent;
+    border: 2px solid #000;
+    color: #000;
+    cursor: pointer;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+.seventh-sea-1e .cs-buttons button:hover { background: #f0f0f0; }
+
+/* ── Clickable-to-roll affordance ─────────────────── */
+.seventh-sea-1e .ss1e-rollable { cursor: pointer; }
+.seventh-sea-1e .ss1e-rollable:hover { color: #8b1a1a; text-decoration: underline; }
+
+/* ── Other Items drawer ───────────────────────────── */
+.seventh-sea-1e .ss1e-items-drawer,
+.seventh-sea-1e .ss1e-bio-drawer {
+    border: 2px solid #000;
+    padding: 0.4rem 0.6rem;
+    background: #fff;
+}
+.seventh-sea-1e .ss1e-items-drawer summary,
+.seventh-sea-1e .ss1e-bio-drawer summary {
+    font-weight: bold;
+    cursor: pointer;
+}
+.seventh-sea-1e .other-items-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+.seventh-sea-1e .oi-section header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #000;
+}
+.seventh-sea-1e .oi-section h3 { font-size: 0.9rem; margin: 0; }
+.seventh-sea-1e .oi-add {
+    background: transparent; border: 1px solid #000; cursor: pointer;
+    padding: 0 4px; font-size: 0.75rem;
+}
+.seventh-sea-1e .oi-section ol { list-style: none; padding: 0; margin: 4px 0; }
+.seventh-sea-1e .oi-section li {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.8rem;
+    border-bottom: 1px dotted #888;
+    padding: 2px 0;
+}
+.seventh-sea-1e .oi-section li a { color: #000; cursor: pointer; flex: 1; }
+.seventh-sea-1e .oi-section li a:hover { color: #8b1a1a; }
+.seventh-sea-1e .oi-cost { color: #444; font-size: 0.75rem; }
+
+/* ── Brute / Monster legacy ───────────────────────── */
+.seventh-sea-1e .ss1e-brute-sheet,
+.seventh-sea-1e .ss1e-monster-sheet { padding: 0.5rem; }
+
+/* ── Chat cards (unchanged) ───────────────────────── */
+.ss1e-roll-card {
+    background: #fdf6e3;
+    border: 2px solid #8b1a1a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: "Signika", serif;
+}
+.ss1e-roll-card header h3 { margin: 0 0 4px; color: #8b1a1a; font-variant: small-caps; }
+.ss1e-roll-line { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.ss1e-formula { font-weight: bold; }
+.ss1e-tn { color: #6b4a23; }
+.ss1e-roll-result {
+    font-size: 1.2em; padding: 4px 8px; border-radius: 4px; margin: 4px 0; text-align: center;
+}
+.ss1e-success { background: #d4edda; color: #155724; }
+.ss1e-failure { background: #f8d7da; color: #721c24; }
+.ss1e-raises-met { color: #c1843b; font-weight: bold; }
+.ss1e-actions { text-align: right; margin-top: 6px; }
+.ss1e-chat-button {
+    background: #8b1a1a; color: white; border: none;
+    padding: 2px 8px; border-radius: 3px; cursor: pointer;
+}

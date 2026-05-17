@@ -1,0 +1,18 @@
+<section class="tab biography" data-group="primary" data-tab="biography">
+    <h2>{{localize "SS1E.UI.Biography"}}</h2>
+    <div class="bio-grid">
+        <label>{{localize "SS1E.UI.Hubris"}}</label>
+        <input type="text" name="system.hubris" value="{{system.hubris}}" />
+
+        <label>{{localize "SS1E.UI.Arcana"}}</label>
+        <input type="text" name="system.arcana" value="{{system.arcana}}" />
+
+        <label>{{localize "SS1E.UI.Appearance"}}</label>
+        <input type="text" name="system.appearance" value="{{system.appearance}}" />
+    </div>
+
+    {{editor enriched.biography target="system.biography" button=true editable=editable}}
+
+    <h3>{{localize "SS1E.UI.Notes"}}</h3>
+    {{editor enriched.notes target="system.notes" button=true editable=editable}}
+</section>

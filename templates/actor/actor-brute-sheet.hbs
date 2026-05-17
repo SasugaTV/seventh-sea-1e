@@ -1,0 +1,30 @@
+<form class="{{cssClass}} flexcol ss1e-brute-sheet" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+        <div class="header-fields">
+            <h1 class="charname">
+                <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'SS1E.UI.Name'}}" />
+            </h1>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.Threat"}}</label>
+                <input type="number" name="system.threat" value="{{system.threat}}" min="1" max="5" />
+                <label>{{localize "SS1E.UI.TN"}}</label>
+                <input type="number" name="system.tn" value="{{system.tn}}" min="5" step="5" />
+                <label>{{localize "SS1E.UI.Weapon"}}</label>
+                <input type="text" name="system.weapon" value="{{system.weapon}}" />
+            </div>
+            <div class="header-row resources">
+                <label>{{localize "SS1E.UI.BrutesRemaining"}}</label>
+                <input type="number" name="system.brutes.value" value="{{system.brutes.value}}" min="0" max="{{system.brutes.max}}" />
+                <span>/</span>
+                <input type="number" name="system.brutes.max" value="{{system.brutes.max}}" min="0" />
+                <button class="brute-take-hit">{{localize "SS1E.UI.TakeHit"}}</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="sheet-body">
+        <h2>{{localize "SS1E.UI.Notes"}}</h2>
+        {{editor system.notes target="system.notes" button=true editable=editable}}
+    </section>
+</form>

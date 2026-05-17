@@ -1,0 +1,36 @@
+<section class="tab skills" data-group="primary" data-tab="skills">
+    <header class="section-header">
+        <h2>{{localize "SS1E.UI.SkillsAndKnacks"}}</h2>
+        <button class="item-create" data-type="skill">+ {{localize "SS1E.ItemType.Skill"}}</button>
+        <button class="item-create" data-type="knack">+ {{localize "SS1E.ItemType.Knack"}}</button>
+    </header>
+
+    {{#each skills as |skill|}}
+    <article class="skill-block" data-item-id="{{skill._id}}">
+        <header>
+            <h3>
+                <a class="item-edit"><i class="fas fa-edit"></i></a>
+                {{skill.name}}
+                <span class="skill-category">[{{localize (lookup ../config.skillCategories skill.system.category)}}]</span>
+                <a class="item-delete pull-right"><i class="fas fa-trash"></i></a>
+            </h3>
+        </header>
+    </article>
+    {{/each}}
+
+    <h3>{{localize "SS1E.UI.AllKnacks"}}</h3>
+    <ol class="knacks-list">
+        {{#each knacks as |knack|}}
+        <li class="knack" data-item-id="{{knack._id}}">
+            <a class="knack-roll" title="{{localize 'SS1E.UI.RollKnack'}}">
+                <span class="knack-name">{{knack.name}}</span>
+            </a>
+            <span class="knack-skill">{{knack.system.skill}}</span>
+            <span class="knack-trait">[{{localize (lookup ../config.traits knack.system.trait)}}]</span>
+            <input class="knack-rank" type="number" name="rank-{{knack._id}}" data-item-id="{{knack._id}}" value="{{knack.system.rank}}" min="0" max="10" disabled />
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+</section>

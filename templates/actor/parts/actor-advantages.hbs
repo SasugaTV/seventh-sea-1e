@@ -1,0 +1,56 @@
+<section class="tab advantages" data-group="primary" data-tab="advantages">
+    <header class="section-header">
+        <h2>{{localize "SS1E.UI.Advantages"}}</h2>
+        <button class="item-create" data-type="advantage">+ {{localize "SS1E.ItemType.Advantage"}}</button>
+        <button class="item-create" data-type="background">+ {{localize "SS1E.ItemType.Background"}}</button>
+        <button class="item-create" data-type="story">+ {{localize "SS1E.ItemType.Story"}}</button>
+    </header>
+
+    <h3>{{localize "SS1E.UI.Advantages"}}</h3>
+    <ol class="items-list">
+        {{#each advantages as |adv|}}
+        <li data-item-id="{{adv._id}}">
+            <strong>{{adv.name}}</strong>
+            <span class="cost">({{adv.system.cost}} HP)</span>
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+
+    <h3>{{localize "SS1E.UI.Flaws"}}</h3>
+    <ol class="items-list">
+        {{#each flaws as |flaw|}}
+        <li data-item-id="{{flaw._id}}">
+            <strong>{{flaw.name}}</strong>
+            <span class="cost">(+{{flaw.system.cost}} HP)</span>
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+
+    <h3>{{localize "SS1E.UI.Backgrounds"}}</h3>
+    <ol class="items-list">
+        {{#each backgrounds as |bg|}}
+        <li data-item-id="{{bg._id}}">
+            <strong>{{bg.name}}</strong>
+            <span class="points">({{bg.system.points}} pts)</span>
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+
+    <h3>{{localize "SS1E.UI.Stories"}}</h3>
+    <ol class="items-list">
+        {{#each stories as |s|}}
+        <li data-item-id="{{s._id}}">
+            <strong>{{s.name}}</strong>
+            {{#if s.system.isComplete}}<span class="complete">✓</span>{{/if}}
+            <a class="item-edit"><i class="fas fa-edit"></i></a>
+            <a class="item-delete"><i class="fas fa-trash"></i></a>
+        </li>
+        {{/each}}
+    </ol>
+</section>

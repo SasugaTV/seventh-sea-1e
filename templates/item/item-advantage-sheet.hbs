@@ -1,0 +1,17 @@
+<form class="{{cssClass}} flexcol ss1e-item-sheet" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" />
+        <div class="header-fields">
+            <h1><input name="name" type="text" value="{{item.name}}" /></h1>
+            <div class="header-row">
+                <label>{{localize "SS1E.UI.Cost"}}</label>
+                <input type="number" name="system.cost" value="{{system.cost}}" />
+                <label><input type="checkbox" name="system.isFlaw" {{checked system.isFlaw}}/> {{localize "SS1E.UI.IsFlaw"}}</label>
+            </div>
+        </div>
+    </header>
+    <section class="sheet-body">
+        <h3>{{localize "SS1E.UI.Description"}}</h3>
+        {{editor enriched.description target="system.description" button=true editable=editable}}
+    </section>
+</form>
