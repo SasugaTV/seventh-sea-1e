@@ -116,7 +116,8 @@ export async function promptRollAndKeep({
   baseRank   = null,
   defaultAdvKept = 0,
   defaultAdvUnkept = 0,
-  defaultAdvPips = 0
+  defaultAdvPips = 0,
+  defaultFreeRaises = 0
 } = {}) {
 
   const traits = actor ? [
@@ -171,6 +172,10 @@ export async function promptRollAndKeep({
         <input type="number" name="adv_pips" value="${defaultAdvPips}" min="-20" max="20" />
       </div>
       <div class="form-group">
+        <label>Free Raises</label>
+        <input type="number" name="free_raises" value="${defaultFreeRaises}" min="0" max="20" />
+      </div>
+      <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Roll")}</label>
         <input type="number" name="roll" value="${defaultRoll}" min="0" max="20" />
       </div>
@@ -192,7 +197,7 @@ export async function promptRollAndKeep({
         </select>
       </div>
       <div class="form-group">
-        <label>${game.i18n.localize("SS1E.Dialog.Raises")}</label>
+        <label>Called Raises</label>
         <input type="number" name="raises" value="0" min="0" max="10" />
       </div>
     </form>
@@ -212,6 +217,7 @@ export async function promptRollAndKeep({
             const advK = Number(fd.adv_kept) || 0;
             const advU = Number(fd.adv_unkept) || 0;
             const advP = Number(fd.adv_pips) || 0;
+            const freeR = Number(fd.free_raises) || 0;
             
             if (actor && spentDD > 0) {
               const currentDD = actor.system?.resources?.dramaDice?.value ?? actor.system?.dramaDice?.value ?? 0;
@@ -225,12 +231,12 @@ export async function promptRollAndKeep({
               actor,
               roll:  Number(fd.roll),
               keep:  Number(fd.keep),
-              bonus: advP,
+              bonus: advP + (freeR * 5),
               tn:    Number(fd.tn),
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : ""
             });
-            resolve({ ...result, trait: selectedTrait, advKept: advK, advUnkept: advU, advPips: advP });
+            resolve({ ...result, trait: selectedTrait, advKept: advK, advUnkept: advU, advPips: advP, freeRaises: freeR });
           }
         },
         cancel: {

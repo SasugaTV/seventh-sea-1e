@@ -618,7 +618,8 @@
       "isMastered": false,
       "advKept": 0,
       "advUnkept": 0,
-      "advPips": 0
+      "advPips": 0,
+      "freeRaises": 0
     },
     "advantage": {
       "templates": [

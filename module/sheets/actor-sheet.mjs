@@ -245,6 +245,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
       defaultAdvKept: item.system.advKept || 0,
       defaultAdvUnkept: item.system.advUnkept || 0,
       defaultAdvPips: item.system.advPips || 0,
+      defaultFreeRaises: item.system.freeRaises || 0,
       title: game.i18n.format("SS1E.Dialog.KnackRollTitle", { knack: item.name })
     });
     
@@ -255,6 +256,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
       if (result.advKept !== undefined && result.advKept !== item.system.advKept) updates["system.advKept"] = result.advKept;
       if (result.advUnkept !== undefined && result.advUnkept !== item.system.advUnkept) updates["system.advUnkept"] = result.advUnkept;
       if (result.advPips !== undefined && result.advPips !== item.system.advPips) updates["system.advPips"] = result.advPips;
+      if (result.freeRaises !== undefined && result.freeRaises !== item.system.freeRaises) updates["system.freeRaises"] = result.freeRaises;
       
       if (!foundry.utils.isEmpty(updates)) {
         await item.update(updates);
