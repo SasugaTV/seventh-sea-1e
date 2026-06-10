@@ -113,7 +113,9 @@ export async function promptRollAndKeep({
   title      = game.i18n.localize("SS1E.Dialog.RollAndKeep"),
   knack      = null,
   trait      = null,
-  baseRank   = null
+  baseRank   = null,
+  defaultAdvKept = 0,
+  defaultAdvUnkept = 0
 } = {}) {
 
   const traits = actor ? [
@@ -156,6 +158,14 @@ export async function promptRollAndKeep({
       ${traitDropdown}
       ${dramaDiceDropdown}
       <div class="form-group">
+        <label>Advantage Kept</label>
+        <input type="number" name="adv_kept" value="${defaultAdvKept}" min="0" max="20" />
+      </div>
+      <div class="form-group">
+        <label>Advantage Unkept</label>
+        <input type="number" name="adv_unkept" value="${defaultAdvUnkept}" min="0" max="20" />
+      </div>
+      <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Roll")}</label>
         <input type="number" name="roll" value="${defaultRoll}" min="0" max="20" />
       </div>
@@ -189,6 +199,8 @@ export async function promptRollAndKeep({
             const fd = new FormDataExtended(html[0].querySelector("form")).object;
             const selectedTrait = html.find('[name="trait_select"]').val() || null;
             const spentDD = Number(fd.drama_dice) || 0;
+            const advK = Number(fd.adv_kept) || 0;
+            const advU = Number(fd.adv_unkept) || 0;
             
             if (actor && spentDD > 0) {
               const currentDD = actor.system?.resources?.dramaDice?.value ?? actor.system?.dramaDice?.value ?? 0;
@@ -207,7 +219,7 @@ export async function promptRollAndKeep({
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : ""
             });
-            resolve({ ...result, trait: selectedTrait });
+            resolve({ ...result, trait: selectedTrait, advKept: advK, advUnkept: advU });
           }
         },
         cancel: {
@@ -230,9 +242,11 @@ export async function promptRollAndKeep({
           }
 
           const ddUsed = Number(html.find('[name="drama_dice"]').val() || 0);
+          const advK = Number(html.find('[name="adv_kept"]').val() || 0);
+          const advU = Number(html.find('[name="adv_unkept"]').val() || 0);
           
-          let finalRoll = currentRoll + ddUsed;
-          let finalKeep = currentKeep + ddUsed;
+          let finalRoll = currentRoll + ddUsed + advK + advU;
+          let finalKeep = currentKeep + ddUsed + advK;
 
           if (finalRoll > 10) {
              const overflow = finalRoll - 10;
@@ -244,7 +258,9 @@ export async function promptRollAndKeep({
           html.find('[name="keep"]').val(finalKeep);
         };
 
-        html.find('[name="trait_select"], [name="drama_dice"]').change(updateDice);
+        html.find('[name="trait_select"], [name="drama_dice"], [name="adv_kept"], [name="adv_unkept"]').change(updateDice);
+        html.find('[name="adv_kept"], [name="adv_unkept"]').keyup(updateDice);
+        updateDice(); // Initialize immediately to ensure default advantages are applied to roll inputs
       },
       default: "roll"
     }).render(true);

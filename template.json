@@ -615,7 +615,9 @@
       "trait": "finesse",
       "rank": 0,
       "isAdvanced": false,
-      "isMastered": false
+      "isMastered": false,
+      "advKept": 0,
+      "advUnkept": 0
     },
     "advantage": {
       "templates": [

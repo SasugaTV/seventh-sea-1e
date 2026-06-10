@@ -242,12 +242,21 @@ export class SeventhSeaActorSheet extends ActorSheet {
       knack: item.name,
       trait: r.trait,
       baseRank: item.system.rank || 0,
+      defaultAdvKept: item.system.advKept || 0,
+      defaultAdvUnkept: item.system.advUnkept || 0,
       title: game.i18n.format("SS1E.Dialog.KnackRollTitle", { knack: item.name })
     });
     
-    // Save the selected trait back to the item so it remembers it for next time
-    if (result && result.trait && result.trait !== item.system.trait) {
-      await item.update({ "system.trait": result.trait });
+    // Save the selected trait and advantage dice back to the item so it remembers it for next time
+    if (result) {
+      const updates = {};
+      if (result.trait && result.trait !== item.system.trait) updates["system.trait"] = result.trait;
+      if (result.advKept !== undefined && result.advKept !== item.system.advKept) updates["system.advKept"] = result.advKept;
+      if (result.advUnkept !== undefined && result.advUnkept !== item.system.advUnkept) updates["system.advUnkept"] = result.advUnkept;
+      
+      if (!foundry.utils.isEmpty(updates)) {
+        await item.update(updates);
+      }
     }
     
     return result;
