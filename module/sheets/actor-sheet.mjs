@@ -428,10 +428,15 @@ export class SeventhSeaActorSheet extends ActorSheet {
     return this.actor.update({ "system.defense.rows": rows });
   }
   async _defenseEdit(el) {
-    const row = el.closest("[data-row]");
-    const idx = Number(row.dataset.row);
+    const idx = Number(el.dataset.row);
+    if (isNaN(idx)) return;
+    
+    // Fallback to finding the label directly next to the button if closest fails
+    const container = el.closest('.defense-row-cell');
+    if (!container) return;
+    
     if (idx < 8) return ui.notifications.warn(game.i18n.localize("SS1E.Notif.DefaultDefenseLocked"));
-    const label = row.querySelector(".defense-label");
+    const label = container.querySelector(".defense-label");
     if (!label) return;
     const cur = this.actor.system.defense?.rows?.[idx]?.label ?? "";
     const input = document.createElement("input");
