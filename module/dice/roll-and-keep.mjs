@@ -126,11 +126,27 @@ export async function promptRollAndKeep({
 
   let traitDropdown = "";
   if (actor && trait !== null && baseRank !== null) {
+    const initialTraitVal = actor.getTrait(trait) || 0;
     const options = traits.map(t => `<option value="${t.key}" ${t.key === trait ? 'selected' : ''}>${t.label}</option>`).join("");
     traitDropdown = `
       <div class="form-group">
-        <label>Trait</label>
+        <label>Trait <span class="trait-value-display" style="font-weight: bold; margin: 0 4px;">(${initialTraitVal})</span></label>
         <select name="trait_select">${options}</select>
+      </div>
+    `;
+  }
+
+  let dramaDiceDropdown = "";
+  if (actor) {
+    const availableDD = Math.min(10, Math.max(0, actor.system?.resources?.dramaDice?.value || actor.system?.dramaDice?.value || 0));
+    let ddOptions = "";
+    for(let i=0; i<=availableDD; i++) {
+      ddOptions += `<option value="${i}">${i}</option>`;
+    }
+    dramaDiceDropdown = `
+      <div class="form-group">
+        <label>Use Drama Dice</label>
+        <select name="drama_dice">${ddOptions}</select>
       </div>
     `;
   }
@@ -138,6 +154,7 @@ export async function promptRollAndKeep({
   const content = `
     <form class="ss1e-roll-dialog">
       ${traitDropdown}
+      ${dramaDiceDropdown}
       <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Roll")}</label>
         <input type="number" name="roll" value="${defaultRoll}" min="0" max="20" />
@@ -171,6 +188,16 @@ export async function promptRollAndKeep({
           callback: async (html) => {
             const fd = new FormDataExtended(html[0].querySelector("form")).object;
             const selectedTrait = html.find('[name="trait_select"]').val() || null;
+            const spentDD = Number(fd.drama_dice) || 0;
+            
+            if (actor && spentDD > 0) {
+              const currentDD = actor.system?.resources?.dramaDice?.value ?? actor.system?.dramaDice?.value ?? 0;
+              const propPath = (actor.system?.resources?.dramaDice !== undefined) 
+                  ? "system.resources.dramaDice.value" 
+                  : "system.dramaDice.value";
+              await actor.update({[propPath]: Math.max(0, currentDD - spentDD)});
+            }
+
             const result = await rollAndKeep({
               actor,
               roll:  Number(fd.roll),
@@ -189,21 +216,35 @@ export async function promptRollAndKeep({
         }
       },
       render: (html) => {
-        if (actor && baseRank !== null) {
-          html.find('[name="trait_select"]').change(ev => {
-            const newTraitKey = ev.target.value;
-            const traitVal = actor.getTrait(newTraitKey) || 0;
-            let newRoll = traitVal + baseRank;
-            let newKeep = traitVal;
-            if (newRoll > 10) {
-               const overflow = newRoll - 10;
-               newRoll = 10;
-               newKeep = Math.min(newKeep + Math.floor(overflow / 2), 10);
-            }
-            html.find('[name="roll"]').val(newRoll);
-            html.find('[name="keep"]').val(newKeep);
-          });
-        }
+        const updateDice = () => {
+          let currentRoll = defaultRoll;
+          let currentKeep = defaultKeep;
+          let newTraitVal = 0;
+
+          if (actor && baseRank !== null) {
+            const newTraitKey = html.find('[name="trait_select"]').val() || trait;
+            newTraitVal = actor.getTrait(newTraitKey) || 0;
+            html.find('.trait-value-display').text(`(${newTraitVal})`);
+            currentRoll = newTraitVal + baseRank;
+            currentKeep = newTraitVal;
+          }
+
+          const ddUsed = Number(html.find('[name="drama_dice"]').val() || 0);
+          
+          let finalRoll = currentRoll + ddUsed;
+          let finalKeep = currentKeep + ddUsed;
+
+          if (finalRoll > 10) {
+             const overflow = finalRoll - 10;
+             finalRoll = 10;
+             finalKeep = Math.min(finalKeep + Math.floor(overflow / 2), 10);
+          }
+
+          html.find('[name="roll"]').val(finalRoll);
+          html.find('[name="keep"]').val(finalKeep);
+        };
+
+        html.find('[name="trait_select"], [name="drama_dice"]').change(updateDice);
       },
       default: "roll"
     }).render(true);
