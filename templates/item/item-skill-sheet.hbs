@@ -15,6 +15,7 @@
     </header>
     <section class="sheet-body">
         <h3>{{localize "SS1E.UI.Description"}}</h3>
-        {{editor enriched.description target="system.description" button=true editable=editable}}
+        <textarea class="ss1e-desc-textarea" name="system.description" rows="6"
+                  placeholder="{{localize 'SS1E.UI.DescriptionPlaceholder'}}">{{system.description}}</textarea>
     </section>
 </form>

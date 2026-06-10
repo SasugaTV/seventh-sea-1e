@@ -3,17 +3,18 @@ import { rollAndKeep, promptRollAndKeep } from "../dice/roll-and-keep.mjs";
 
 /**
  * Unified Actor Sheet for Heroes, Villains, Brute Squads, and Monsters.
- * The Hero/Villain sheet mirrors the HTML reference layout: single page,
- * trait dot trackers, 5-col seed row, weapons/defense/wounds row, dynamic
- * skill grid. Clicking the rollable elements fires Foundry rolls.
  */
 export class SeventhSeaActorSheet extends ActorSheet {
 
   static get defaultOptions() {
+    // Initial size fits within the current window
+    const w = Math.min(1200, Math.max(720, Math.floor((window.innerWidth || 1200) * 0.86)));
+    const h = Math.min(900, Math.max(560, Math.floor((window.innerHeight || 900) * 0.86)));
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["seventh-sea-1e", "sheet", "actor"],
-      width: 1100,
-      height: 820,
+      width: w,
+      height: h,
+      resizable: true,
       scrollY: [".sheet"]
     });
   }
@@ -28,11 +29,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
     ctx.config  = SS1E;
     ctx.isHero    = this.actor.type === "hero";
     ctx.isVillain = this.actor.type === "villain";
-    ctx.isBrute   = this.actor.type === "brute";
-    ctx.isMonster = this.actor.type === "monster";
 
     // Item buckets
-    const items     = Array.from(this.actor.items);
+    const items = Array.from(this.actor.items);
     ctx.skills      = items.filter(i => i.type === "skill");
     ctx.knacks      = items.filter(i => i.type === "knack");
     ctx.advantages  = items.filter(i => i.type === "advantage" && !i.system.isFlaw);
@@ -45,27 +44,22 @@ export class SeventhSeaActorSheet extends ActorSheet {
     ctx.schools     = items.filter(i => i.type === "school");
     ctx.sorceries   = items.filter(i => i.type === "sorcery");
 
-    // Build skill cells (3-per-row grid)
+    // Build skill cells (strict skillId match — knacks no longer cross-pollinate by name)
     const cells = ctx.skills.map(skill => ({
       skillId:   skill.id,
       skillName: skill.name,
       knacks:    ctx.knacks
-        .filter(k => k.system.skillId === skill.id || k.system.skill === skill.name)
+        .filter(k => k.system.skillId === skill.id)
         .sort((a, b) => a.name.localeCompare(b.name))
     }));
-    // Group into rows of 3
-    const cellsPerRow = 3;
+    const perRow = 3;
     ctx.skillCellRows = [];
-    for (let i = 0; i < cells.length; i += cellsPerRow) {
-      ctx.skillCellRows.push(cells.slice(i, i + cellsPerRow));
+    for (let i = 0; i < cells.length; i += perRow) {
+      ctx.skillCellRows.push(cells.slice(i, i + perRow));
     }
-    // Optional empty-cell padding so the last row is left-aligned (no padding cells)
-    // — we render only real cells; that's fine.
 
-    // Enriched biography
-    ctx.enriched = {
-      biography: await TextEditor.enrichHTML(ctx.system.biography ?? "", { async: true })
-    };
+    // Font scale for live ±
+    ctx.fontScale = Number(ctx.system?.uiPrefs?.fontScale) || 1.0;
     return ctx;
   }
 
@@ -74,22 +68,27 @@ export class SeventhSeaActorSheet extends ActorSheet {
   /* ------------------------------------------------------------------ */
   activateListeners(html) {
     super.activateListeners(html);
-    // Always build the dot trackers, even if not editable, so the dots are visible.
+
+    // Apply user's saved font scale to the sheet root
+    const scale = Number(this.actor.system?.uiPrefs?.fontScale) || 1.0;
+    html[0].style.setProperty("--ss1e-font-scale", String(scale));
+
+    // Always build dot trackers (even when not editable)
     this._renderDotTrackers(html);
 
     if (!this.isEditable) return;
 
-    // Dot tracker clicks
+    // Dot clicks
     html.find(".ss1e-dot-tracker").each((_, tr) => {
       tr.querySelectorAll(".dot").forEach(dot => {
         dot.addEventListener("click", (ev) => this._onDotClick(ev, tr));
       });
     });
 
-    // Single delegated click handler for [data-action]
+    // Single delegated [data-action] handler
     html.on("click", "[data-action]", (event) => this._onAction(event));
 
-    // Income formatting (mirror the HTML sheet's behavior)
+    // Income formatting
     html.find(".income-num").each((_, input) => {
       input.addEventListener("focus", () => { input.value = input.value.replace(/,/g, ""); });
       input.addEventListener("blur",  () => {
@@ -101,7 +100,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Dot Trackers                                                       */
+  /*  Dot trackers                                                       */
   /* ------------------------------------------------------------------ */
   _renderDotTrackers(html) {
     html.find(".ss1e-dot-tracker").each((_, tr) => {
@@ -124,37 +123,79 @@ export class SeventhSeaActorSheet extends ActorSheet {
 
   async _onDotClick(event, tracker) {
     event.preventDefault();
-    const path    = tracker.dataset.path;
+    const path   = tracker.dataset.path;
     if (!path) return;
-    const itemId  = tracker.dataset.itemId || null;
-    const value   = parseInt(event.currentTarget.dataset.value) || 0;
-    const current = parseInt(tracker.dataset.current || "0") || 0;
-    const next    = (current === value) ? 0 : value;
+    const itemId = tracker.dataset.itemId || null;
+    const value  = parseInt(event.currentTarget.dataset.value) || 0;
+    const cur    = parseInt(tracker.dataset.current || "0") || 0;
+    const next   = (cur === value) ? 0 : value;
+
+    // Helper to safely update array elements in v10+
+    const performUpdate = async (doc) => {
+      // Check if path contains array notation (e.g., .rows.0. or .cols.1)
+      const arrayMatch = path.match(/(.*)\.(\d+)(?:\.(.*))?/);
+      if (arrayMatch) {
+        const arrayPath = arrayMatch[1];
+        const idx = Number(arrayMatch[2]);
+        const subPath = arrayMatch[3];
+
+        const existingArray = foundry.utils.getProperty(doc, arrayPath);
+        if (Array.isArray(existingArray)) {
+          const newArray = foundry.utils.deepClone(existingArray);
+          if (idx >= 0 && idx < newArray.length) {
+            if (subPath) {
+              foundry.utils.setProperty(newArray[idx], subPath, next);
+            } else {
+              newArray[idx] = next;
+            }
+            return doc.update({ [arrayPath]: newArray });
+          }
+        }
+      }
+      return doc.update({ [path]: next });
+    };
 
     if (itemId) {
       const item = this.actor.items.get(itemId);
-      if (item) await item.update({ [path]: next });
+      if (item) await performUpdate(item);
     } else {
-      await this.actor.update({ [path]: next });
+      await performUpdate(this.actor);
     }
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Dispatcher for [data-action] elements                              */
+  /*  Action dispatcher                                                  */
   /* ------------------------------------------------------------------ */
   async _onAction(event) {
     const el = event.currentTarget;
     const action = el.dataset.action;
     event.preventDefault();
     event.stopPropagation();
+
+    // Flush any pending input changes (e.g. the number the user just typed)
+    // before mutating the actor's array fields, otherwise the click race
+    // makes the button feel "stuck".
+    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete"];
+    if (needsFlush.includes(action)) {
+      try { await this.submit({ preventClose: true, preventRender: true }); }
+      catch (_) { /* nothing to submit */ }
+    }
+
     switch (action) {
-      case "roll-trait":             return this._onRollTrait(el);
-      case "roll-knack":             return this._onRollKnack(el);
-      case "roll-weapon":            return this._onRollWeapon(el);
-      case "roll-wound-check":       return this._onRollWoundCheck(el);
-      case "roll-composure-check":   return this._onRollComposureCheck(el);
+      // Rolls — all go through the same dialog
+      case "roll-trait":             return this._rollTrait(el);
+      case "roll-knack":             return this._rollKnack(el);
+      case "roll-weapon":            return this._rollWeapon(el);
+      case "roll-wound-check":       return this._rollWoundCheck();
+      case "roll-composure-check":   return this._rollComposureCheck();
+      case "roll-initiative":        return this._rollInitiative();
+      case "roll-defense":           return this._rollDefense(el);
       case "generic-roll":           return promptRollAndKeep({ actor: this.actor });
-      case "roll-initiative":        return this._onRollInitiative();
+      // Drama Dice +/-
+      case "drama-adjust":           return this._dramaAdjust(el);
+      // Font scale
+      case "font-adjust":            return this._fontAdjust(el);
+      // Item create/edit/delete
       case "create-skill":           return this._create("skill",     game.i18n.localize("SS1E.ItemType.Skill"));
       case "create-knack":           return this._createKnack(el);
       case "create-advantage":       return this._create("advantage", game.i18n.localize("SS1E.ItemType.Advantage"));
@@ -164,89 +205,123 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "create-story":           return this._create("story",     game.i18n.localize("SS1E.ItemType.Story"));
       case "edit-item":              return this._editItem(el);
       case "delete-item":            return this._deleteItem(el);
-      case "rename-skill":           return; // handled by input blur
+      case "delete-knack":           return this._confirmDeleteItem(el, "knack");
+      case "delete-skill":           return this._confirmDeleteSkill(el);
+      // Defense row management
+      case "defense-add":            return this._defenseAdd();
+      case "defense-delete":         return this._defenseDelete(el);
+      case "defense-edit":           return this._defenseEdit(el);
+      // XP Log management
+      case "xp-add":                 return this._xpLogAdd();
+      case "xp-delete":              return this._xpLogDelete(el);
+      case "rename-skill":           return; // input blur handles it
     }
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Rolls                                                              */
+  /*  Rolls (every roll uses the same dialog)                            */
   /* ------------------------------------------------------------------ */
-  async _onRollTrait(el) {
+  async _rollTrait(el) {
     const key = el.dataset.trait;
     const v   = this.actor.getTrait(key);
     return promptRollAndKeep({
       actor: this.actor,
-      defaultRoll: v,
-      defaultKeep: v,
+      defaultRoll: v, defaultKeep: v,
       title: game.i18n.format("SS1E.Dialog.TraitRollTitle",
-        { trait: game.i18n.localize(SS1E.traits[key]) })
+              { trait: game.i18n.localize(SS1E.traits[key]) })
     });
   }
-
-  async _onRollKnack(el) {
+  async _rollKnack(el) {
     const item = this.actor.items.get(el.dataset.itemId);
     if (!item) return;
     const r = item.getKnackRoll();
     if (!r) return;
     return promptRollAndKeep({
       actor: this.actor,
-      defaultRoll: r.roll,
-      defaultKeep: r.keep,
+      defaultRoll: r.roll, defaultKeep: r.keep,
       knack: item.name,
       title: game.i18n.format("SS1E.Dialog.KnackRollTitle", { knack: item.name })
     });
   }
-
-  async _onRollWeapon(el) {
+  async _rollWeapon(el) {
     const rowIdx = parseInt(el.dataset.row || "0");
     const which  = el.dataset.which || "atk1";
     const row    = this.actor.system.weapons?.rows?.[rowIdx];
     if (!row) return;
     const data = row[which] || { roll: 0, keep: 0 };
-    const roll = Number(data.roll) || 0;
-    const keep = Number(data.keep) || 0;
-    if (!roll || !keep) {
-      ui.notifications.warn(game.i18n.localize("SS1E.Notif.EmptyFormula"));
-      return;
-    }
-    const flavor = which.startsWith("atk")
-      ? game.i18n.format("SS1E.Chat.WeaponAttack", { weapon: row.name || "?" })
-      : game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || "?" });
-    return rollAndKeep({ actor: this.actor, roll, keep, flavor });
-  }
-
-  async _onRollWoundCheck() {
-    const sys = this.actor.system;
-    const roll = Number(sys.wounds?.check?.roll) || 0;
-    const keep = Number(sys.wounds?.check?.keep) || this.actor.getTrait("brawn");
-    return rollAndKeep({
-      actor: this.actor, roll, keep,
-      flavor: game.i18n.format("SS1E.Chat.WoundCheckFor", { name: this.actor.name })
-    });
-  }
-
-  async _onRollComposureCheck() {
-    const sys = this.actor.system;
-    const roll = Number(sys.composure?.check?.roll) || 0;
-    const keep = Number(sys.composure?.check?.keep) || this.actor.getTrait("panache");
-    return rollAndKeep({
-      actor: this.actor, roll, keep,
-      flavor: game.i18n.format("SS1E.Chat.ComposureCheckFor", { name: this.actor.name })
-    });
-  }
-
-  async _onRollInitiative() {
-    const sys = this.actor.system;
-    return rollAndKeep({
+    return promptRollAndKeep({
       actor: this.actor,
-      roll: sys.initiative?.dice ?? 0,
-      keep: sys.initiative?.keep ?? 0,
-      flavor: game.i18n.format("SS1E.Chat.InitiativeFor", { name: this.actor.name })
+      defaultRoll: Number(data.roll) || 0,
+      defaultKeep: Number(data.keep) || 0,
+      title: which.startsWith("atk")
+        ? game.i18n.format("SS1E.Chat.WeaponAttack", { weapon: row.name || "?" })
+        : game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || "?" }),
+      knack: row.name || ""
+    });
+  }
+  async _rollWoundCheck() {
+    const brawn = this.actor.getTrait("brawn");
+    return promptRollAndKeep({
+      actor: this.actor,
+      defaultRoll: brawn, defaultKeep: brawn,
+      title: game.i18n.format("SS1E.Chat.WoundCheckFor", { name: this.actor.name })
+    });
+  }
+  async _rollComposureCheck() {
+    const panache = this.actor.getTrait("panache");
+    return promptRollAndKeep({
+      actor: this.actor,
+      defaultRoll: panache, defaultKeep: panache,
+      title: game.i18n.format("SS1E.Chat.ComposureCheckFor", { name: this.actor.name })
+    });
+  }
+  async _rollInitiative() {
+    const wits    = this.actor.getTrait("wits");
+    const panache = this.actor.getTrait("panache");
+    return promptRollAndKeep({
+      actor: this.actor,
+      defaultRoll: wits + panache, defaultKeep: panache,
+      title: game.i18n.format("SS1E.Chat.InitiativeFor", { name: this.actor.name })
+    });
+  }
+  async _rollDefense(el) {
+    const idx = Number(el.dataset.row || "0");
+    const def = this.actor.system.defense?.rows?.[idx];
+    if (!def) return;
+    const wits = this.actor.getTrait("wits");
+    const act  = Number(def.active) || 0;
+    return promptRollAndKeep({
+      actor: this.actor,
+      defaultRoll: wits + act, defaultKeep: wits,
+      title: game.i18n.format("SS1E.Dialog.DefenseRollTitle", { defense: def.label || "?" })
     });
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Item helpers                                                       */
+  /*  Drama Dice +/-                                                     */
+  /* ------------------------------------------------------------------ */
+  async _dramaAdjust(el) {
+    const delta = Number(el.dataset.delta || 0);
+    const cur   = this.actor.system.resources?.dramaDice?.value ?? 0;
+    const max   = this.actor.system.resources?.dramaDice?.max   ?? 0;
+    const next  = Math.max(0, Math.min(max, cur + delta));
+    if (next !== cur) await this.actor.update({ "system.resources.dramaDice.value": next });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Font scale +/-                                                     */
+  /* ------------------------------------------------------------------ */
+  async _fontAdjust(el) {
+    const delta = Number(el.dataset.delta || 0);
+    const cur   = Number(this.actor.system?.uiPrefs?.fontScale) || 1.0;
+    const next  = Math.max(0.6, Math.min(2.0, +(cur + delta * 0.1).toFixed(2)));
+    if (next === cur) return;
+    this.element[0].style.setProperty("--ss1e-font-scale", String(next));
+    await this.actor.update({ "system.uiPrefs.fontScale": next });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Items                                                              */
   /* ------------------------------------------------------------------ */
   async _create(type, displayName) {
     const name = game.i18n.format("SS1E.UI.NewItem", { type: displayName });
@@ -265,9 +340,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
   }
   async _createFlaw() {
     const name = game.i18n.format("SS1E.UI.NewItem", { type: game.i18n.localize("SS1E.UI.IsFlaw") });
-    const [item] = await Item.create([{
-      name, type: "advantage", system: { isFlaw: true }
-    }], { parent: this.actor });
+    const [item] = await Item.create([{ name, type: "advantage", system: { isFlaw: true } }], { parent: this.actor });
     item?.sheet?.render(true);
   }
   _editItem(el) {
@@ -278,13 +351,108 @@ export class SeventhSeaActorSheet extends ActorSheet {
     const li = el.closest("[data-item-id]");
     return this.actor.items.get(li?.dataset.itemId)?.delete();
   }
+  async _confirmDeleteItem(el, kindKey) {
+    const itemId = el.dataset.itemId || el.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (!item) return;
+    const label = game.i18n.localize(`SS1E.ItemType.${kindKey[0].toUpperCase() + kindKey.slice(1)}`);
+    const ok = await Dialog.confirm({
+      title: game.i18n.localize("SS1E.UI.ConfirmDeleteTitle"),
+      content: `<p>${game.i18n.format("SS1E.UI.ConfirmDeleteBody", { type: label, name: item.name })}</p>`,
+      defaultYes: false
+    });
+    if (ok) return item.delete();
+  }
+  async _confirmDeleteSkill(el) {
+    const skillId = el.dataset.itemId || el.closest("[data-item-id]")?.dataset.itemId;
+    const skill = this.actor.items.get(skillId);
+    if (!skill) return;
+    const linked = this.actor.items.filter(i => i.type === "knack" && i.system.skillId === skillId);
+    const list = linked.length
+      ? `<p>${game.i18n.format("SS1E.UI.SkillDeleteKnacks", { n: linked.length })}</p>
+         <ul>${linked.map(k => `<li>${k.name}</li>`).join("")}</ul>` : "";
+    const ok = await Dialog.confirm({
+      title: game.i18n.localize("SS1E.UI.ConfirmDeleteTitle"),
+      content: `<p>${game.i18n.format("SS1E.UI.ConfirmDeleteBody",
+                  { type: game.i18n.localize("SS1E.ItemType.Skill"), name: skill.name })}</p>${list}`,
+      defaultYes: false
+    });
+    if (!ok) return;
+    return this.actor.deleteEmbeddedDocuments("Item", [skillId, ...linked.map(k => k.id)]);
+  }
 
   /* ------------------------------------------------------------------ */
-  /*  Form submission — auto-sync renamed skills back to their knacks    */
+  /*  Defense row management                                             */
+  /* ------------------------------------------------------------------ */
+  async _defenseAdd() {
+    const rows = [...(this.actor.system.defense?.rows ?? [])];
+    rows.push({ label: game.i18n.localize("SS1E.UI.NewDefense"), passive: 5, active: 0 });
+    return this.actor.update({ "system.defense.rows": rows });
+  }
+  async _defenseDelete(el) {
+    const idx = Number(el.dataset.row);
+    if (idx < 8) return ui.notifications.warn(game.i18n.localize("SS1E.Notif.DefaultDefenseLocked"));
+    const rows = [...(this.actor.system.defense?.rows ?? [])];
+    const target = rows[idx];
+    if (!target) return;
+    const ok = await Dialog.confirm({
+      title: game.i18n.localize("SS1E.UI.ConfirmDeleteTitle"),
+      content: `<p>${game.i18n.format("SS1E.UI.ConfirmDeleteBody",
+                  { type: game.i18n.localize("SS1E.UI.Defense"),
+                    name: target.label || `#${idx + 1}` })}</p>`,
+      defaultYes: false
+    });
+    if (!ok) return;
+    rows.splice(idx, 1);
+    return this.actor.update({ "system.defense.rows": rows });
+  }
+  async _defenseEdit(el) {
+    const row = el.closest("[data-row]");
+    const idx = Number(row.dataset.row);
+    if (idx < 8) return ui.notifications.warn(game.i18n.localize("SS1E.Notif.DefaultDefenseLocked"));
+    const label = row.querySelector(".defense-label");
+    if (!label) return;
+    const cur = this.actor.system.defense?.rows?.[idx]?.label ?? "";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = cur;
+    input.className = "defense-label-input";
+    label.replaceWith(input);
+    input.focus();
+    input.select();
+    const commit = async () => {
+      const rows = [...(this.actor.system.defense?.rows ?? [])];
+      if (rows[idx]) {
+        rows[idx] = { ...rows[idx], label: input.value };
+        await this.actor.update({ "system.defense.rows": rows });
+      }
+    };
+    input.addEventListener("blur", commit, { once: true });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); input.blur(); }
+      if (e.key === "Escape"){ e.preventDefault(); input.value = cur; input.blur(); }
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  XP Log                                                             */
+  /* ------------------------------------------------------------------ */
+  async _xpLogAdd() {
+    const entries = [...(this.actor.system.xpLog?.entries ?? [])];
+    entries.push({ label: "", amount: 0 });
+    return this.actor.update({ "system.xpLog.entries": entries });
+  }
+  async _xpLogDelete(el) {
+    const idx = Number(el.dataset.row);
+    const entries = [...(this.actor.system.xpLog?.entries ?? [])];
+    entries.splice(idx, 1);
+    return this.actor.update({ "system.xpLog.entries": entries });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Form submission — propagate skill renames to the underlying items  */
   /* ------------------------------------------------------------------ */
   async _updateObject(event, formData) {
-    // If the user typed a new skill name into a .skill-title-input, propagate
-    // to the underlying Skill item before the actor save.
     const renames = [];
     this.element.find(".skill-title-input[data-item-id]").each((_, input) => {
       const id = input.dataset.itemId;
@@ -294,6 +462,49 @@ export class SeventhSeaActorSheet extends ActorSheet {
       }
     });
     if (renames.length) await Promise.all(renames);
+
+    // Reconstruct arrays for Foundry V10+ compatibility
+    const expanded = foundry.utils.expandObject(formData);
+    const arrayPaths = [
+      "system.defense.rows",
+      "system.reputation.entries",
+      "system.backgrounds.rows",
+      "system.accoutrements.rows",
+      "system.wealth.rows",
+      "system.contacts.rows",
+      "system.languages.rows",
+      "system.weapons.rows"
+    ];
+
+    for (const path of arrayPaths) {
+      const formValue = foundry.utils.getProperty(expanded, path);
+      // If the form has any data for this path, formValue will be an object with numeric keys
+      if (formValue !== undefined && !Array.isArray(formValue)) {
+        const existingArray = foundry.utils.getProperty(this.actor, path) || [];
+        const newArray = foundry.utils.deepClone(existingArray);
+        
+        for (const [key, val] of Object.entries(formValue)) {
+          const idx = Number(key);
+          if (!isNaN(idx) && idx >= 0 && idx < newArray.length) {
+            if (typeof val === 'object' && val !== null) {
+              foundry.utils.mergeObject(newArray[idx], val);
+            } else {
+              newArray[idx] = val;
+            }
+          }
+        }
+        
+        // Remove the dot-notation keys from formData so they don't override our array
+        for (const key of Object.keys(formData)) {
+          if (key.startsWith(path + ".") || key.startsWith(path + "[")) {
+            delete formData[key];
+          }
+        }
+        // Set the full array in formData
+        formData[path] = newArray;
+      }
+    }
+
     return super._updateObject(event, formData);
   }
 }

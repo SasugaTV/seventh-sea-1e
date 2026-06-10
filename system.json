@@ -3,7 +3,7 @@
   "title": "7th Sea (1st Edition)",
   "description": "An unofficial Foundry VTT game system for AEG's 7th Sea 1st Edition. Implements the Roll & Keep dice mechanic, Heroes/Villains/Brute Squads/Monsters, Traits, Skills & Knacks, Advantages, Backgrounds, Swordsman Schools, and Sorceries.",
   "version": "0.1.0",
-  "compatibility": { "minimum": "12", "verified": "13" },
+  "compatibility": { "minimum": "12", "verified": "14" },
   "authors": [
     { "name": "SasugaTV", "url": "https://github.com/SasugaTV", "email": "jeremyglassford@gmail.com" }
   ],
@@ -15,22 +15,22 @@
   "packs": [],
   "documentTypes": {
     "Actor": {
-      "hero":    { "htmlFields": ["biography", "notes"] },
-      "villain": { "htmlFields": ["biography", "notes"] },
-      "brute":   { "htmlFields": ["notes"] },
-      "monster": { "htmlFields": ["notes"] }
+      "hero":    {},
+      "villain": {},
+      "brute":   {},
+      "monster": {}
     },
     "Item": {
-      "skill":      { "htmlFields": ["description"] },
-      "knack":      { "htmlFields": ["description"] },
-      "advantage":  { "htmlFields": ["description"] },
-      "background": { "htmlFields": ["description"] },
-      "story":      { "htmlFields": ["description"] },
-      "weapon":     { "htmlFields": ["description"] },
-      "armor":      { "htmlFields": ["description"] },
-      "gear":       { "htmlFields": ["description"] },
-      "school":     { "htmlFields": ["description"] },
-      "sorcery":    { "htmlFields": ["description"] }
+      "skill":      {},
+      "knack":      {},
+      "advantage":  {},
+      "background": {},
+      "story":      {},
+      "weapon":     {},
+      "armor":      {},
+      "gear":       {},
+      "school":     {},
+      "sorcery":    {}
     }
   },
   "grid": { "distance": 1, "units": "pace" },
