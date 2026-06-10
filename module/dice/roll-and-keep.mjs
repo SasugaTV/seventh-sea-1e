@@ -112,11 +112,32 @@ export async function promptRollAndKeep({
   defaultBonus = 0,
   title      = game.i18n.localize("SS1E.Dialog.RollAndKeep"),
   knack      = null,
-  trait      = null
+  trait      = null,
+  baseRank   = null
 } = {}) {
+
+  const traits = actor ? [
+    { key: "brawn", label: game.i18n.localize("SS1E.Trait.Brawn") },
+    { key: "finesse", label: game.i18n.localize("SS1E.Trait.Finesse") },
+    { key: "resolve", label: game.i18n.localize("SS1E.Trait.Resolve") },
+    { key: "wits", label: game.i18n.localize("SS1E.Trait.Wits") },
+    { key: "panache", label: game.i18n.localize("SS1E.Trait.Panache") }
+  ] : [];
+
+  let traitDropdown = "";
+  if (actor && trait !== null && baseRank !== null) {
+    const options = traits.map(t => `<option value="${t.key}" ${t.key === trait ? 'selected' : ''}>${t.label}</option>`).join("");
+    traitDropdown = `
+      <div class="form-group">
+        <label>Trait</label>
+        <select name="trait_select">${options}</select>
+      </div>
+    `;
+  }
 
   const content = `
     <form class="ss1e-roll-dialog">
+      ${traitDropdown}
       <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Roll")}</label>
         <input type="number" name="roll" value="${defaultRoll}" min="0" max="20" />
@@ -149,6 +170,7 @@ export async function promptRollAndKeep({
           label: game.i18n.localize("SS1E.Dialog.Roll"),
           callback: async (html) => {
             const fd = new FormDataExtended(html[0].querySelector("form")).object;
+            const selectedTrait = html.find('[name="trait_select"]').val() || null;
             const result = await rollAndKeep({
               actor,
               roll:  Number(fd.roll),
@@ -158,12 +180,29 @@ export async function promptRollAndKeep({
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : ""
             });
-            resolve(result);
+            resolve({ ...result, trait: selectedTrait });
           }
         },
         cancel: {
           label: game.i18n.localize("SS1E.Dialog.Cancel"),
           callback: () => resolve(null)
+        }
+      },
+      render: (html) => {
+        if (actor && baseRank !== null) {
+          html.find('[name="trait_select"]').change(ev => {
+            const newTraitKey = ev.target.value;
+            const traitVal = actor.getTrait(newTraitKey) || 0;
+            let newRoll = traitVal + baseRank;
+            let newKeep = traitVal;
+            if (newRoll > 10) {
+               const overflow = newRoll - 10;
+               newRoll = 10;
+               newKeep = Math.min(newKeep + Math.floor(overflow / 2), 10);
+            }
+            html.find('[name="roll"]').val(newRoll);
+            html.find('[name="keep"]').val(newKeep);
+          });
         }
       },
       default: "roll"

@@ -236,12 +236,21 @@ export class SeventhSeaActorSheet extends ActorSheet {
     if (!item) return;
     const r = item.getKnackRoll();
     if (!r) return;
-    return promptRollAndKeep({
+    const result = await promptRollAndKeep({
       actor: this.actor,
       defaultRoll: r.roll, defaultKeep: r.keep,
       knack: item.name,
+      trait: r.trait,
+      baseRank: item.system.rank || 0,
       title: game.i18n.format("SS1E.Dialog.KnackRollTitle", { knack: item.name })
     });
+    
+    // Save the selected trait back to the item so it remembers it for next time
+    if (result && result.trait && result.trait !== item.system.trait) {
+      await item.update({ "system.trait": result.trait });
+    }
+    
+    return result;
   }
   async _rollWeapon(el) {
     const rowIdx = parseInt(el.dataset.row || "0");
