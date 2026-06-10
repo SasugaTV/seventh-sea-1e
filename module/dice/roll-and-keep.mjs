@@ -115,7 +115,8 @@ export async function promptRollAndKeep({
   trait      = null,
   baseRank   = null,
   defaultAdvKept = 0,
-  defaultAdvUnkept = 0
+  defaultAdvUnkept = 0,
+  defaultAdvPips = 0
 } = {}) {
 
   const traits = actor ? [
@@ -166,6 +167,10 @@ export async function promptRollAndKeep({
         <input type="number" name="adv_unkept" value="${defaultAdvUnkept}" min="0" max="20" />
       </div>
       <div class="form-group">
+        <label>Advantage Pips</label>
+        <input type="number" name="adv_pips" value="${defaultAdvPips}" min="-20" max="20" />
+      </div>
+      <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Roll")}</label>
         <input type="number" name="roll" value="${defaultRoll}" min="0" max="20" />
       </div>
@@ -201,6 +206,7 @@ export async function promptRollAndKeep({
             const spentDD = Number(fd.drama_dice) || 0;
             const advK = Number(fd.adv_kept) || 0;
             const advU = Number(fd.adv_unkept) || 0;
+            const advP = Number(fd.adv_pips) || 0;
             
             if (actor && spentDD > 0) {
               const currentDD = actor.system?.resources?.dramaDice?.value ?? actor.system?.dramaDice?.value ?? 0;
@@ -214,12 +220,12 @@ export async function promptRollAndKeep({
               actor,
               roll:  Number(fd.roll),
               keep:  Number(fd.keep),
-              bonus: Number(fd.bonus),
+              bonus: Number(fd.bonus) + advP,
               tn:    Number(fd.tn),
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : ""
             });
-            resolve({ ...result, trait: selectedTrait, advKept: advK, advUnkept: advU });
+            resolve({ ...result, trait: selectedTrait, advKept: advK, advUnkept: advU, advPips: advP });
           }
         },
         cancel: {
