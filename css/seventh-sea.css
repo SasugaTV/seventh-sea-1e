@@ -127,7 +127,7 @@
     white-space: nowrap;
 }
 .seventh-sea-1e .charinfo-input { flex: 1 1 6rem; min-width: 0; }
-.seventh-sea-1e .charinfo-full  { flex: 1 1 100%; }
+.seventh-sea-1e .charinfo-full  { flex: 1; }
 .seventh-sea-1e .income-num     { width: 7rem; text-align: right; }
 .seventh-sea-1e .xp-input       { width: 3rem; text-align: center; }
 .seventh-sea-1e .xp-max         { font-size: 0.85rem; color: #444; }

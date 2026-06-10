@@ -27,11 +27,13 @@
             </div>
             <div class="resource">
                 <label>{{localize "SS1E.UI.DramaDice"}}</label>
-                <a class="drama-adjust" data-delta="-1">−</a>
-                <input type="number" name="system.dramaDice.value" value="{{system.dramaDice.value}}" min="0" max="10" />
-                <span class="separator">/</span>
-                <span class="max">10</span>
-                <a class="drama-adjust" data-delta="1">+</a>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <a class="drama-adjust" data-delta="-1">−</a>
+                    <input type="number" name="system.dramaDice.value" value="{{system.dramaDice.value}}" min="0" max="10" />
+                    <a class="drama-adjust" data-delta="1">+</a>
+                    <span class="separator">/</span>
+                    <span class="max">10</span>
+                </div>
             </div>
             <div class="resource">
                 <label>{{localize "SS1E.UI.XP"}}</label>
