@@ -179,12 +179,17 @@ export async function promptRollAndKeep({
         <input type="number" name="keep" value="${defaultKeep}" min="0" max="10" />
       </div>
       <div class="form-group">
-        <label>${game.i18n.localize("SS1E.Dialog.Bonus")}</label>
-        <input type="number" name="bonus" value="${defaultBonus}" />
-      </div>
-      <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.TN")}</label>
-        <input type="number" name="tn" value="${SS1E.defaultTN}" min="5" step="5" />
+        <select name="tn">
+          <option value="5">5 Mundane</option>
+          <option value="10">10 Easy</option>
+          <option value="15" selected>15 Average</option>
+          <option value="20">20 Hard</option>
+          <option value="25">25 Very Hard</option>
+          <option value="30">30 Heroic</option>
+          <option value="35">35 Never Done Before</option>
+          <option value="40">40 Never To Be Done Again</option>
+        </select>
       </div>
       <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Raises")}</label>
@@ -220,7 +225,7 @@ export async function promptRollAndKeep({
               actor,
               roll:  Number(fd.roll),
               keep:  Number(fd.keep),
-              bonus: Number(fd.bonus) + advP,
+              bonus: advP,
               tn:    Number(fd.tn),
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : ""
