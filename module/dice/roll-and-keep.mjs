@@ -91,7 +91,6 @@ export async function rollAndKeep({
   const msg = await r.toMessage({
     speaker: ChatMessage.getSpeaker({ actor }),
     flavor: content,
-    formula: "",
     flags: {
       "seventh-sea-1e": {
         actorId: actor?.id ?? null,
