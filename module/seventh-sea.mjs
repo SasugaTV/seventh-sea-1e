@@ -41,6 +41,9 @@ Hooks.once("init", function () {
 
   registerHandlebarsHelpers();
   return preloadHandlebarsTemplates();
+
+  // Register GM Dashboard as a sidebar panel (must be in init, not ready).
+  _registerGMDashboardSidebar();
 });
 
 Hooks.once("ready", async function () {
@@ -174,5 +177,25 @@ async function _spendDramaDie(message) {
   await extraRoll.toMessage({
     speaker: ChatMessage.getSpeaker({ actor }),
     flavor: game.i18n.format("SS1E.Chat.DramaDieAdded", { name: actor.name })
+  });
+}
+
+/* -------------------------------------------- */
+/*  GM Dashboard sidebar registration           */
+/* -------------------------------------------- */
+
+/**
+ * Register the GM Dashboard as a sidebar panel.
+ * Must be called in the init hook so the sidebar is built with our tab.
+ */
+function _registerGMDashboardSidebar() {
+  Hooks.on("getSidebarTabs", (tabs) => {
+    tabs.push({
+      id: "gm-dashboard",
+      name: game.i18n.localize("SS1E.Dashboard.Title"),
+      icon: "fas fa-chess-board",
+      content: game.seventhSea.GMDashboard,
+      visible: game.user.isGM,
+    });
   });
 }
