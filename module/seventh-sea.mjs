@@ -11,6 +11,9 @@ import { SeventhSeaItem }       from "./documents/item.mjs";
 import { SeventhSeaActorSheet } from "./sheets/actor-sheet.mjs";
 import { SeventhSeaItemSheet }  from "./sheets/item-sheet.mjs";
 import { rollAndKeep, promptRollAndKeep } from "./dice/roll-and-keep.mjs";
+import { registerSettings }     from "./settings.mjs";
+
+import * as GMDashboard from "./apps/gm-dashboard.mjs";
 
 Hooks.once("init", function () {
   console.log("7th Sea 1e | Initializing");
@@ -42,6 +45,7 @@ Hooks.once("init", function () {
 Hooks.once("ready", async function () {
   console.log("7th Sea 1e | Ready");
   $(document).on("click", ".ss1e-chat-button", _onChatButton);
+  registerSettings();
 
   // Auto-migrate Hero / Villain actors that pre-date the latest schema.
   // Only the GM runs this so we don't fight over writes.

@@ -8,7 +8,7 @@
     { "name": "SasugaTV", "url": "https://github.com/SasugaTV", "email": "jeremyglassford@gmail.com" }
   ],
   "esmodules": [ "module/seventh-sea.mjs" ],
-  "styles":    [ "css/seventh-sea.css" ],
+  "styles":    [ "css/seventh-sea.css", "css/gm-dashboard.css" ],
   "languages": [
     { "lang": "en", "name": "English", "path": "lang/en.json" }
   ],
