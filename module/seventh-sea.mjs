@@ -22,6 +22,7 @@ Hooks.once("init", function () {
     SeventhSeaActor, SeventhSeaItem,
     rollAndKeep, promptRollAndKeep,
     config: SS1E,
+    GMDashboard: GMDashboard.SeventhSeaGMDashboard,
     migrateActor: _migrateActor
   };
   CONFIG.SS1E = SS1E;
