@@ -1,6 +1,6 @@
 /**
- * 7th Sea 1e — GM Dashboard Application
- * Port of My7thSeaGMScreen.html → FoundryVTT Application.
+ * 7th Sea 1e — GM Dashboard SidebarApp
+ * Port of My7thSeaGMScreen.html → FoundryVTT SidebarApp.
  * All layout / button behavior identical to the original.
  * Rolls use FoundryVTT Roll class → chat messages.
  */
@@ -27,15 +27,14 @@ function saveState(state) {
   game.settings.set("seventh-sea-1e", SAVE_KEY, JSON.stringify(state));
 }
 
-/**
- * Main GM Dashboard Application class.
- * Opens as a pop-out window (works on v12–v14).
- */
+/* ─────────────────────────────────────────────
+   SidebarApp
+   ───────────────────────────────────────────── */
 export class SeventhSeaGMDashboard extends Application {
   static get defaultOptions() {
     return {
       id: "seventh-sea-gm-dashboard",
-      title: game.i18n.localize("SS1E.Dashboard.Title"),
+      title: "7th Sea GM Dashboard",
       template: "systems/seventh-sea-1e/templates/apps/gm-dashboard.html",
       width: 960,
       height: "auto",
@@ -109,6 +108,8 @@ export class SeventhSeaGMDashboard extends Application {
       if (item) {
         item.update({ [path]: next }).then(() => { this._render(); });
       }
+    } else {
+      // Not supported in dashboard context (dot-trackers for actor items only)
     }
   }
 
@@ -118,6 +119,7 @@ export class SeventhSeaGMDashboard extends Application {
     const action = el.dataset.action;
 
     if (action === "roll-trait") {
+      const trait = el.dataset.trait;
       this._rollTrait(el);
     }
     if (action === "roll-knack") {
@@ -135,12 +137,15 @@ export class SeventhSeaGMDashboard extends Application {
     event.stopPropagation();
 
     switch (action) {
+      // Global
       case "drama-adjust":      return this._dramaAdjust(el.dataset.delta);
       case "xp-adjust":         return this._xpAdjust(el.dataset.delta);
+      // Player rows
       case "add-player":        return this._addPlayer();
       case "remove-player":     return this._removePlayer();
       case "update-player":     return this._updatePlayer(el);
       case "update-player-init": return this._updatePlayerInit(el);
+      // Tiles
       case "add-tile":          return this._addTile(el.dataset.tileType);
       case "delete-tile":       return this._deleteTile(el.dataset.tileId);
       case "update-tile-title": return this._updateTileField(el.dataset.tileId, "title", el.value);
@@ -148,10 +153,11 @@ export class SeventhSeaGMDashboard extends Application {
       case "fill-clock":        return this._fillClock(el.dataset.tileId, el.dataset.amount);
       case "change-clock-slices": return this._changeClockSlices(el.dataset.tileId, el.dataset.amount);
       case "roll-brute":        return this._rollBrute(el.dataset.tileId);
-      case "roll-henchman-init": return this._rollHenchmanInit(el.dataset.tileId);
+      case "roll-henchman-init":return => this._rollHenchmanInit(el.dataset.tileId);
       case "update-henchman-stat": return this._updateHenchmanStat(el.dataset.tileId, el.dataset.stat, el.value);
       case "adjust-brute-count": return this._adjustBruteCount(el.dataset.tileId, el.dataset.amount);
       case "toggle-note":       return this._toggleNoteBox(el.dataset.tileId);
+      // Misc
       case "import-characters": return this._importCharacters();
       case "reset-dashboard":   return this._resetDashboard();
     }
@@ -421,6 +427,11 @@ export class SeventhSeaGMDashboard extends Application {
 
   /* ── Roll Helpers (FoundryVTT integration) ─ */
 
+  /**
+   * Brute squad attack roll — ported from the original.
+   * Rolls count dice with roll-and-keep, explodes 10s, applies weapon damage.
+   * Posts result to Foundry chat as a roll message.
+   */
   async _rollBrute(id) {
     const tile = this.state.tiles.find(t => t.id === id);
     if (!tile || tile.type !== "brute") return;
@@ -432,10 +443,11 @@ export class SeventhSeaGMDashboard extends Application {
     const explode = !!tile.explode;
 
     if (count === 0) {
-      ui.notifications.warn(game.i18n.localize("SS1E.Dashboard.NoBrutesLeft"));
+      ui.notifications.warn("No Brutes left to roll!");
       return;
     }
 
+    // Simulate the original's roll logic using Foundry's Roll class
     let initialRolls = [];
     let pool = [];
 
@@ -486,154 +498,189 @@ export class SeventhSeaGMDashboard extends Application {
     // Also show the detailed breakdown as a follow-up message
     const diceDisplay = initialRolls.map(d => d.display).join(", ");
     const resultHTML = `
-      <div style="padding:8px;background:#333333;border:1px solid #555;border-radius:4px;font-size:13px;color:#ccc;">
-        <strong>Attack Results:</strong><br>
-        Dice: ${diceDisplay}<br>
-        Kept (top ${kept}): ${keptDice.join(", ")} → Total: <strong>${finalRollTotal}</strong><br>
-        TN: ${targetTn} | Hits: <strong>${totalHits}</strong> | Damage: <strong>${totalDamage}</strong>
-      </div>
+      <strong>Dice Pool:</strong> ${diceDisplay}<br>
+      <strong>Kept Total:</strong> ${finalRollTotal} (Kept top ${kept})<br>
+      <strong>Hits Generated:</strong> ${totalHits} <span style="color:#48bb78;">(Beats TN by ${finalRollTotal >= targetTn ? finalRollTotal - targetTn : 0})</span><br>
+      <strong style="color:#f6e05e;">Total Damage Inflicted: ${totalDamage}</strong>
     `;
 
     await ChatMessage.create({
       user: game.user.id,
       content: resultHTML,
-      whisper: [game.user.id],
-      type: CONST.CHAT_MESSAGE_TYPES.OTHER
+      speaker: ChatMessage.getSpeaker({ actor: null }),
+      flavor: `${tile.title} — Attack Breakdown`
     });
 
-    // Update state with roll result
-    tile.rollResult = {
-      hits: totalHits,
-      damage: totalDamage,
-      totalRoll: finalRollTotal,
-      dice: initialRolls
-    };
+    tile.rollResult = resultHTML;
     saveState(this.state);
+    this._render();
   }
 
-  _buildBruteFormula(initialRolls, kept) {
-    let formula = "";
-    const keptDice = initialRolls.slice(-Math.min(kept, initialRolls.length));
-    for (const die of keptDice) {
-      formula += `${die.total}d10k0 + `;
-    }
-    return formula.replace(/ \+ $/, "") || "0";
+  _buildBruteFormula(rolls, kept) {
+    // Build a single formula string like "1d10+3d10 k<kept>" for Foundry
+    const parts = rolls.map((_, i) => `1d10`);
+    return `${parts.join("+")} k<${Math.min(kept, rolls.length)}>`;
   }
 
   async _rollTrait(el) {
     const trait = el.dataset.trait;
-    const formula = `2d10kh`;
+    const traitName = game.i18n.localize(CONFIG.SS1E?.traits?.[trait] || trait);
+    const value = parseInt(el.dataset.value) || 0;
+    const formula = `${value}d10k${value}`;
+
     const roll = new Roll(formula);
     await roll.evaluate({ async: true });
+
     await roll.toMessage({
       user: game.user.id,
-      flavor: `Rolling ${trait} trait`,
+      flavor: `Rolling ${traitName}: ${formula}`,
       speaker: ChatMessage.getSpeaker({ actor: null })
     });
   }
 
   async _rollKnack(el) {
-    const knack = el.dataset.knack;
-    const formula = `3d10kh`;
+    const knackName = el.dataset.knack || "Knack";
+    const trait = el.dataset.trait || "Finesse";
+    const rank = parseInt(el.dataset.rank) || 0;
+    const advKept = parseInt(el.dataset.advKept) || 0;
+    const advUnkept = parseInt(el.dataset.advUnkept) || 0;
+    const advPips = parseInt(el.dataset.advPips) || 0;
+    const freeRaises = parseInt(el.dataset.freeRaises) || 0;
+
+    // Build formula: base + advKept + advPips + freeRaises
+    const total = rank + advKept + advPips + freeRaises;
+    const formula = total > 0 ? `${total}d10k${advKept}` : "0d10";
+
     const roll = new Roll(formula);
     await roll.evaluate({ async: true });
+
     await roll.toMessage({
       user: game.user.id,
-      flavor: `Rolling ${knack} knack`,
+      flavor: `Rolling ${knackName} (${trait}): ${formula}`,
       speaker: ChatMessage.getSpeaker({ actor: null })
     });
   }
 
   async _rollInitiative() {
-    const roll = new Roll("1d10");
+    const formula = "2d10k1";
+    const roll = new Roll(formula);
     await roll.evaluate({ async: true });
-    const result = roll.results[0].result;
+
     await roll.toMessage({
       user: game.user.id,
-      flavor: `Rolling Initiative`,
+      flavor: "General Initiative Roll",
       speaker: ChatMessage.getSpeaker({ actor: null })
     });
   }
 
+  /* ── Clock SVG ───────────────────────────── */
+
+  _getClockSVG(tile) {
+    const total = tile.slices;
+    let svgContent = "";
+
+    for (let i = 0; i < total; i++) {
+      const isFilled = i < tile.filled;
+      const startAngle = (i * 360) / total;
+      const endAngle = ((i + 1) * 360) / total;
+
+      const rad1 = (startAngle * Math.PI) / 180;
+      const rad2 = (endAngle * Math.PI) / 180;
+      const x1 = 60 + 50 * Math.cos(rad1);
+      const y1 = 60 + 50 * Math.sin(rad1);
+      const x2 = 60 + 50 * Math.cos(rad2);
+      const y2 = 60 + 50 * Math.sin(rad2);
+
+      const longArc = (endAngle - startAngle) > 180 ? 1 : 0;
+      const pathData = `M 60 60 L ${x1} ${y1} A 50 50 0 ${longArc} 1 ${x2} ${y2} Z`;
+
+      svgContent += `<path d="${pathData}" class="clock-slice ${isFilled ? "filled" : ""}"></path>`;
+    }
+    return `<svg class="clock-svg" viewBox="0 0 120 120">${svgContent}</svg>`;
+  }
+
   _onClockSliceClick(event) {
-    event.preventDefault();
-    const el = event.currentTarget;
-    const sliceIndex = parseInt(el.dataset.sliceIndex);
-    const tileId = el.closest(".clock-container")?.dataset.tileId;
-    if (!tileId) return;
-    const tile = this.state.tiles.find(t => t.id === tileId);
-    if (!tile) return;
-    if (sliceIndex < (tile.filled || 0)) {
+    const path = event.currentTarget;
+    const tileEl = path.closest(".tile");
+    if (!tileEl) return;
+    const tile = this.state.tiles.find(t => t.id === tileEl.dataset.tileId);
+    if (!tile || tile.type !== "clock") return;
+
+    // Determine which slice was clicked by position
+    const rect = path.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    // Check if this slice is currently filled
+    const sliceIndex = parseInt(path.dataset.sliceIndex);
+    if (isNaN(sliceIndex)) return;
+
+    if (sliceIndex < tile.filled) {
+      // Unfill this slice and all after it
       tile.filled = sliceIndex;
     } else {
+      // Fill this slice and all before it
       tile.filled = sliceIndex + 1;
     }
+
     saveState(this.state);
     this._render();
   }
 
   _onDieRemove(event) {
-    event.preventDefault();
-    const el = event.currentTarget;
-    const tileId = el.dataset.tileId;
-    const dieIndex = parseInt(el.dataset.dieIndex);
-    const tile = this.state.tiles.find(t => t.id === tileId);
+    const dieEl = event.currentTarget;
+    const tileEl = dieEl.closest(".tile");
+    if (!tileEl) return;
+    const tile = this.state.tiles.find(t => t.id === tileEl.dataset.tileId);
     if (!tile) return;
-    if (tile.initRolls && tile.initRolls.length > 0) {
-      tile.initRolls.splice(dieIndex, 1);
-      saveState(this.state);
-      this._renderPhaseBoard();
-    }
+
+    const idx = parseInt(dieEl.dataset.dieIndex);
+    if (isNaN(idx) || !tile.initRolls) return;
+    tile.initRolls.splice(idx, 1);
+    saveState(this.state);
+    this._render();
   }
 
-  /* ── Import / Reset ──────────────────────── */
+  /* ── Import Characters ───────────────────── */
 
-  async _importCharacters() {
+  _importCharacters() {
     const heroes = game.actors.filter(a => a.type === "hero" && a.permission >= CONST.DOCUMENT_OWNERSHIP_LIMIT.NONE);
     if (heroes.length === 0) {
-      ui.notifications.warn(game.i18n.localize("SS1E.Dashboard.NoHeroes"));
+      ui.notifications.warn("No hero actors found to import.");
       return;
     }
-    for (const hero of heroes) {
-      const exists = this.state.players.find(p => p.id === hero.id);
-      if (!exists) {
-        this.state.players.push({
-          id: hero.id,
-          name: hero.name,
-          diceString: String(hero.system.initiative?.value ?? 0)
-        });
+    const existingNames = this.state.players.map(p => p.name);
+    let added = 0;
+    for (const actor of heroes) {
+      if (!existingNames.includes(actor.name)) {
+        const id = "p_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
+        this.state.players.push({ id, name: actor.name, diceString: "" });
+        existingNames.push(actor.name);
+        added++;
       }
     }
     saveState(this.state);
-    this._renderPhaseBoard();
-    ui.notifications.info(game.i18n.format("SS1E.Dashboard.ImportedChars", { n: heroes.length }));
+    this._render();
+    if (added > 0) {
+      ui.notifications.info(`Imported ${added} character(s).`);
+    }
   }
 
   _resetDashboard() {
-    if (!ui.dialogs?.first) {
-      // Fallback for older Foundry versions
-      if (confirm(game.i18n.localize("SS1E.Dashboard.ResetConfirm"))) {
-        this.state = structuredClone(DEFAULT_STATE);
-        saveState(this.state);
-        this._render();
-      }
-      return;
+    if (!confirm("Reset the entire GM Dashboard to defaults? This cannot be undone.")) return;
+    this.state = structuredClone(DEFAULT_STATE);
+    saveState(this.state);
+    this._render();
+  }
+
+  /* ── Override render to hook phase board ─── */
+
+  render(force = false, options = {}) {
+    const result = super.render(force, options);
+    if (result && !force) {
+      // Render phase board after DOM is ready
+      setTimeout(() => this._renderPhaseBoard(), 50);
     }
-    ui.dialogs.prompt({
-      title: game.i18n.localize("SS1E.Dashboard.ResetConfirm"),
-      content: `<p>${game.i18n.localize("SS1E.Dashboard.ResetConfirm")}</p>`,
-      buttons: {
-        yes: {
-          label: "Yes",
-          callback: () => {
-            this.state = structuredClone(DEFAULT_STATE);
-            saveState(this.state);
-            this._render();
-          }
-        },
-        no: { label: "No" }
-      },
-      default: "no"
-    });
+    return result;
   }
 }

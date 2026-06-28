@@ -1,11 +1,18 @@
 /**
  * 7th Sea 1e — Global settings.
- * Registers the GM Dashboard button on the scene controls (left toolbar),
- * matching how Dice Oracles adds its button.
  */
-import { SeventhSeaGMDashboard } from "./apps/gm-dashboard.mjs";
 
+/**
+ * Register the GM Dashboard button on the scene controls toolbar
+ * (same approach as Dice Oracles). Clicking opens the GM Dashboard as a pop-out window.
+ */
 export function registerSettings() {
+  const appClass = game.seventhSea?.GMDashboard;
+  if (!appClass) {
+    console.warn("7th Sea 1e | GMDashboard class not found, skipping GM Dashboard setup.");
+    return;
+  }
+
   // Add GM Dashboard button to the scene controls (left toolbar), same as Dice Oracles.
   Hooks.on("getSceneControlButtons", (controls) => {
     // Only show to GM
@@ -24,7 +31,7 @@ export function registerSettings() {
       visible: true,
       onClick: () => {
         // Open the GM Dashboard as a pop-out window
-        const dashboard = new SeventhSeaGMDashboard();
+        const dashboard = new appClass();
         dashboard.render(true);
       },
     };
