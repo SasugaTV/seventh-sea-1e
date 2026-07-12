@@ -143,7 +143,7 @@
   "SS1E.UI.Progress": "Progress",
   "SS1E.UI.Complete": "Complete",
   "SS1E.UI.WeaponType": "Weapon Type",
-  "SS1E.UI.AttackKnack": "Attack Knack",
+  "SS1E.UI.AttackKnack": "Knack",
   "SS1E.UI.DamageRoll": "Damage Roll",
   "SS1E.UI.DamageKeep": "Damage Keep",
   "SS1E.UI.AtkBonus": "Attack Bonus",
@@ -229,7 +229,6 @@
   "SS1E.UI.EditKnack": "Edit this Knack",
   "SS1E.Notif.DefaultDefenseLocked": "Default defenses cannot be edited or deleted.",
   "SS1E.Notif.NoWeaponKnack": "Select an attack knack for this weapon first.",
-  "SS1E.UI.AttackKnack": "Attack Knack",
   "SS1E.UI.SelectKnack": "— knack —",
   "SS1E.UI.AddWeapon": "+ Add Weapon"
 }

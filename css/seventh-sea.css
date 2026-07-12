@@ -226,7 +226,9 @@
    Wounds columns. */
 .seventh-sea-1e .weapon-row {
     display: grid;
-    grid-template-columns: 1fr 140px 118px 110px 60px 48px 48px 60px;
+    /* Knack column hugs the "— knack —" placeholder; long knack names
+       truncate in the closed select but read fine in the opened list. */
+    grid-template-columns: 1fr 85px 118px 110px 60px 48px 48px 60px;
     gap: 2px;
     align-items: center;
     margin: 2px 0;
@@ -294,13 +296,18 @@
     margin: 2px 0;
     flex-wrap: wrap;
 }
-/* Dot trackers run vertically (columns, not rows) to keep the box narrow. */
+/* Dot trackers run vertically (columns, not rows) to keep the box narrow,
+   and sit UNDER their label (Dramatic Wounds / Humiliations). */
 .seventh-sea-1e .wounds-box .dots {
     flex-direction: column;
-    margin-left: 0.25rem;
+    margin-left: 0;
 }
-.seventh-sea-1e .wounds-box .dramatic-row { align-items: flex-start; }
-.seventh-sea-1e .wounds-box .dramatic-row .wounds-label { padding-top: 1px; }
+.seventh-sea-1e .wounds-box .dramatic-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+.seventh-sea-1e .wounds-box .dramatic-dots { padding-left: 0.5rem; }
 .seventh-sea-1e .wounds-label { font-size: 0.85rem; cursor: default; white-space: nowrap; }
 .seventh-sea-1e .wounds-box .wc-formula { white-space: nowrap; }
 .seventh-sea-1e .wounds-label.ss1e-rollable { cursor: pointer; }
