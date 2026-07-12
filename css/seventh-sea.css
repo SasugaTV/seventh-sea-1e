@@ -714,12 +714,21 @@
 }
 
 /* ── Explosion rerolls in chat tooltip ────────────── */
-/* Extra dice spawned by exploding 10s render pink so they stand out.
+/* Extra dice spawned by exploding 10s render red so they stand out.
    Outranks core's .min/.max coloring (same specificity, loaded later). */
 .ss1e-tooltip .dice-rolls .roll.ss1e-explosion {
-    color: #a4126b;
-    filter: sepia(0.5) hue-rotate(-100deg) saturate(1.5);
+    color: #a00000;
+    filter: sepia(1) hue-rotate(-50deg) saturate(2.5);
 }
 .ss1e-tooltip .dice-rolls .roll.ss1e-explosion.discarded {
-    filter: sepia(0.5) hue-rotate(-100deg) saturate(1.5) opacity(0.4);
+    filter: sepia(1) hue-rotate(-50deg) saturate(2.5) opacity(0.4);
+}
+/* Natural 1s have no special meaning in 7th Sea 1e; strip core's red-pink
+   "min" tint inside our cards so red is unambiguous (explosions only). */
+.ss1e-tooltip .dice-rolls .roll.min:not(.ss1e-explosion) {
+    color: inherit;
+    filter: none;
+}
+.ss1e-tooltip .dice-rolls .roll.min.discarded:not(.ss1e-explosion) {
+    filter: sepia(0.5) contrast(0.75) opacity(0.4);
 }
