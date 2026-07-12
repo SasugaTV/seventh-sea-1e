@@ -95,12 +95,8 @@ export function registerHandlebarsHelpers() {
     }
   });
 
-  Handlebars.registerHelper("if", function (condition, a, b) {
-    if (condition) return a;
-    return b;
-  });
-
-  Handlebars.registerHelper("lookup", function (obj, key) {
-    return obj?.[key];
-  });
+  // Do NOT register helpers named "if" or "lookup" here: those are Handlebars
+  // built-ins used by every sheet template (and Foundry core). Overriding them
+  // breaks {{#if}} blocks everywhere. For an inline ternary use Foundry's
+  // core `ifThen` helper instead.
 }

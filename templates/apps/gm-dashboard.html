@@ -96,7 +96,7 @@
   <div class="init-row">
     <button class="btn ss1e-rollable" data-action="roll-initiative" data-tile-id="{{this.id}}" style="padding: 2px 8px; font-size:13px; background:var(--accent-muted);">Init</button>
     <select style="padding: 2px; font-size: 12px;" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="initValue">
-      {{#select (if this.initValue this.initValue 2)}}
+      {{#select (ifThen this.initValue this.initValue 2)}}
       {{#each (range 11)}}<option value="{{this}}">{{this}}</option>{{/each}}
       {{/select}}
     </select>
@@ -111,8 +111,8 @@
   <div class="dot-container">
     <span style="font-size:12px; font-weight:bold; color:var(--text-muted)">Squad:</span>
     <div class="dots-row">
-      {{#each (range (if this.count this.count 6))}}
-      {{#if (lt @index (if this.threat this.threat 4))}}
+      {{#each (range (ifThen this.count this.count 6))}}
+      {{#if (lt @index (ifThen this.threat this.threat 4))}}
       <span class="brute-dot red"></span>
       {{else}}
       <span class="brute-dot black"></span>
@@ -124,21 +124,21 @@
       <button class="btn" style="padding:2px 8px; font-size:12px; background:var(--accent-muted);" data-action="adjust-brute-count" data-tile-id="{{this.id}}" data-amount="1">+</button>
     </div>
   </div>
-  <div class="tn-info">TN to be Hit: <span id="tn-hit-{{this.id}}">{{math (add (if this.threat this.threat 4) 1) "multiply" 5}}</span></div>
+  <div class="tn-info">TN to be Hit: <span id="tn-hit-{{this.id}}">{{math (math (ifThen this.threat this.threat 4) "add" 1) "multiply" 5}}</span></div>
   <div class="inline-inputs">
     <label>Count:</label>
-    <input type="number" min="0" max="99" value="{{if this.count this.count 6}}" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="count">
+    <input type="number" min="0" max="99" value="{{ifThen this.count this.count 6}}" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="count">
     <label>Threat:</label>
     <select data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="threat">
-      {{#select (if this.threat this.threat 4)}}
-      {{#each (range (if this.threat this.threat 4))}}<option value="{{this}}">{{this}}</option>{{/each}}
+      {{#select (ifThen this.threat this.threat 4)}}
+      {{#each (range (ifThen this.threat this.threat 4))}}<option value="{{this}}">{{this}}</option>{{/each}}
       {{/select}}
     </select>
   </div>
   <div class="inline-inputs">
     <label>Weapon:</label>
     <select style="width: 100%;" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="weaponDamage">
-      {{#select (if this.weaponDamage this.weaponDamage 6)}}
+      {{#select (ifThen this.weaponDamage this.weaponDamage 6)}}
       <option value="3">Small Weapons (Knife/Pin) [Dmg 3]</option>
       <option value="6">Medium Weapons (Club/Sword) [Dmg 6]</option>
       <option value="9">Large Weapons (Broadsword) [Dmg 9]</option>
@@ -150,7 +150,7 @@
   <div class="inline-inputs">
     <label>Target TN:</label>
     <select data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="targetTn">
-      {{#select (if this.targetTn this.targetTn 15)}}
+      {{#select (ifThen this.targetTn this.targetTn 15)}}
       {{#each [5,10,15,20,25,30,35,40]}}<option value="{{this}}">{{this}}</option>{{/each}}
       {{/select}}
     </select>
@@ -175,7 +175,7 @@
   <div class="init-row">
     <button class="btn ss1e-rollable" data-action="roll-henchman-init" data-tile-id="{{this.id}}" style="padding: 2px 8px; font-size:13px; background:var(--accent-muted);">Init</button>
     <select style="padding: 2px; font-size: 12px;" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="initValue">
-      {{#select (if this.initValue this.initValue 2)}}
+      {{#select (ifThen this.initValue this.initValue 2)}}
       {{#each (range 11)}}<option value="{{this}}">{{this}}</option>{{/each}}
       {{/select}}
     </select>
@@ -201,9 +201,9 @@
   </div>
   <div class="inline-inputs">
     <label>Flesh:</label>
-    <input type="number" min="0" value="{{if this.flesh this.flesh 0}}" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="flesh">
+    <input type="number" min="0" value="{{ifThen this.flesh this.flesh 0}}" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="flesh">
     <label>Dramatic:</label>
-    <input type="number" min="0" value="{{if this.dramatic this.dramatic 0}}" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="dramatic">
+    <input type="number" min="0" value="{{ifThen this.dramatic this.dramatic 0}}" data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="dramatic">
   </div>
   {{#if this.hasNoteBox}}
   <textarea class="note-box" placeholder="Notes..." data-action="update-tile-field" data-tile-id="{{this.id}}" data-field="notes">{{this.notes}}</textarea>
