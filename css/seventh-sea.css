@@ -221,27 +221,17 @@
     grid-template-columns: 1fr auto auto;
 }
 .seventh-sea-1e .cs-cell { padding: 0.3rem 0.5rem; }
-/* Two lines per weapon: name/knack/damage on top, notes/range/short/long/
-   reload underneath. Shared column templates keep blocks aligned with the
-   header lines above the list. */
-.seventh-sea-1e .weapon-line1 {
+/* One line per weapon. Every column is fixed-width except the name,
+   which soaks up whatever the box gains from the squeezed Defense and
+   Wounds columns. */
+.seventh-sea-1e .weapon-row {
     display: grid;
-    grid-template-columns: 1fr 140px 118px;
+    grid-template-columns: 1fr 140px 118px 110px 60px 48px 48px 60px;
     gap: 2px;
     align-items: center;
-}
-.seventh-sea-1e .weapon-line2 {
-    display: grid;
-    grid-template-columns: 1.6fr 0.7fr 0.55fr 0.55fr 0.7fr;
-    gap: 2px;
-    align-items: center;
+    margin: 2px 0;
 }
 .seventh-sea-1e .weapon-headers { margin-bottom: 1px; }
-.seventh-sea-1e .weapon-block {
-    padding: 3px 0;
-    border-bottom: 1px dashed rgba(107, 69, 33, 0.35);
-}
-.seventh-sea-1e .weapon-block:last-of-type { border-bottom: none; }
 .seventh-sea-1e .weapon-name-cell {
     display: flex;
     align-items: center;
@@ -294,22 +284,30 @@
 .seventh-sea-1e .defense-grid .w-header { padding: 0 0.3rem; white-space: nowrap; }
 .seventh-sea-1e .defense-num { width: 3rem; margin: 0 auto; display: block; }
 
+/* Rows packed as tight as the trait/knack dot rows (2px / 4px). */
 .seventh-sea-1e .wounds-box .wound-check-row,
 .seventh-sea-1e .wounds-box .flesh-row,
 .seventh-sea-1e .wounds-box .dramatic-row {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    margin: 0.2rem 0;
+    gap: 4px;
+    margin: 2px 0;
     flex-wrap: wrap;
 }
+/* Dot trackers run vertically (columns, not rows) to keep the box narrow. */
+.seventh-sea-1e .wounds-box .dots {
+    flex-direction: column;
+    margin-left: 0.25rem;
+}
+.seventh-sea-1e .wounds-box .dramatic-row { align-items: flex-start; }
+.seventh-sea-1e .wounds-box .dramatic-row .wounds-label { padding-top: 1px; }
 .seventh-sea-1e .wounds-label { font-size: 0.85rem; cursor: default; white-space: nowrap; }
 .seventh-sea-1e .wounds-box .wc-formula { white-space: nowrap; }
 .seventh-sea-1e .wounds-label.ss1e-rollable { cursor: pointer; }
 .seventh-sea-1e .wounds-label.ss1e-rollable:hover { color: #8b1a1a; }
 .seventh-sea-1e .wound-check-num { width: 2.2rem; text-align: center; }
 .seventh-sea-1e .wound-check-brawn { font-size: 0.9rem; font-weight: bold; }
-.seventh-sea-1e .flesh-num { width: 3rem; text-align: center; }
+.seventh-sea-1e .flesh-num { width: 2.4rem; text-align: center; }
 .seventh-sea-1e .dramatic-dots { display: flex; gap: 6px; align-items: center; }
 .seventh-sea-1e .dramatic-gap { display: inline-block; width: 6px; }
 .seventh-sea-1e .wounds-subheader {
