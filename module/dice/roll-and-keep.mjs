@@ -7,10 +7,13 @@
  *    one kept die worth 12), chaining on further 10s.
  *  - Sum kept dice. Compare to a Target Number (TN).
  *  - Each Raise = +5 to the TN; success on Raises grants extra effects.
- *  - Neither side of XkY may exceed 10: rolled dice over 10 convert 1:1
- *    into kept dice, and kept dice over 10 (or over the rolled count)
- *    convert into a flat +10 each. 11k3 → 10k4; 15k1 → 10k6;
- *    11k10 and 10k11 → 10k10+10; 12k10 and 10k12 → 10k10+20.
+ *  - Neither side of the STARTING XkY may exceed 10: rolled dice over 10
+ *    convert 1:1 into kept dice, and each kept die beyond 10 leaves the
+ *    pool as a single flat +10. 11k3 → 10k4; 15k1 → 10k6; 11k10, 10k11
+ *    and 11k11 → 10k10+10; 12k10 and 10k12 → 10k10+20.
+ *  - The cap is applied before rolling only — explosions during the roll
+ *    freely take the result past it (a 10k10 with one explosion is
+ *    effectively 11 kept dice, each at face value).
  */
 
 import { SS1E } from "../helpers/config.mjs";
@@ -27,13 +30,27 @@ export function normalizeRollAndKeep(roll, keep) {
   let r = Math.max(0, Math.floor(roll || 0));
   let k = Math.max(0, Math.floor(keep || 0));
   let bonus = 0;
-  if (r > 10) {          // rolled overflow → kept dice, 1:1
+  // Keeps with no die behind them (keep > roll) → +10 each.
+  if (k > r) {
+    bonus += (k - r) * 10;
+    k = r;
+  }
+  // Kept dice beyond 10 are whole dice: each leaves the pool (both sides)
+  // as a single flat +10 — so 11k11 is 10k10+10, not +20.
+  if (k > 10) {
+    bonus += (k - 10) * 10;
+    r -= (k - 10);
+    k = 10;
+  }
+  // Remaining rolled dice beyond 10 promote to kept 1:1; if that overflows
+  // the kept cap, the excess becomes +10s.
+  if (r > 10) {
     k += r - 10;
     r = 10;
-  }
-  if (k > r) {           // kept overflow (k > 10, or k > dice available) → +10 each
-    bonus = (k - r) * 10;
-    k = r;
+    if (k > 10) {
+      bonus += (k - 10) * 10;
+      k = 10;
+    }
   }
   return { roll: r, keep: k, bonus };
 }
@@ -186,18 +203,34 @@ export async function rollAndKeep({
       formula = `${norm.roll}d10x10`;
       dieKeeps.push(norm.keep);
     } else {
-      // Cap across the combined pool: shave rolled overflow from the
-      // non-exploding trait side first (1:1 into kept dice); kept dice
-      // beyond a pool's size convert into a flat +10 each.
+      // Cap across the combined pool with the same semantics as
+      // normalizeRollAndKeep, but pool-aware (trait dice don't explode):
+      // 1) kept dice beyond 10 leave the pool entirely as +10 each
+      //    (shaved from the trait side first, sparing exploding drama dice);
+      // 2) rolled overflow promotes unkept dice into kept 1:1 (trait first);
+      // 3) keeps that overflow the cap after promotion become +10s.
       let taDice = t + a, taKeep = tk, dDice = d, dKeep = dk;
-      let over = taDice + dDice - 10;
-      if (over > 0) {
-        const cut = Math.min(over, taDice);
-        taDice -= cut; taKeep += cut; over -= cut;
-        if (over > 0) { dDice -= over; dKeep += over; }
+      let overKeep = taKeep + dKeep - 10;
+      if (overKeep > 0) {
+        const cut = Math.min(overKeep, taKeep);
+        taKeep -= cut; taDice -= cut; bonus += cut * 10; overKeep -= cut;
+        if (overKeep > 0) { dKeep -= overKeep; dDice -= overKeep; bonus += overKeep * 10; }
       }
-      if (taKeep > taDice) { bonus += (taKeep - taDice) * 10; taKeep = taDice; }
-      if (dKeep > dDice)   { bonus += (dKeep - dDice) * 10;   dKeep = dDice; }
+      let overRoll = taDice + dDice - 10;
+      if (overRoll > 0) {
+        const cutT = Math.min(overRoll, Math.max(0, taDice - taKeep));
+        taDice -= cutT; taKeep += cutT; overRoll -= cutT;
+        if (overRoll > 0) {
+          const cutD = Math.min(overRoll, Math.max(0, dDice - dKeep));
+          dDice -= cutD; dKeep += cutD;
+        }
+      }
+      let extraKeep = taKeep + dKeep - 10;
+      if (extraKeep > 0) {
+        const cut = Math.min(extraKeep, taKeep);
+        taKeep -= cut; bonus += cut * 10; extraKeep -= cut;
+        if (extraKeep > 0) { dKeep -= extraKeep; bonus += extraKeep * 10; }
+      }
 
       let splitFormula = "";
       if (taDice > 0) {
@@ -431,7 +464,7 @@ export async function promptRollAndKeep({
               actor,
               roll:  Number(fd.roll),
               keep:  Number(fd.keep),
-              bonus: advP + (freeR * 5),
+              bonus: advP + (freeR * 5) + (split ? 0 : (html[0]._capBonus || 0)),
               tn:    Number(fd.tn),
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : "",
@@ -481,12 +514,13 @@ export async function promptRollAndKeep({
           let finalRoll = currentRoll + ddUsed + advK + advU;
           let finalKeep = currentKeep + ddUsed + advK;
 
-          if (finalRoll > 10) {
-             // Rolled dice over 10 convert 1:1 into kept dice (both capped at 10).
-             const overflow = finalRoll - 10;
-             finalRoll = 10;
-             finalKeep = Math.min(finalKeep + overflow, 10);
-          }
+          // Cap the displayed pool (inputs may never exceed 10k10); kept
+          // overflow becomes a flat bonus stashed for roll time. Split knack
+          // pools re-derive their own cap inside rollAndKeep.
+          const norm = normalizeRollAndKeep(finalRoll, finalKeep);
+          finalRoll = norm.roll;
+          finalKeep = norm.keep;
+          html[0]._capBonus = norm.bonus;
 
           html.find('[name="roll"]').val(finalRoll);
           html.find('[name="keep"]').val(finalKeep);
