@@ -350,14 +350,19 @@ export class SeventhSeaActorSheet extends ActorSheet {
     });
     if (!attack) return; // dialog cancelled — no damage roll either
 
+    // Each raise called on the attack adds one unkept die to the damage
+    // roll; the dice engine converts overflow past 10 dice into kept dice.
+    const raiseDice = Number(attack.raises) || 0;
     const dmg = row.dmg1 || {};
+    let flavor = game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || knack.name });
+    if (raiseDice > 0) flavor += ` (${game.i18n.format("SS1E.Chat.RaiseDice", { n: raiseDice })})`;
     const damage = await rollAndKeep({
       actor: this.actor,
-      roll:  Number(dmg.roll) || 0,
+      roll:  (Number(dmg.roll) || 0) + raiseDice,
       keep:  Number(dmg.keep) || 0,
       bonus: Number(dmg.bonus) || 0,
       tn:    null,
-      flavor: game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || knack.name })
+      flavor
     });
     return { attack, damage };
   }

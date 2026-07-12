@@ -7,11 +7,36 @@
  *    one kept die worth 12), chaining on further 10s.
  *  - Sum kept dice. Compare to a Target Number (TN).
  *  - Each Raise = +5 to the TN; success on Raises grants extra effects.
- *  - Max dice rolled before unkept is 10; per house rule, overflow becomes
- *    extra kept dice at 2:1 (the engine respects whatever roll/keep you pass).
+ *  - Neither side of XkY may exceed 10: rolled dice over 10 convert 1:1
+ *    into kept dice, and kept dice over 10 (or over the rolled count)
+ *    convert into a flat +10 each. 11k3 → 10k4; 15k1 → 10k6;
+ *    11k10 and 10k11 → 10k10+10; 12k10 and 10k12 → 10k10+20.
  */
 
 import { SS1E } from "../helpers/config.mjs";
+
+/**
+ * Apply the dice-cap rule to an XkY pool. Returns the capped roll/keep and
+ * the flat bonus produced by kept-dice overflow.
+ *
+ * @param {number} roll  Requested dice to roll.
+ * @param {number} keep  Requested dice to keep.
+ * @returns {{roll: number, keep: number, bonus: number}}
+ */
+export function normalizeRollAndKeep(roll, keep) {
+  let r = Math.max(0, Math.floor(roll || 0));
+  let k = Math.max(0, Math.floor(keep || 0));
+  let bonus = 0;
+  if (r > 10) {          // rolled overflow → kept dice, 1:1
+    k += r - 10;
+    r = 10;
+  }
+  if (k > r) {           // kept overflow (k > 10, or k > dice available) → +10 each
+    bonus = (k - r) * 10;
+    k = r;
+  }
+  return { roll: r, keep: k, bonus };
+}
 
 /**
  * Build the Foundry Roll formula for an XkY exploding pool.
@@ -140,6 +165,7 @@ export async function rollAndKeep({
 
   const hasTN = tn !== null && tn !== undefined;
   const finalTN = hasTN ? Number(tn) + Number(raises) * SS1E.raiseIncrement : null;
+  bonus = Number(bonus) || 0;
   let formula;
   // Keep count per Die term, aligned with Roll#dice order. A null entry means
   // the term already keeps natively (kh in the formula). Exploding terms get a
@@ -154,35 +180,54 @@ export async function rollAndKeep({
     const dk = Math.max(0, Math.min(d, Math.floor(dramaKeep || 0)));
 
     if (exploding) {
-      formula = `${t + d + a}d10x10`;
-      dieKeeps.push(tk + dk);
+      // One combined exploding pool — apply the dice cap to it as a whole.
+      const norm = normalizeRollAndKeep(t + d + a, tk + dk);
+      bonus += norm.bonus;
+      formula = `${norm.roll}d10x10`;
+      dieKeeps.push(norm.keep);
     } else {
+      // Cap across the combined pool: shave rolled overflow from the
+      // non-exploding trait side first (1:1 into kept dice); kept dice
+      // beyond a pool's size convert into a flat +10 each.
+      let taDice = t + a, taKeep = tk, dDice = d, dKeep = dk;
+      let over = taDice + dDice - 10;
+      if (over > 0) {
+        const cut = Math.min(over, taDice);
+        taDice -= cut; taKeep += cut; over -= cut;
+        if (over > 0) { dDice -= over; dKeep += over; }
+      }
+      if (taKeep > taDice) { bonus += (taKeep - taDice) * 10; taKeep = taDice; }
+      if (dKeep > dDice)   { bonus += (dKeep - dDice) * 10;   dKeep = dDice; }
+
       let splitFormula = "";
-      if (t + a > 0) {
-        splitFormula += `${t + a}d10kh${tk}`;
+      if (taDice > 0) {
+        splitFormula += `${taDice}d10kh${taKeep}`;
         dieKeeps.push(null);
       }
-      if (d > 0) {
+      if (dDice > 0) {
         if (splitFormula) splitFormula += " + ";
-        splitFormula += `${d}d10x10`;
-        dieKeeps.push(dk);
+        splitFormula += `${dDice}d10x10`;
+        dieKeeps.push(dKeep);
       }
       formula = splitFormula || "1d10";
       if (!splitFormula) dieKeeps.push(null);
     }
     if (bonus) formula += (bonus >= 0 ? ` + ${bonus}` : ` - ${Math.abs(bonus)}`);
-  } else if (!exploding) {
-    // Non-exploding formula (explode toggle is OFF)
-    const r = Math.max(0, Math.min(SS1E.maxDiceRolled, Math.floor(roll)));
-    const k = Math.max(0, Math.min(r, Math.floor(keep)));
-    formula = `${r}d10kh${k}`;
-    dieKeeps.push(null);
-    if (bonus) formula += (bonus >= 0 ? ` + ${bonus}` : ` - ${Math.abs(bonus)}`);
   } else {
-    const rr = Math.max(0, Math.min(SS1E.maxDiceRolled, Math.floor(roll)));
-    const kk = Math.max(0, Math.min(rr, Math.floor(keep)));
-    formula = `${rr}d10x10`;
-    dieKeeps.push(kk);
+    // Simple pool — cap it, folding kept overflow into the flat bonus.
+    // Reassigning roll/keep here also makes the chat card show the capped
+    // formula (e.g. 11k3 displays as 10k4).
+    const norm = normalizeRollAndKeep(roll, keep);
+    bonus += norm.bonus;
+    roll = norm.roll;
+    keep = norm.keep;
+    if (exploding) {
+      formula = `${roll}d10x10`;
+      dieKeeps.push(keep);
+    } else {
+      formula = `${roll}d10kh${keep}`;
+      dieKeeps.push(null);
+    }
     if (bonus) formula += (bonus >= 0 ? ` + ${bonus}` : ` - ${Math.abs(bonus)}`);
   }
   const r = new Roll(formula);
@@ -241,7 +286,7 @@ export async function rollAndKeep({
     }
   });
 
-  return { roll: r, message: msg, total, success, raisesEarned };
+  return { roll: r, message: msg, total, success, raisesEarned, raises: Number(raises) || 0 };
 }
 
 /**
@@ -437,9 +482,10 @@ export async function promptRollAndKeep({
           let finalKeep = currentKeep + ddUsed + advK;
 
           if (finalRoll > 10) {
+             // Rolled dice over 10 convert 1:1 into kept dice (both capped at 10).
              const overflow = finalRoll - 10;
              finalRoll = 10;
-             finalKeep = Math.min(finalKeep + Math.floor(overflow / 2), 10);
+             finalKeep = Math.min(finalKeep + overflow, 10);
           }
 
           html.find('[name="roll"]').val(finalRoll);

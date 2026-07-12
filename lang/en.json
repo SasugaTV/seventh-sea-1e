@@ -234,5 +234,6 @@
   "SS1E.UI.EditWeapons": "Edit weapons",
   "SS1E.UI.DoneEditing": "Done editing — back to game mode",
   "SS1E.Dialog.Save": "Save",
+  "SS1E.Chat.RaiseDice": "+{n} raise dice",
   "SS1E.Dialog.WeaponNotesTitle": "{weapon} — Notes"
 }

@@ -31,11 +31,13 @@ export class SeventhSeaItem extends Item {
     const rank = this.system.rank ?? 0;
     let roll = trait + rank;
     let keep = trait;
-    // 7th Sea caps roll at 10 dice; extra dice convert at 2:1 into kept dice (house option).
+    // 7th Sea caps roll at 10 dice; extra rolled dice convert 1:1 into kept
+    // dice (both sides capped at 10 — kept overflow past 10 becomes a flat
+    // +10 each, applied by the dice engine at roll time).
     if (roll > 10) {
       const overflow = roll - 10;
       roll = 10;
-      keep = Math.min(keep + Math.floor(overflow / 2), 10);
+      keep = Math.min(keep + overflow, 10);
     }
     return {
       roll,
