@@ -82,6 +82,31 @@ export function keepHighestExplodedChains(die, keep) {
 }
 
 /**
+ * Tag explosion rerolls in a rendered roll tooltip with `ss1e-explosion` so
+ * the extra dice spawned by 10s can be styled distinctly in the chat card.
+ *
+ * Explosion rerolls are always appended after a term's `number` base results,
+ * and the tooltip renders one `.tooltip-part` per die term with one `.roll`
+ * per result in results order.
+ *
+ * @param {Roll} roll      The evaluated roll.
+ * @param {string} tooltip HTML from Roll#getTooltip.
+ * @returns {string} The tooltip HTML with explosion rerolls tagged.
+ */
+function markExplosionRerolls(roll, tooltip) {
+  const div = document.createElement("div");
+  div.innerHTML = tooltip;
+  const parts = div.querySelectorAll(".tooltip-part");
+  roll.dice.forEach((die, i) => {
+    const rolls = parts[i]?.querySelectorAll(".dice-rolls > .roll");
+    if (!rolls) return;
+    const base = Math.min(die.number ?? die.results.length, die.results.length);
+    for (let j = base; j < rolls.length; j++) rolls[j].classList.add("ss1e-explosion");
+  });
+  return div.innerHTML;
+}
+
+/**
  * Execute a Roll & Keep and post the chat card.
  *
  * @param {object} options
@@ -176,7 +201,7 @@ export async function rollAndKeep({
   const raisesEarned = Math.max(0, Math.floor((total - SS1E.defaultTN) / SS1E.raiseIncrement));
   const raisesMet    = success && raises > 0;
 
-  const tooltip = await r.getTooltip();
+  const tooltip = markExplosionRerolls(r, await r.getTooltip());
 
   const flavorText = flavor
     || (actor ? game.i18n.format("SS1E.Chat.RollFor", { name: actor.name }) : game.i18n.localize("SS1E.Chat.Roll"));
