@@ -177,6 +177,9 @@ export async function rollAndKeep({
   tn         = SS1E.defaultTN,
   raises     = 0,
   flavor     = "",
+  // Die flavor tag appended to simple pools (e.g. "psychic"): Dice So Nice
+  // colors the 3D dice with the matching colorset. Ignored for split pools.
+  diceFlavor = null,
   // For split dice pools (e.g., exploding drama vs non-exploding trait)
   exploding  = true,
   traitDice  = undefined,
@@ -260,11 +263,12 @@ export async function rollAndKeep({
     bonus += norm.bonus;
     roll = norm.roll;
     keep = norm.keep;
+    const tag = diceFlavor ? `[${diceFlavor}]` : "";
     if (exploding) {
-      formula = `${roll}d10x990=10`;
+      formula = `${roll}d10x990=10${tag}`;
       dieKeeps.push(keep);
     } else {
-      formula = `${roll}d10kh${keep}`;
+      formula = `${roll}d10kh${keep}${tag}`;
       dieKeeps.push(null);
     }
     if (bonus) formula += (bonus >= 0 ? ` + ${bonus}` : ` - ${Math.abs(bonus)}`);
