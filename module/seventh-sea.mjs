@@ -177,7 +177,7 @@ async function _spendDramaDie(message) {
   const drama = actor.system.resources?.dramaDice?.value ?? 0;
   if (drama <= 0) return ui.notifications.warn(game.i18n.localize("SS1E.Notif.NoDrama"));
   await actor.update({ "system.resources.dramaDice.value": drama - 1 });
-  const extraRoll = await new Roll("1d10x10").evaluate();
+  const extraRoll = await new Roll("1d10x990=10").evaluate();
   await extraRoll.toMessage({
     speaker: ChatMessage.getSpeaker({ actor }),
     flavor: game.i18n.format("SS1E.Chat.DramaDieAdded", { name: actor.name })

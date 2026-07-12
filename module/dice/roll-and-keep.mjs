@@ -16,6 +16,11 @@
  *  - The cap is applied before rolling only — explosions during the roll
  *    freely take the result past it (a 10k10 with one explosion is
  *    effectively 11 kept dice, each at face value).
+ *  - Crash protection: explosions stop after 990 rerolls per pool (the
+ *    `x990=10` modifier) — 990 + 10 base dice = exactly Foundry's
+ *    1000-result limit, past which core THROWS and loses the roll.
+ *    This cap instead completes the roll gracefully, and is unreachable
+ *    in play anyway.
  */
 
 import { SS1E } from "../helpers/config.mjs";
@@ -201,7 +206,7 @@ export async function rollAndKeep({
       // One combined exploding pool — apply the dice cap to it as a whole.
       const norm = normalizeRollAndKeep(t + d + a, tk + dk);
       bonus += norm.bonus;
-      formula = `${norm.roll}d10x10`;
+      formula = `${norm.roll}d10x990=10`;
       dieKeeps.push(norm.keep);
     } else {
       // Cap across the combined pool with the same semantics as
@@ -240,7 +245,7 @@ export async function rollAndKeep({
       }
       if (dDice > 0) {
         if (splitFormula) splitFormula += " + ";
-        splitFormula += `${dDice}d10x10`;
+        splitFormula += `${dDice}d10x990=10`;
         dieKeeps.push(dKeep);
       }
       formula = splitFormula || "1d10";
@@ -256,7 +261,7 @@ export async function rollAndKeep({
     roll = norm.roll;
     keep = norm.keep;
     if (exploding) {
-      formula = `${roll}d10x10`;
+      formula = `${roll}d10x990=10`;
       dieKeeps.push(keep);
     } else {
       formula = `${roll}d10kh${keep}`;
