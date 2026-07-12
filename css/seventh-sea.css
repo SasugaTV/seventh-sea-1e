@@ -216,11 +216,12 @@
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0.5rem;
 }
+/* Defense and Wounds hug their content; Weapons soaks up the rest. */
 .seventh-sea-1e .cs-row-wd {
-    grid-template-columns: 2fr 0.9fr 0.9fr;
+    grid-template-columns: 1fr auto auto;
 }
 .seventh-sea-1e .cs-cell { padding: 0.3rem 0.5rem; }
-.seventh-sea-1e .weapons-major-cols { display: grid; grid-template-columns: 1.1fr 1.2fr; gap: 0.4rem; }
+.seventh-sea-1e .weapons-major-cols { display: grid; grid-template-columns: 1.25fr 1fr; gap: 0.4rem; }
 .seventh-sea-1e .weapons-left-grid {
     display: grid;
     grid-template-columns: 1fr 110px 135px;
@@ -275,11 +276,15 @@
 
 .seventh-sea-1e .defense-grid {
     display: grid;
-    grid-template-columns: 1fr 0.6fr 0.6fr;
+    /* Content-sized: label column fits the longest label (capped — long
+       custom labels ellipsize), TN columns fit their "Passive TN"/"Active
+       TN" headers. Keeps the box as narrow as possible without wrapping. */
+    grid-template-columns: fit-content(9rem) auto auto;
     gap: 2px;
     align-items: center;
 }
-.seventh-sea-1e .defense-num { width: 100%; }
+.seventh-sea-1e .defense-grid .w-header { padding: 0 0.3rem; white-space: nowrap; }
+.seventh-sea-1e .defense-num { width: 3rem; margin: 0 auto; display: block; }
 
 .seventh-sea-1e .wounds-box .wound-check-row,
 .seventh-sea-1e .wounds-box .flesh-row,
@@ -290,7 +295,8 @@
     margin: 0.2rem 0;
     flex-wrap: wrap;
 }
-.seventh-sea-1e .wounds-label { font-size: 0.85rem; cursor: default; }
+.seventh-sea-1e .wounds-label { font-size: 0.85rem; cursor: default; white-space: nowrap; }
+.seventh-sea-1e .wounds-box .wc-formula { white-space: nowrap; }
 .seventh-sea-1e .wounds-label.ss1e-rollable { cursor: pointer; }
 .seventh-sea-1e .wounds-label.ss1e-rollable:hover { color: #8b1a1a; }
 .seventh-sea-1e .wound-check-num { width: 2.2rem; text-align: center; }
