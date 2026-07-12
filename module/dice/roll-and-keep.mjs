@@ -7,13 +7,12 @@
  *    one kept die worth 12), chaining on further 10s.
  *  - Sum kept dice. Compare to a Target Number (TN).
  *  - Each Raise = +5 to the TN; success on Raises grants extra effects.
- *  - Neither side of the STARTING XkY may exceed 10: rolled dice over 10
- *    convert 1:1 into kept dice, and each kept die beyond 10 leaves the
- *    pool as a single flat +10. 11k3 → 10k4; 15k1 → 10k6; 11k10, 10k11
- *    and 11k11 → 10k10+10; 12k10 and 10k12 → 10k10+20.
- *  - Below the cap, keeps that exceed the rolled dice just clamp (3k4
- *    rolls as 3k3): they're placeholders that called-raise dice fill
- *    (3k4 + 1 raise = 4k4, + 2 raises = 5k4).
+ *  - Neither side of the STARTING XkY may exceed 10, and only real rolled
+ *    dice count. Keeps with no die behind them clamp away (3k4 rolls as
+ *    3k3, 10k11 as 10k10) — they're placeholders that called-raise dice
+ *    fill (3k4 + 1 raise = 4k4). Unkept rolled dice over 10 promote to
+ *    kept 1:1 (11k3 → 10k4, 15k1 → 10k6). Kept REAL dice beyond 10 each
+ *    become a flat +10 (11k10 and 11k11 → 10k10+10, 12k10 → 10k10+20).
  *  - The cap is applied before rolling only — explosions during the roll
  *    freely take the result past it (a 10k10 with one explosion is
  *    effectively 11 kept dice, each at face value).
@@ -33,21 +32,19 @@ export function normalizeRollAndKeep(roll, keep) {
   let r = Math.max(0, Math.floor(roll || 0));
   let k = Math.max(0, Math.floor(keep || 0));
   let bonus = 0;
-  // Kept dice beyond the 10 cap exit as +10 each, taking their rolled die
-  // with them when it exists beyond the roll cap: 11k11 and 10k11 are both
-  // 10k10+10.
+  // Only actually-rolled dice count. Keeps with no die behind them clamp
+  // away with no bonus, at any size: 3k4 rolls as 3k3, 10k11 as 10k10.
+  // (Called raises are what back phantom keeps: 3k4 + 1 raise = 4k4.)
+  if (k > r) k = r;
+  // Kept dice beyond 10 are real dice; each leaves the pool (both sides)
+  // as a single flat +10: 11k11 → 10k10+10, 12k12 → 10k10+20.
   if (k > 10) {
-    const excess = k - 10;
-    bonus += excess * 10;
-    r -= Math.min(excess, Math.max(0, r - 10));
+    bonus += (k - 10) * 10;
+    r -= (k - 10);
     k = 10;
   }
-  // Keeps beyond the dice actually rolled, below the cap, simply clamp —
-  // no bonus. 3k4 rolls as 3k3; called raises are what back those keeps
-  // with real dice (3k4 + 1 raise die = 4k4).
-  if (k > r) k = r;
-  // Rolled dice beyond 10 promote to kept 1:1; if that overflows the kept
-  // cap, the excess becomes +10s.
+  // Unkept rolled dice beyond 10 promote to kept 1:1 (11k3 → 10k4); keeps
+  // that overflow the cap in the process become +10s (12k10 → 10k10+20).
   if (r > 10) {
     k += r - 10;
     r = 10;
