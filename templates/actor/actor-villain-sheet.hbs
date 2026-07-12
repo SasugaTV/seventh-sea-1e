@@ -216,51 +216,49 @@
 
           <div class="box cs-cell weapons-box">
             <div class="box-title">{{localize "SS1E.UI.Weapons"}}</div>
-            <div class="weapons-major-cols">
-              <div class="weapons-left">
-                <div class="weapons-left-grid">
-                  <span class="w-header">{{localize "SS1E.UI.Name"}}</span>
-                  <span class="w-header">{{localize "SS1E.UI.AttackKnack"}}</span>
-                  <span class="w-header">{{localize "SS1E.UI.DMG"}}</span>
-                  {{#each system.weapons.rows as |w i|}}
-                    <div class="weapon-name-cell">
-                      <input type="text" class="w-input" name="system.weapons.rows.{{i}}.name" value="{{w.name}}" />
-                      <a class="ss1e-rollable atk-roll-btn" data-action="roll-weapon-attack" data-row="{{i}}" title="{{localize 'SS1E.UI.RollAttack'}}">⚔</a>
-                    </div>
-                    <select class="weapon-knack-select" name="system.weapons.rows.{{i}}.knack">
-                      <option value="">{{localize "SS1E.UI.SelectKnack"}}</option>
-                      {{#each @root.knackOptions}}
-                      <option value="{{this.id}}" {{#if (eq this.id w.knack)}}selected{{/if}}>{{this.name}}</option>
-                      {{/each}}
-                    </select>
-                    <div class="atk-cell">
-                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.roll" value="{{w.dmg1.roll}}" />
-                      <span class="atk-k">k</span>
-                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.keep" value="{{w.dmg1.keep}}" />
-                      <span class="atk-k">+</span>
-                      <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.bonus" value="{{w.dmg1.bonus}}" />
-                      <a class="ss1e-rollable atk-roll-btn" data-action="roll-weapon" data-row="{{i}}" data-which="dmg1" title="{{localize 'SS1E.UI.RollDamage'}}">★</a>
-                    </div>
+            <div class="weapon-line1 weapon-headers">
+              <span class="w-header">{{localize "SS1E.UI.Name"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.AttackKnack"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.DMG"}}</span>
+            </div>
+            <div class="weapon-line2 weapon-headers">
+              <span class="w-header">{{localize "SS1E.UI.Notes"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.Range"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.ShortMod"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.LongMod"}}</span>
+              <span class="w-header">{{localize "SS1E.UI.Reload"}}</span>
+            </div>
+            {{#each system.weapons.rows as |w i|}}
+            <div class="weapon-block">
+              <div class="weapon-line1">
+                <div class="weapon-name-cell">
+                  <input type="text" class="w-input" name="system.weapons.rows.{{i}}.name" value="{{w.name}}" />
+                  <a class="ss1e-rollable atk-roll-btn" data-action="roll-weapon-attack" data-row="{{i}}" title="{{localize 'SS1E.UI.RollAttack'}}">⚔</a>
+                </div>
+                <select class="weapon-knack-select" name="system.weapons.rows.{{i}}.knack">
+                  <option value="">{{localize "SS1E.UI.SelectKnack"}}</option>
+                  {{#each @root.knackOptions}}
+                  <option value="{{this.id}}" {{#if (eq this.id w.knack)}}selected{{/if}}>{{this.name}}</option>
                   {{/each}}
+                </select>
+                <div class="atk-cell">
+                  <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.roll" value="{{w.dmg1.roll}}" />
+                  <span class="atk-k">k</span>
+                  <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.keep" value="{{w.dmg1.keep}}" />
+                  <span class="atk-k">+</span>
+                  <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.bonus" value="{{w.dmg1.bonus}}" />
                 </div>
               </div>
-              <div class="weapons-right">
-                <div class="weapons-right-grid">
-                  <span class="w-header">{{localize "SS1E.UI.Notes"}}</span>
-                  <span class="w-header">{{localize "SS1E.UI.Range"}}</span>
-                  <span class="w-header">{{localize "SS1E.UI.ShortMod"}}</span>
-                  <span class="w-header">{{localize "SS1E.UI.LongMod"}}</span>
-                  <span class="w-header">{{localize "SS1E.UI.Reload"}}</span>
-                  {{#each system.weapons.rows as |w i|}}
-                    <input type="text" class="w-input"          name="system.weapons.rows.{{i}}.notes"  value="{{w.notes}}" />
-                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.range"  value="{{w.range}}" />
-                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.shtMod" value="{{w.shtMod}}" />
-                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.lngMod" value="{{w.lngMod}}" />
-                    <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.reload" value="{{w.reload}}" />
-                  {{/each}}
-                </div>
+              <div class="weapon-line2">
+                <input type="text" class="w-input"          name="system.weapons.rows.{{i}}.notes"  value="{{w.notes}}" />
+                <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.range"  value="{{w.range}}" />
+                <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.shtMod" value="{{w.shtMod}}" />
+                <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.lngMod" value="{{w.lngMod}}" />
+                <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.reload" value="{{w.reload}}" />
               </div>
             </div>
+            {{/each}}
+            <button type="button" class="defense-add-btn weapon-add-btn" data-action="weapon-add">{{localize "SS1E.UI.AddWeapon"}}</button>
           </div>
 
           <div class="box cs-cell defense-box">

@@ -20,7 +20,7 @@
           "appearance": ""
         },
         "uiPrefs": {
-          "fontScale": 1.0
+          "fontScale": 1
         }
       },
       "combatant": {
@@ -333,110 +333,6 @@
         },
         "weapons": {
           "rows": [
-            {
-              "name": "",
-              "knack": "",
-              "atk1": {
-                "roll": 0,
-                "keep": 0
-              },
-              "atk2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "dmg1": {
-                "roll": 0,
-                "keep": 0,
-                "bonus": 0
-              },
-              "dmg2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "notes": "",
-              "range": "",
-              "shtMod": "",
-              "lngMod": "",
-              "reload": ""
-            },
-            {
-              "name": "",
-              "knack": "",
-              "atk1": {
-                "roll": 0,
-                "keep": 0
-              },
-              "atk2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "dmg1": {
-                "roll": 0,
-                "keep": 0,
-                "bonus": 0
-              },
-              "dmg2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "notes": "",
-              "range": "",
-              "shtMod": "",
-              "lngMod": "",
-              "reload": ""
-            },
-            {
-              "name": "",
-              "knack": "",
-              "atk1": {
-                "roll": 0,
-                "keep": 0
-              },
-              "atk2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "dmg1": {
-                "roll": 0,
-                "keep": 0,
-                "bonus": 0
-              },
-              "dmg2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "notes": "",
-              "range": "",
-              "shtMod": "",
-              "lngMod": "",
-              "reload": ""
-            },
-            {
-              "name": "",
-              "knack": "",
-              "atk1": {
-                "roll": 0,
-                "keep": 0
-              },
-              "atk2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "dmg1": {
-                "roll": 0,
-                "keep": 0,
-                "bonus": 0
-              },
-              "dmg2": {
-                "roll": 0,
-                "keep": 0
-              },
-              "notes": "",
-              "range": "",
-              "shtMod": "",
-              "lngMod": "",
-              "reload": ""
-            },
             {
               "name": "",
               "knack": "",

@@ -166,10 +166,16 @@ export class SeventhSeaActor extends Actor {
       roll: new num({ nullable: true }),
       keep: new num({ nullable: true })
     });
+    const weaponDmg = new obj({
+      roll: new num({ nullable: true }),
+      keep: new num({ nullable: true }),
+      bonus: new num({ nullable: true })
+    });
     const weaponRow = new obj({
       name: new str(),
+      knack: new str(),
       atk1: weaponAtk, atk2: weaponAtk,
-      dmg1: weaponAtk, dmg2: weaponAtk,
+      dmg1: weaponDmg, dmg2: weaponAtk,
       notes: new str(),
       range: new str(),
       shtMod: new str(),

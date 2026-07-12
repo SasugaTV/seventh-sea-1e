@@ -135,8 +135,20 @@ function _migrateActor(actor) {
   if (!sys.languages || !Array.isArray(sys.languages.rows) || sys.languages.rows.length === 0)        patch["system.languages"]    = { extraLabel: "", rows: Array.from({length: 5}, () => ({ name: "", rank: 0, rw: 0 })) };
   if (!sys.wealth || !Array.isArray(sys.wealth.rows) || sys.wealth.rows.length === 0)                  patch["system.wealth"]       = { rows: Array.from({length: 10}, () => ({ text: "", value: 0 })) };
   if (!sys.weapons || !Array.isArray(sys.weapons.rows) || sys.weapons.rows.length === 0)              patch["system.weapons"]      = {
-    rows: Array.from({length: 8}, () => ({ name: "", atk1: { roll: 0, keep: 0 }, atk2: { roll: 0, keep: 0 }, dmg1: { roll: 0, keep: 0 }, dmg2: { roll: 0, keep: 0 }, notes: "", range: "", shtMod: "", lngMod: "", reload: "" }))
+    rows: Array.from({length: 4}, () => ({ name: "", knack: "", atk1: { roll: 0, keep: 0 }, atk2: { roll: 0, keep: 0 }, dmg1: { roll: 0, keep: 0, bonus: 0 }, dmg2: { roll: 0, keep: 0 }, notes: "", range: "", shtMod: "", lngMod: "", reload: "" }))
   };
+  // Weapons list shrank from 8 default rows to 4 (two lines per weapon):
+  // trim trailing rows that hold no data, but never below 4 and never a row
+  // the player has filled in.
+  else if (sys.weapons.rows.length > 4) {
+    const rows = sys.weapons.rows;
+    const isEmptyRow = r => !r?.name && !r?.notes && !r?.range && !r?.shtMod && !r?.lngMod && !r?.reload
+      && !r?.knack && !(Number(r?.dmg1?.roll) || 0) && !(Number(r?.dmg1?.keep) || 0) && !(Number(r?.dmg1?.bonus) || 0)
+      && !(Number(r?.atk1?.roll) || 0) && !(Number(r?.atk1?.keep) || 0);
+    let keep = rows.length;
+    while (keep > 4 && isEmptyRow(rows[keep - 1])) keep--;
+    if (keep < rows.length) patch["system.weapons.rows"] = rows.slice(0, keep);
+  }
 
   return patch;
 }

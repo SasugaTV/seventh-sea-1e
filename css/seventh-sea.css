@@ -221,13 +221,27 @@
     grid-template-columns: 1fr auto auto;
 }
 .seventh-sea-1e .cs-cell { padding: 0.3rem 0.5rem; }
-.seventh-sea-1e .weapons-major-cols { display: grid; grid-template-columns: 1.25fr 1fr; gap: 0.4rem; }
-.seventh-sea-1e .weapons-left-grid {
+/* Two lines per weapon: name/knack/damage on top, notes/range/short/long/
+   reload underneath. Shared column templates keep blocks aligned with the
+   header lines above the list. */
+.seventh-sea-1e .weapon-line1 {
     display: grid;
-    grid-template-columns: 1fr 110px 135px;
+    grid-template-columns: 1fr 140px 118px;
     gap: 2px;
     align-items: center;
 }
+.seventh-sea-1e .weapon-line2 {
+    display: grid;
+    grid-template-columns: 1.6fr 0.7fr 0.55fr 0.55fr 0.7fr;
+    gap: 2px;
+    align-items: center;
+}
+.seventh-sea-1e .weapon-headers { margin-bottom: 1px; }
+.seventh-sea-1e .weapon-block {
+    padding: 3px 0;
+    border-bottom: 1px dashed rgba(107, 69, 33, 0.35);
+}
+.seventh-sea-1e .weapon-block:last-of-type { border-bottom: none; }
 .seventh-sea-1e .weapon-name-cell {
     display: flex;
     align-items: center;
@@ -242,12 +256,6 @@
     width: 100%;
     min-width: 0;
     height: 1.6rem;
-}
-.seventh-sea-1e .weapons-right-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 0.7fr 0.7fr 0.7fr 0.7fr;
-    gap: 2px;
-    align-items: center;
 }
 .seventh-sea-1e .w-header {
     font-weight: bold;

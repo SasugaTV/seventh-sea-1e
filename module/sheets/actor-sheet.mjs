@@ -180,7 +180,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
     // Flush any pending input changes (e.g. the number the user just typed)
     // before mutating the actor's array fields, otherwise the click race
     // makes the button feel "stuck".
-    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete"];
+    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete", "weapon-add"];
     if (needsFlush.includes(action)) {
       try { await this.submit({ preventClose: true, preventRender: true }); }
       catch (_) { /* nothing to submit */ }
@@ -190,8 +190,8 @@ export class SeventhSeaActorSheet extends ActorSheet {
       // Rolls — all go through the same dialog
       case "roll-trait":             return this._rollTrait(el);
       case "roll-knack":             return this._rollKnack(el);
-      case "roll-weapon":            return this._rollWeapon(el);
       case "roll-weapon-attack":     return this._rollWeaponAttack(el);
+      case "weapon-add":             return this._weaponAdd();
       case "roll-wound-check":       return this._rollWoundCheck();
       case "roll-composure-check":   return this._rollComposureCheck();
       case "roll-initiative":        return this._rollInitiative();
@@ -277,23 +277,16 @@ export class SeventhSeaActorSheet extends ActorSheet {
 
     return result;
   }
-  async _rollWeapon(el) {
-    const rowIdx = parseInt(el.dataset.row || "0");
-    const which  = el.dataset.which || "atk1";
-    const row    = this.actor.system.weapons?.rows?.[rowIdx];
-    if (!row) return;
-    const data = row[which] || { roll: 0, keep: 0 };
-    return promptRollAndKeep({
-      actor: this.actor,
-      defaultRoll: Number(data.roll) || 0,
-      defaultKeep: Number(data.keep) || 0,
-      // Damage rows carry a flat "+N" bonus; pips add 1:1 to the total.
-      defaultAdvPips: which.startsWith("dmg") ? (Number(data.bonus) || 0) : 0,
-      title: which.startsWith("atk")
-        ? game.i18n.format("SS1E.Chat.WeaponAttack", { weapon: row.name || "?" })
-        : game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || "?" }),
-      knack: row.name || ""
+  /** Append a blank weapon row (two-line block) to the weapons table. */
+  async _weaponAdd() {
+    const rows = foundry.utils.deepClone(this.actor.system.weapons?.rows ?? []);
+    rows.push({
+      name: "", knack: "",
+      atk1: { roll: 0, keep: 0 }, atk2: { roll: 0, keep: 0 },
+      dmg1: { roll: 0, keep: 0, bonus: 0 }, dmg2: { roll: 0, keep: 0 },
+      notes: "", range: "", shtMod: "", lngMod: "", reload: ""
     });
+    return this.actor.update({ "system.weapons.rows": rows });
   }
   /**
    * Weapon-name click: roll the weapon's selected knack (attack) with that

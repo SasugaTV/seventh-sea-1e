@@ -122,8 +122,8 @@
   "SS1E.UI.ATKRoll": "ATK Roll",
   "SS1E.UI.DMG": "DMG",
   "SS1E.UI.Range": "Range",
-  "SS1E.UI.ShortMod": "Sht Mod",
-  "SS1E.UI.LongMod": "Lng Mod",
+  "SS1E.UI.ShortMod": "Short",
+  "SS1E.UI.LongMod": "Long",
   "SS1E.UI.Reload": "Reload",
   "SS1E.UI.SorceryAndSchools": "Sorcery & Schools",
   "SS1E.UI.Schools": "Swordsman Schools",
@@ -230,5 +230,6 @@
   "SS1E.Notif.DefaultDefenseLocked": "Default defenses cannot be edited or deleted.",
   "SS1E.Notif.NoWeaponKnack": "Select an attack knack for this weapon first.",
   "SS1E.UI.AttackKnack": "Attack Knack",
-  "SS1E.UI.SelectKnack": "— knack —"
+  "SS1E.UI.SelectKnack": "— knack —",
+  "SS1E.UI.AddWeapon": "+ Add Weapon"
 }
