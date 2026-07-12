@@ -382,33 +382,43 @@ export async function promptRollAndKeep({
     `;
   }
 
+  // Build a 0–10 dropdown; the current value is clamped into range so saved
+  // settings that pre-date the dropdowns (e.g. an old adv_kept of 12) still
+  // land on a valid option.
+  const numSelect = (name, value) => {
+    const v = Math.min(10, Math.max(0, Number(value) || 0));
+    let opts = "";
+    for (let i = 0; i <= 10; i++) opts += `<option value="${i}" ${i === v ? "selected" : ""}>${i}</option>`;
+    return `<select name="${name}">${opts}</select>`;
+  };
+
   const content = `
     <form class="ss1e-roll-dialog">
       ${traitDropdown}
       ${dramaDiceDropdown}
       <div class="form-group">
         <label>Advantage Kept</label>
-        <input type="number" name="adv_kept" value="${defaultAdvKept}" min="0" max="20" />
+        ${numSelect("adv_kept", defaultAdvKept)}
       </div>
       <div class="form-group">
         <label>Advantage Unkept</label>
-        <input type="number" name="adv_unkept" value="${defaultAdvUnkept}" min="0" max="20" />
+        ${numSelect("adv_unkept", defaultAdvUnkept)}
       </div>
       <div class="form-group">
         <label>Advantage Pips</label>
-        <input type="number" name="adv_pips" value="${defaultAdvPips}" min="-20" max="20" />
+        ${numSelect("adv_pips", defaultAdvPips)}
       </div>
       <div class="form-group">
         <label>Free Raises</label>
-        <input type="number" name="free_raises" value="${defaultFreeRaises}" min="0" max="20" />
+        ${numSelect("free_raises", defaultFreeRaises)}
       </div>
       <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Roll")}</label>
-        <input type="number" name="roll" value="${defaultRoll}" min="0" max="20" />
+        ${numSelect("roll", defaultRoll)}
       </div>
       <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.Keep")}</label>
-        <input type="number" name="keep" value="${defaultKeep}" min="0" max="10" />
+        ${numSelect("keep", defaultKeep)}
       </div>
       <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.TN")}</label>
@@ -425,7 +435,7 @@ export async function promptRollAndKeep({
       </div>
       <div class="form-group">
         <label>Called Raises</label>
-        <input type="number" name="raises" value="0" min="0" max="10" />
+        ${numSelect("raises", 0)}
       </div>
       <div class="form-group">
         <label>Explode</label>
@@ -538,7 +548,6 @@ export async function promptRollAndKeep({
         };
 
         html.find('[name="trait_select"], [name="drama_dice"], [name="adv_kept"], [name="adv_unkept"]').change(updateDice);
-        html.find('[name="adv_kept"], [name="adv_unkept"]').keyup(updateDice);
         updateDice(); // Initialize immediately to ensure default advantages are applied to roll inputs
       },
       default: "roll"
