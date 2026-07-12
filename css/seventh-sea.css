@@ -223,9 +223,24 @@
 .seventh-sea-1e .weapons-major-cols { display: grid; grid-template-columns: 1.1fr 1.2fr; gap: 0.4rem; }
 .seventh-sea-1e .weapons-left-grid {
     display: grid;
-    grid-template-columns: 1fr 95px 95px;
+    grid-template-columns: 1fr 110px 135px;
     gap: 2px;
     align-items: center;
+}
+.seventh-sea-1e .weapon-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.seventh-sea-1e .weapon-name-cell .w-input {
+    flex: 1;
+    min-width: 0;
+}
+.seventh-sea-1e .weapon-knack-select {
+    font-size: 0.75rem;
+    width: 100%;
+    min-width: 0;
+    height: 1.6rem;
 }
 .seventh-sea-1e .weapons-right-grid {
     display: grid;

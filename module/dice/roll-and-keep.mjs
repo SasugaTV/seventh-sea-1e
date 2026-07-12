@@ -114,7 +114,9 @@ function markExplosionRerolls(roll, tooltip) {
  * @param {number} [options.roll=1]   Dice to roll.
  * @param {number} [options.keep=1]   Dice to keep.
  * @param {number} [options.bonus=0]  Flat bonus.
- * @param {number} [options.tn]       Target number (5 default).
+ * @param {number|null} [options.tn]  Target number. Pass null for rolls with
+ *                                    no TN (e.g. damage): the card shows only
+ *                                    the total, no success/failure line.
  * @param {number} [options.raises=0] Called raises (TN += 5 × raises).
  * @param {string} [options.flavor]   Chat-card flavor.
  * @returns {Promise<Roll>}
@@ -136,7 +138,8 @@ export async function rollAndKeep({
   dramaKeep  = undefined
 } = {}) {
 
-  const finalTN = Number(tn) + Number(raises) * SS1E.raiseIncrement;
+  const hasTN = tn !== null && tn !== undefined;
+  const finalTN = hasTN ? Number(tn) + Number(raises) * SS1E.raiseIncrement : null;
   let formula;
   // Keep count per Die term, aligned with Roll#dice order. A null entry means
   // the term already keeps natively (kh in the formula). Exploding terms get a
@@ -197,8 +200,8 @@ export async function rollAndKeep({
   }
 
   const total = r.total;
-  const success = total >= finalTN;
-  const raisesEarned = Math.max(0, Math.floor((total - SS1E.defaultTN) / SS1E.raiseIncrement));
+  const success = hasTN ? total >= finalTN : true;
+  const raisesEarned = hasTN ? Math.max(0, Math.floor((total - SS1E.defaultTN) / SS1E.raiseIncrement)) : 0;
   const raisesMet    = success && raises > 0;
 
   const tooltip = markExplosionRerolls(r, await r.getTooltip());
@@ -211,12 +214,12 @@ export async function rollAndKeep({
       <header><h3>${flavorText}</h3></header>
       <div class="ss1e-roll-line">
         <span class="ss1e-formula">${roll}k${keep}${bonus ? (bonus >= 0 ? ` + ${bonus}` : ` − ${Math.abs(bonus)}`) : ""}</span>
-        <span class="ss1e-vs">vs</span>
-        <span class="ss1e-tn">TN ${finalTN}${raises ? ` (${raises} raise${raises === 1 ? "" : "s"})` : ""}</span>
+        ${hasTN ? `<span class="ss1e-vs">vs</span>
+        <span class="ss1e-tn">TN ${finalTN}${raises ? ` (${raises} raise${raises === 1 ? "" : "s"})` : ""}</span>` : ""}
       </div>
-      <div class="ss1e-roll-result ${success ? "ss1e-success" : "ss1e-failure"}">
-        <strong>${total}</strong> — ${success ? game.i18n.localize("SS1E.Chat.Success") : game.i18n.localize("SS1E.Chat.Failure")}
-        ${raises && success ? `<span class="ss1e-raises-met"> · ${game.i18n.format("SS1E.Chat.RaisesEarned", { n: raisesEarned })}</span>` : ""}
+      <div class="ss1e-roll-result ${hasTN ? (success ? "ss1e-success" : "ss1e-failure") : ""}">
+        <strong>${total}</strong>${hasTN ? ` — ${success ? game.i18n.localize("SS1E.Chat.Success") : game.i18n.localize("SS1E.Chat.Failure")}` : ""}
+        ${hasTN && raises && success ? `<span class="ss1e-raises-met"> · ${game.i18n.format("SS1E.Chat.RaisesEarned", { n: raisesEarned })}</span>` : ""}
       </div>
       <div class="ss1e-tooltip">${tooltip}</div>
       ${actor ? `<footer class="ss1e-actions">

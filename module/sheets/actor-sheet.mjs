@@ -58,6 +58,11 @@ export class SeventhSeaActorSheet extends ActorSheet {
       ctx.skillCellRows.push(cells.slice(i, i + perRow));
     }
 
+    // Knack choices for the weapon rows' attack-knack dropdowns
+    ctx.knackOptions = ctx.knacks
+      .map(k => ({ id: k.id, name: k.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
     // Font scale for live ±
     ctx.fontScale = Number(ctx.system?.uiPrefs?.fontScale) || 1.0;
     return ctx;
@@ -186,6 +191,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "roll-trait":             return this._rollTrait(el);
       case "roll-knack":             return this._rollKnack(el);
       case "roll-weapon":            return this._rollWeapon(el);
+      case "roll-weapon-attack":     return this._rollWeaponAttack(el);
       case "roll-wound-check":       return this._rollWoundCheck();
       case "roll-composure-check":   return this._rollComposureCheck();
       case "roll-initiative":        return this._rollInitiative();
@@ -234,6 +240,13 @@ export class SeventhSeaActorSheet extends ActorSheet {
   async _rollKnack(el) {
     const item = this.actor.items.get(el.dataset.itemId);
     if (!item) return;
+    return this._promptKnackRoll(item);
+  }
+  /**
+   * Open the knack roll dialog for `item` (with its last-saved settings) and
+   * persist whatever trait/advantage settings the user picked back to it.
+   */
+  async _promptKnackRoll(item, { title } = {}) {
     const r = item.getKnackRoll();
     if (!r) return;
     const result = await promptRollAndKeep({
@@ -246,9 +259,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
       defaultAdvUnkept: item.system.advUnkept || 0,
       defaultAdvPips: item.system.advPips || 0,
       defaultFreeRaises: 0,
-      title: game.i18n.format("SS1E.Dialog.KnackRollTitle", { knack: item.name })
+      title: title || game.i18n.format("SS1E.Dialog.KnackRollTitle", { knack: item.name })
     });
-    
+
     // Save the selected trait and advantage dice back to the item so it remembers it for next time
     if (result) {
       const updates = {};
@@ -256,12 +269,12 @@ export class SeventhSeaActorSheet extends ActorSheet {
       if (result.advKept !== undefined && result.advKept !== item.system.advKept) updates["system.advKept"] = result.advKept;
       if (result.advUnkept !== undefined && result.advUnkept !== item.system.advUnkept) updates["system.advUnkept"] = result.advUnkept;
       if (result.advPips !== undefined && result.advPips !== item.system.advPips) updates["system.advPips"] = result.advPips;
-      
+
       if (!foundry.utils.isEmpty(updates)) {
         await item.update(updates);
       }
     }
-    
+
     return result;
   }
   async _rollWeapon(el) {
@@ -274,11 +287,42 @@ export class SeventhSeaActorSheet extends ActorSheet {
       actor: this.actor,
       defaultRoll: Number(data.roll) || 0,
       defaultKeep: Number(data.keep) || 0,
+      // Damage rows carry a flat "+N" bonus; pips add 1:1 to the total.
+      defaultAdvPips: which.startsWith("dmg") ? (Number(data.bonus) || 0) : 0,
       title: which.startsWith("atk")
         ? game.i18n.format("SS1E.Chat.WeaponAttack", { weapon: row.name || "?" })
         : game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || "?" }),
       knack: row.name || ""
     });
+  }
+  /**
+   * Weapon-name click: roll the weapon's selected knack (attack) with that
+   * knack's last-saved dialog settings, then immediately roll the weapon's
+   * damage (XkY + flat bonus) in the same click.
+   */
+  async _rollWeaponAttack(el) {
+    const rowIdx = parseInt(el.dataset.row || "0");
+    const row = this.actor.system.weapons?.rows?.[rowIdx];
+    if (!row) return;
+    const knack = this.actor.items.get(row.knack);
+    if (!knack || knack.type !== "knack") {
+      return ui.notifications.warn(game.i18n.localize("SS1E.Notif.NoWeaponKnack"));
+    }
+    const attack = await this._promptKnackRoll(knack, {
+      title: game.i18n.format("SS1E.Chat.WeaponAttack", { weapon: row.name || knack.name })
+    });
+    if (!attack) return; // dialog cancelled — no damage roll either
+
+    const dmg = row.dmg1 || {};
+    const damage = await rollAndKeep({
+      actor: this.actor,
+      roll:  Number(dmg.roll) || 0,
+      keep:  Number(dmg.keep) || 0,
+      bonus: Number(dmg.bonus) || 0,
+      tn:    null,
+      flavor: game.i18n.format("SS1E.Chat.WeaponDamage", { weapon: row.name || knack.name })
+    });
+    return { attack, damage };
   }
   async _rollWoundCheck() {
     const brawn = this.actor.getTrait("brawn");

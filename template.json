@@ -335,6 +335,7 @@
           "rows": [
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -345,7 +346,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -359,6 +361,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -369,7 +372,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -383,6 +387,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -393,7 +398,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -407,6 +413,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -417,7 +424,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -431,6 +439,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -441,7 +450,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -455,6 +465,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -465,7 +476,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -479,6 +491,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -489,7 +502,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
@@ -503,6 +517,7 @@
             },
             {
               "name": "",
+              "knack": "",
               "atk1": {
                 "roll": 0,
                 "keep": 0
@@ -513,7 +528,8 @@
               },
               "dmg1": {
                 "roll": 0,
-                "keep": 0
+                "keep": 0,
+                "bonus": 0
               },
               "dmg2": {
                 "roll": 0,
