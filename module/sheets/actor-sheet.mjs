@@ -362,7 +362,6 @@ export class SeventhSeaActorSheet extends ActorSheet {
       keep:  Number(dmg.keep) || 0,
       bonus: Number(dmg.bonus) || 0,
       tn:    null,
-      diceFlavor: "psychic", // Dice So Nice colors damage dice with this set
       flavor
     });
     return { attack, damage };
