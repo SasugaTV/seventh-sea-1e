@@ -297,13 +297,36 @@ export class SeventhSeaActorSheet extends ActorSheet {
     });
   }
   async _rollInitiative() {
-    const wits    = this.actor.getTrait("wits");
-    const panache = this.actor.getTrait("panache");
-    return promptRollAndKeep({
+    const result = await promptRollAndKeep({
       actor: this.actor,
-      defaultRoll: wits + panache, defaultKeep: panache,
+      trait: "panache",
+      baseRank: 0,
+      defaultAdvKept: this.actor.system.initiative?.advKept || 0,
+      defaultAdvUnkept: this.actor.system.initiative?.advUnkept || 0,
+      defaultAdvPips: this.actor.system.initiative?.advPips || 0,
+      defaultFreeRaises: 0,
+      defaultExplode: false,
       title: game.i18n.format("SS1E.Chat.InitiativeFor", { name: this.actor.name })
     });
+    
+    if (result) {
+      // Extract kept dice from the roll result (filter out discarded dice)
+      const keptDice = result.roll.dice
+        .flatMap(d => d.results)
+        .filter(r => !r.discarded)
+        .map(r => r.result)
+        .sort((a, b) => a - b);
+
+      await this.actor.update({
+        "system.initiative.dice": result.usedRoll,
+        "system.initiative.keep": result.usedKeep,
+        "system.initiative.trait": result.trait,
+        "system.initiative.advKept": result.advKept,
+        "system.initiative.advUnkept": result.advUnkept,
+        "system.initiative.advPips": result.advPips,
+        "system.initiative.keptDice": keptDice
+      });
+    }
   }
   async _rollDefense(el) {
     const idx = Number(el.dataset.row || "0");

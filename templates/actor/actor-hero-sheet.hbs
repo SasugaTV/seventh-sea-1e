@@ -30,7 +30,11 @@
           <div class="box-title">{{localize "SS1E.UI.Initiative"}}</div>
           <div class="init-row">
             <span class="ss1e-rollable" data-action="roll-initiative" title="{{localize 'SS1E.UI.RollInitiative'}}">⚔ {{localize "SS1E.UI.RollInitiative"}}</span>
-            <span class="init-formula">{{system.initiative.dice}}k{{system.initiative.keep}}</span>
+            <div class="initiative-kept-dice">
+              {{#each system.initiative.keptDice}}
+                <span class="init-die">{{this}}</span>
+              {{/each}}
+            </div>
           </div>
           <div class="init-row">
             <label>{{localize "SS1E.UI.Tracked"}}</label>

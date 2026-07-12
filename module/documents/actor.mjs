@@ -148,7 +148,11 @@ export class SeventhSeaActor extends Actor {
       bonus: new num({ nullable: true }),
       value: new num({ nullable: true }),
       dice: new num({ nullable: true }),
-      keep: new num({ nullable: true })
+      keep: new num({ nullable: true }),
+      trait: new str({ nullable: true }),
+      advKept: new num({ nullable: true }),
+      advUnkept: new num({ nullable: true }),
+      advPips: new num({ nullable: true })
     });
 
     const charInfo = new obj({
@@ -258,10 +262,10 @@ export class SeventhSeaActor extends Actor {
     sys.defense.bestPassive = bestPassive;
     sys.defense.bestActive  = bestActive;
 
-    // Initiative: Wits + Panache k Panache (standard 1e)
+    // Initiative: use saved values if present, otherwise Wits + Panache k Panache
     sys.initiative = sys.initiative ?? { bonus: 0, value: 0 };
-    sys.initiative.dice = wits + panache;
-    sys.initiative.keep = panache;
+    if (sys.initiative.dice === undefined || sys.initiative.dice === null) sys.initiative.dice = wits + panache;
+    if (sys.initiative.keep === undefined || sys.initiative.keep === null) sys.initiative.keep = panache;
   }
 
   _prepareBruteDerived(sys) {
