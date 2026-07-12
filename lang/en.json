@@ -230,5 +230,9 @@
   "SS1E.Notif.DefaultDefenseLocked": "Default defenses cannot be edited or deleted.",
   "SS1E.Notif.NoWeaponKnack": "Select an attack knack for this weapon first.",
   "SS1E.UI.SelectKnack": "— knack —",
-  "SS1E.UI.AddWeapon": "+ Add Weapon"
+  "SS1E.UI.AddWeapon": "+ Add Weapon",
+  "SS1E.UI.EditWeapons": "Edit weapons",
+  "SS1E.UI.DoneEditing": "Done editing — back to game mode",
+  "SS1E.Dialog.Save": "Save",
+  "SS1E.Dialog.WeaponNotesTitle": "{weapon} — Notes"
 }

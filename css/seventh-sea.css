@@ -227,13 +227,51 @@
 .seventh-sea-1e .weapon-row {
     display: grid;
     /* Knack column hugs the "— knack —" placeholder; long knack names
-       truncate in the closed select but read fine in the opened list. */
-    grid-template-columns: 1fr 85px 118px 110px 60px 48px 48px 60px;
+       truncate in the closed select but read fine in the opened list.
+       Range/Short/Long/Reload are two-digit boxes; the name gets the rest. */
+    grid-template-columns: 1fr 85px 118px 110px 42px 42px 42px 42px;
     gap: 2px;
     align-items: center;
     margin: 2px 0;
 }
 .seventh-sea-1e .weapon-headers { margin-bottom: 1px; }
+.seventh-sea-1e .weapon-row > .w-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+/* Game-mode weapon name: clickable like a knack */
+.seventh-sea-1e .weapon-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.seventh-sea-1e .weapon-name:hover { color: #8b1a1a; }
+.seventh-sea-1e .weapon-name-empty { color: rgba(58, 36, 18, 0.35); padding-left: 2px; }
+/* Notes cell: shows what fits; click opens the full-text popup */
+.seventh-sea-1e .weapon-notes {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 1.3em;
+    border-bottom: 1px dotted #6b4521;
+    cursor: pointer;
+}
+.seventh-sea-1e .weapon-notes:hover { background: rgba(255, 250, 235, 0.7); }
+/* Edit-mode toggle in the box title */
+.seventh-sea-1e .weapons-mode-btn {
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #6b4521;
+    text-decoration: none;
+}
+.seventh-sea-1e .weapons-mode-btn:hover { color: #8b1a1a; }
 .seventh-sea-1e .weapon-name-cell {
     display: flex;
     align-items: center;

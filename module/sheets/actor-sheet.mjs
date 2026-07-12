@@ -63,6 +63,10 @@ export class SeventhSeaActorSheet extends ActorSheet {
       .map(k => ({ id: k.id, name: k.name }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
+    // Weapons box mode: game mode shows names as clickable roll targets,
+    // edit mode swaps them for text inputs. Sheet-local UI state.
+    ctx.weaponsEdit = !!this._weaponsEdit;
+
     // Font scale for live ±
     ctx.fontScale = Number(ctx.system?.uiPrefs?.fontScale) || 1.0;
     return ctx;
@@ -180,7 +184,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
     // Flush any pending input changes (e.g. the number the user just typed)
     // before mutating the actor's array fields, otherwise the click race
     // makes the button feel "stuck".
-    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete", "weapon-add"];
+    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete", "weapon-add", "weapons-toggle-mode", "weapon-notes"];
     if (needsFlush.includes(action)) {
       try { await this.submit({ preventClose: true, preventRender: true }); }
       catch (_) { /* nothing to submit */ }
@@ -192,6 +196,8 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "roll-knack":             return this._rollKnack(el);
       case "roll-weapon-attack":     return this._rollWeaponAttack(el);
       case "weapon-add":             return this._weaponAdd();
+      case "weapons-toggle-mode":    this._weaponsEdit = !this._weaponsEdit; return this.render(false);
+      case "weapon-notes":           return this._weaponNotesEdit(el);
       case "roll-wound-check":       return this._rollWoundCheck();
       case "roll-composure-check":   return this._rollComposureCheck();
       case "roll-initiative":        return this._rollInitiative();
@@ -276,6 +282,44 @@ export class SeventhSeaActorSheet extends ActorSheet {
     }
 
     return result;
+  }
+  /**
+   * Open a popup with a large textarea for a weapon row's notes. The row cell
+   * only shows what fits; the full text lives here. Saving updates the row.
+   */
+  async _weaponNotesEdit(el) {
+    const idx = parseInt(el.dataset.row || "0");
+    const rows = this.actor.system.weapons?.rows;
+    const row = rows?.[idx];
+    if (!row) return;
+    const current = foundry.utils.escapeHTML(row.notes || "");
+    const title = game.i18n.format("SS1E.Dialog.WeaponNotesTitle", {
+      weapon: row.name || game.i18n.localize("SS1E.UI.Weapons")
+    });
+    return new Promise((resolve) => {
+      new Dialog({
+        title,
+        content: `<form><textarea name="notes" style="width: 100%; min-height: 220px; resize: vertical;">${current}</textarea></form>`,
+        buttons: {
+          save: {
+            label: game.i18n.localize("SS1E.Dialog.Save"),
+            callback: async (html) => {
+              const val = html.find('textarea[name="notes"]').val() ?? "";
+              const newRows = foundry.utils.deepClone(this.actor.system.weapons?.rows ?? []);
+              if (!newRows[idx]) return resolve(null);
+              newRows[idx].notes = val;
+              await this.actor.update({ "system.weapons.rows": newRows });
+              resolve(val);
+            }
+          },
+          cancel: {
+            label: game.i18n.localize("SS1E.Dialog.Cancel"),
+            callback: () => resolve(null)
+          }
+        },
+        default: "save"
+      }).render(true);
+    });
   }
   /** Append a blank weapon row (two-line block) to the weapons table. */
   async _weaponAdd() {

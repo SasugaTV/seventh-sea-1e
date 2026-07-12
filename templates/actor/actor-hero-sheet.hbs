@@ -208,7 +208,12 @@
         <div class="cs-row cs-row-wd">
 
           <div class="box cs-cell weapons-box">
-            <div class="box-title">{{localize "SS1E.UI.Weapons"}}</div>
+            <div class="box-title">{{localize "SS1E.UI.Weapons"}}
+              <a class="weapons-mode-btn" data-action="weapons-toggle-mode"
+                 title="{{#if weaponsEdit}}{{localize 'SS1E.UI.DoneEditing'}}{{else}}{{localize 'SS1E.UI.EditWeapons'}}{{/if}}">
+                <i class="fas {{#if weaponsEdit}}fa-check{{else}}fa-edit{{/if}}"></i>
+              </a>
+            </div>
             <div class="weapon-row weapon-headers">
               <span class="w-header">{{localize "SS1E.UI.Name"}}</span>
               <span class="w-header">{{localize "SS1E.UI.AttackKnack"}}</span>
@@ -222,8 +227,13 @@
             {{#each system.weapons.rows as |w i|}}
             <div class="weapon-row">
               <div class="weapon-name-cell">
+                {{#if @root.weaponsEdit}}
                 <input type="text" class="w-input" name="system.weapons.rows.{{i}}.name" value="{{w.name}}" />
-                <a class="ss1e-rollable atk-roll-btn" data-action="roll-weapon-attack" data-row="{{i}}" title="{{localize 'SS1E.UI.RollAttack'}}">⚔</a>
+                {{else if w.name}}
+                <span class="weapon-name ss1e-rollable" data-action="roll-weapon-attack" data-row="{{i}}" title="{{localize 'SS1E.UI.RollAttack'}}">{{w.name}}</span>
+                {{else}}
+                <span class="weapon-name-empty">—</span>
+                {{/if}}
               </div>
               <select class="weapon-knack-select" name="system.weapons.rows.{{i}}.knack">
                 <option value="">{{localize "SS1E.UI.SelectKnack"}}</option>
@@ -238,7 +248,7 @@
                 <span class="atk-k">+</span>
                 <input type="number" class="atk-num" name="system.weapons.rows.{{i}}.dmg1.bonus" value="{{w.dmg1.bonus}}" />
               </div>
-              <input type="text" class="w-input"          name="system.weapons.rows.{{i}}.notes"  value="{{w.notes}}" />
+              <div class="weapon-notes" data-action="weapon-notes" data-row="{{i}}" title="{{w.notes}}">{{w.notes}}</div>
               <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.range"  value="{{w.range}}" />
               <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.shtMod" value="{{w.shtMod}}" />
               <input type="text" class="w-input w-center" name="system.weapons.rows.{{i}}.lngMod" value="{{w.lngMod}}" />
