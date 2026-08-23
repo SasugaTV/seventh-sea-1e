@@ -6,36 +6,36 @@
         </h1>
         <div class="header-row">
             <label>{{localize "SS1E.UI.Nation"}}</label>
-            <select name="system.nation">
+            <select name="system.charInfo.nationality">
                 <option value=""></option>
                 {{#each config.nations as |label key|}}
-                    <option value="{{key}}" {{#if (ss1e-eq ../system.nation key)}}selected{{/if}}>{{localize label}}</option>
+                    <option value="{{key}}" {{#if (ss1e-eq ../system.charInfo.nationality key)}}selected{{/if}}>{{localize label}}</option>
                 {{/each}}
             </select>
 
             <label>{{localize "SS1E.UI.Gender"}}</label>
-            <input type="text" name="system.gender" value="{{system.gender}}" />
+            <input type="text" name="system.charInfo.gender" value="{{system.charInfo.gender}}" />
 
             <label>{{localize "SS1E.UI.Age"}}</label>
-            <input type="text" name="system.age" value="{{system.age}}" />
+            <input type="text" name="system.charInfo.age" value="{{system.charInfo.age}}" />
         </div>
         {{#if isHero}}
         <div class="header-row resources">
             <div class="resource">
                 <label>{{localize "SS1E.UI.Reputation"}}</label>
-                <input type="number" name="system.reputation.value" value="{{system.reputation.value}}" />
+                <input type="number" name="system.reputation.cap" value="{{system.reputation.cap}}" />
             </div>
             <div class="resource">
                 <label>{{localize "SS1E.UI.DramaDice"}}</label>
                 <div style="display: flex; align-items: center; gap: 4px;">
                     <a class="drama-adjust" data-delta="-1">−</a>
-                    <input type="number" name="system.dramaDice.value" value="{{system.dramaDice.value}}" min="0" max="10" />
+                    <input type="number" name="system.resources.dramaDice.value" value="{{system.resources.dramaDice.value}}" min="0" max="10" />
                     <a class="drama-adjust" data-delta="1">+</a>
                 </div>
             </div>
             <div class="resource">
                 <label>{{localize "SS1E.UI.XP"}}</label>
-                <input type="number" name="system.experience.value" value="{{system.experience.value}}" />
+                <input type="number" name="system.resources.xp.value" value="{{system.resources.xp.value}}" />
             </div>
         </div>
         {{/if}}

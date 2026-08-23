@@ -608,7 +608,8 @@ export class SeventhSeaActorSheet extends ActorSheet {
       "system.wealth.rows",
       "system.contacts.rows",
       "system.languages.rows",
-      "system.weapons.rows"
+      "system.weapons.rows",
+      "system.xpLog.entries"
     ];
 
     for (const path of arrayPaths) {
