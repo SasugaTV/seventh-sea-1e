@@ -4,7 +4,8 @@
       "hero",
       "villain",
       "brute",
-      "monster"
+      "monster",
+      "ship"
     ],
     "templates": {
       "common": {
@@ -484,6 +485,134 @@
         "abilities": ""
       },
       "size": "medium"
+    },
+    "ship": {
+      "templates": [
+        "common"
+      ],
+      "shipInfo": {
+        "origin": "",
+        "shipClass": "",
+        "captain": "",
+        "homePort": "",
+        "flag": ""
+      },
+      "points": 10,
+      "traits": {
+        "brawn": {
+          "value": 2,
+          "lost": 0
+        },
+        "finesse": {
+          "value": 2,
+          "lost": 0
+        },
+        "resolve": {
+          "value": 2,
+          "lost": 0
+        },
+        "wits": {
+          "value": 2,
+          "lost": 0
+        },
+        "panache": {
+          "value": 2,
+          "lost": 0
+        }
+      },
+      "cannons": {
+        "port": 1,
+        "starboard": 1
+      },
+      "hits": {
+        "superficial": 0
+      },
+      "dramaDice": {
+        "value": 0
+      },
+      "reputation": 0,
+      "modifications": {
+        "rows": []
+      },
+      "flaws": {
+        "rows": []
+      },
+      "dutyLeads": {
+        "finesse": {
+          "name": "",
+          "rank": 0
+        },
+        "resolve": {
+          "name": "",
+          "rank": 0
+        },
+        "wits": {
+          "name": "",
+          "rank": 0
+        },
+        "panache": {
+          "name": "",
+          "rank": 0
+        }
+      },
+      "crew": {
+        "rows": [
+          {
+            "role": "Captain",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Lieutenant",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Ship's Master",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Quartermaster",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Boatswain",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Purser",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Surgeon",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Master Gunner",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Ship's Carpenter",
+            "name": "",
+            "notes": ""
+          },
+          {
+            "role": "Master of the Tops",
+            "name": "",
+            "notes": ""
+          }
+        ]
+      },
+      "cargo": {
+        "manifest": ""
+      },
+      "phases": []
     }
   },
   "Item": {

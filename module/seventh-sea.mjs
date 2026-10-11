@@ -9,6 +9,7 @@ import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
 import { SeventhSeaActor }      from "./documents/actor.mjs";
 import { SeventhSeaItem }       from "./documents/item.mjs";
 import { SeventhSeaActorSheet } from "./sheets/actor-sheet.mjs";
+import { SeventhSeaShipSheet }  from "./sheets/ship-sheet.mjs";
 import { SeventhSeaItemSheet }  from "./sheets/item-sheet.mjs";
 import { rollAndKeep, promptRollAndKeep } from "./dice/roll-and-keep.mjs";
 
@@ -28,7 +29,11 @@ Hooks.once("init", function () {
 
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet("seventh-sea-1e", SeventhSeaActorSheet, {
+    types: ["hero", "villain", "brute", "monster"],
     makeDefault: true, label: "SS1E.SheetLabels.Actor"
+  });
+  Actors.registerSheet("seventh-sea-1e", SeventhSeaShipSheet, {
+    types: ["ship"], makeDefault: true, label: "SS1E.SheetLabels.Ship"
   });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("seventh-sea-1e", SeventhSeaItemSheet, {

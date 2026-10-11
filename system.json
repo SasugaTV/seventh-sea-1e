@@ -18,7 +18,8 @@
       "hero":    {},
       "villain": {},
       "brute":   {},
-      "monster": {}
+      "monster": {},
+      "ship":    {}
     },
     "Item": {
       "skill":      {},

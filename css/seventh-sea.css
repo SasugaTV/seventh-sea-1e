@@ -804,3 +804,87 @@
 .ss1e-tooltip .dice-rolls .roll.min.discarded:not(.ss1e-explosion) {
     filter: sepia(0.5) contrast(0.75) opacity(0.4);
 }
+
+/* =====================================================
+   Ship sheet (inherits the hero sheet's boxes & inputs)
+   ===================================================== */
+.seventh-sea-1e .ss1e-ship-sheet .box-traits.ship-traits { flex: 0 0 auto; min-width: 0; }
+.seventh-sea-1e .ss1e-ship-sheet .left-stack { flex: 0 1 auto; min-width: 0; overflow-x: auto; }
+.seventh-sea-1e .ship-trait-head,
+.seventh-sea-1e .ship-trait-row {
+    display: grid;
+    grid-template-columns: 8.5em 186px 2em 150px 2em;
+    align-items: center;
+    column-gap: 0.4rem;
+    margin: 0.25rem 0;
+}
+.seventh-sea-1e .ship-trait-head {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #6b4521;
+    border-bottom: 1px solid #6b4521;
+}
+.seventh-sea-1e .ship-trait-head span:nth-child(n+3) { text-align: center; }
+.seventh-sea-1e .ship-trait-name { display: flex; flex-direction: column; line-height: 1.1; }
+.seventh-sea-1e .ship-trait-role { font-size: 0.7rem; color: #6b4521; font-style: italic; }
+.seventh-sea-1e .ship-trait-row .dots { margin-left: 0; }
+.seventh-sea-1e .ship-trait-bonus { text-align: center; font-weight: bold; color: #2f5d1e; }
+.seventh-sea-1e .ship-trait-now { text-align: center; font-weight: bold; font-size: 1.15rem; }
+.seventh-sea-1e .ship-lost-dots .dot { border-color: #8b1a1a; width: 11px; height: 11px; }
+.seventh-sea-1e .ship-lost-dots .dot.filled { background: #8b1a1a; }
+.seventh-sea-1e .over-max .dot.filled { background: #8b1a1a; border-color: #8b1a1a; }
+
+.seventh-sea-1e .ship-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    align-items: center;
+}
+.seventh-sea-1e .ship-stat { display: flex; align-items: center; gap: 0.35rem; }
+.seventh-sea-1e .ship-stat label { font-weight: bold; font-size: 0.85rem; }
+.seventh-sea-1e .ship-stat-num { font-weight: bold; font-size: 1.05rem; min-width: 1.2em; text-align: center; }
+.seventh-sea-1e .ss1e-ship-sheet .xp-input { width: 3em; text-align: center; }
+.seventh-sea-1e .ss1e-ship-sheet .drama-dice-group { display: flex; align-items: center; gap: 4px; }
+
+.seventh-sea-1e .ship-combat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.2rem;
+    margin: 0.2rem 0;
+}
+.seventh-sea-1e .ship-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.3rem 0;
+}
+.seventh-sea-1e .ship-line label { font-weight: bold; font-size: 0.85rem; }
+.seventh-sea-1e .ship-hint { font-size: 0.75rem; color: #6b4521; font-style: italic; }
+.seventh-sea-1e .ship-sinking-banner {
+    background: #8b1a1a;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.3rem;
+    letter-spacing: 0.05em;
+}
+
+.seventh-sea-1e .ship-row2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 0.6rem;
+}
+.seventh-sea-1e .ship-warnings {
+    margin: 0.3rem 0 0;
+    padding-left: 1.1rem;
+    color: #8b1a1a;
+    font-size: 0.8rem;
+}
+.seventh-sea-1e .ship-ok { color: #2f5d1e; font-weight: bold; font-size: 0.85rem; margin-top: 0.3rem; }
+.seventh-sea-1e .ship-duty-role { font-weight: bold; font-size: 0.85rem; white-space: nowrap; }
+.seventh-sea-1e .ship-num-cell { width: 3.2em; text-align: center; }
+.seventh-sea-1e .ship-rows-table .ship-row-pick select { width: 100%; }
+.seventh-sea-1e .ship-rows-table td { vertical-align: top; }
+.seventh-sea-1e .ship-subtitle { margin-top: 0.5rem; }
+.seventh-sea-1e .ss1e-ship-sheet .ss1e-bio-textarea { width: 100%; }

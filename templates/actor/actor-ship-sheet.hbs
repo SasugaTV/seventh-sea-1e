@@ -1,0 +1,223 @@
+<form class="{{cssClass}} ss1e-hero-sheet ss1e-ship-sheet" autocomplete="off">
+
+  <div class="sheet">
+
+    {{!-- ── TOP UTILITY STRIP : font ± · roll & keep ──────────────── --}}
+    <div class="ss1e-top-strip">
+      <div class="strip-group font-controls">
+        <span class="strip-label">A</span>
+        <button type="button" class="strip-btn" data-action="font-adjust" data-delta="-1" title="{{localize 'SS1E.UI.FontSmaller'}}">−</button>
+        <button type="button" class="strip-btn" data-action="font-adjust" data-delta="1"  title="{{localize 'SS1E.UI.FontLarger'}}">+</button>
+        <span class="strip-label" style="font-size:1.2em">A</span>
+      </div>
+      <button type="button" class="strip-btn primary" data-action="generic-roll">🎲 {{localize "SS1E.UI.GenericRoll"}}</button>
+    </div>
+
+    {{#if system.combat.sinking}}
+      <div class="ship-sinking-banner">⚓ {{sinkingText}}</div>
+    {{/if}}
+
+    {{!-- ── ROW 1 : Ship Traits (left) | Ship info + values (right) ── --}}
+    <div class="row row1">
+      <div class="left-stack">
+        <div class="box box-traits ship-traits">
+          <div class="traits-title">{{localize "SS1E.Ship.Traits"}}</div>
+          <div class="ship-trait-head">
+            <span></span>
+            <span>{{localize "SS1E.Ship.Built"}}</span>
+            <span>{{localize "SS1E.Ship.Mod"}}</span>
+            <span>{{localize "SS1E.Ship.Lost"}}</span>
+            <span>{{localize "SS1E.Ship.Current"}}</span>
+          </div>
+          {{#each traitRows as |t|}}
+            <div class="ship-trait-row">
+              <span class="ship-trait-name">
+                <span class="trait-name ss1e-rollable" data-action="roll-ship-trait" data-trait="{{t.key}}" title="{{localize 'SS1E.UI.RollTrait'}}">{{t.label}}</span>
+                <span class="ship-trait-role">{{t.role}}{{#if t.leadRank}} · +{{t.leadRank}}{{/if}}{{#if t.noExplode}} · no 10s{{/if}}</span>
+              </span>
+              <span class="dots ss1e-dot-tracker {{#if t.overMax}}over-max{{/if}}" data-path="system.traits.{{t.key}}.value" data-max="10" data-gap="5" data-current="{{t.value}}"></span>
+              <span class="ship-trait-bonus">{{#if t.bonus}}+{{t.bonus}}{{/if}}</span>
+              <span class="dots ss1e-dot-tracker ship-lost-dots" data-path="system.traits.{{t.key}}.lost" data-max="{{t.built}}" data-current="{{t.lost}}"></span>
+              <span class="ship-trait-now">{{t.effective}}</span>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="right-stack">
+        <div class="box box-charinfo">
+          <div class="charinfo-row">
+            <label>{{localize "SS1E.Ship.ShipName"}}</label>
+            <input type="text" class="charinfo-input charinfo-full" name="name" value="{{actor.name}}" />
+          </div>
+          <div class="charinfo-row">
+            <label>{{localize "SS1E.Ship.Class"}}</label>
+            <input type="text" class="charinfo-input" name="system.shipInfo.shipClass" value="{{system.shipInfo.shipClass}}" />
+            <label>{{localize "SS1E.Ship.Origin"}}</label>
+            <input type="text" class="charinfo-input" name="system.shipInfo.origin" value="{{system.shipInfo.origin}}" />
+          </div>
+          <div class="charinfo-row">
+            <label>{{localize "SS1E.Ship.Captain"}}</label>
+            <input type="text" class="charinfo-input" name="system.shipInfo.captain" value="{{system.shipInfo.captain}}" />
+            <label>{{localize "SS1E.Ship.HomePort"}}</label>
+            <input type="text" class="charinfo-input" name="system.shipInfo.homePort" value="{{system.shipInfo.homePort}}" />
+            <label>{{localize "SS1E.Ship.Flag"}}</label>
+            <input type="text" class="charinfo-input" name="system.shipInfo.flag" value="{{system.shipInfo.flag}}" />
+          </div>
+        </div>
+
+        <div class="box ship-values">
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.Draft"}}</label><span class="ship-stat-num">{{system.draft}}</span></div>
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.Cargo"}}</label><span class="ship-stat-num">{{system.cargoCap}}</span></div>
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.Crew"}}</label><span class="ship-stat-num">{{system.crewSize}}</span></div>
+          <div class="ship-stat">
+            <label>{{localize "SS1E.Ship.Reputation"}}</label>
+            <input type="number" class="xp-input" name="system.reputation" value="{{system.reputation}}" />
+          </div>
+          <div class="ship-stat" title="{{localize 'SS1E.Ship.DramaHint'}}">
+            <label>{{localize "SS1E.Ship.DramaDice"}}</label>
+            <div class="drama-dice-group">
+              <button type="button" class="strip-btn" data-action="drama-adjust" data-delta="-1">−</button>
+              <input type="number" class="xp-input" name="system.dramaDice.value" value="{{system.dramaDice.value}}" min="0" max="{{system.dramaDice.max}}" />
+              <span>/ {{system.dramaDice.max}}</span>
+              <button type="button" class="strip-btn" data-action="drama-adjust" data-delta="1">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="box ship-combat">
+          <div class="box-title">{{localize "SS1E.Ship.Cannons"}} &amp; {{localize "SS1E.Ship.Hits"}}</div>
+          <div class="ship-combat-grid">
+            <div class="ship-stat"><label>{{localize "SS1E.Ship.TNToHit"}}</label><span class="ship-stat-num">{{system.combat.tnToHit}}</span></div>
+            <div class="ship-stat"><label>{{localize "SS1E.Ship.Speed"}}</label><span class="ship-stat-num">{{system.combat.speed}}</span></div>
+            <div class="ship-stat" title="{{localize 'SS1E.Ship.TurnHint'}}"><label>{{localize "SS1E.Ship.TurnCost"}}</label><span class="ship-stat-num">≥ {{system.combat.turnCost}}</span></div>
+          </div>
+          <div class="ship-line">
+            <span class="ss1e-rollable" data-action="roll-phases">⚓ {{localize "SS1E.Ship.RollPhases"}}</span>
+            <span class="initiative-kept-dice">
+              {{#each system.phases}}<span class="init-die">{{this}}</span>{{/each}}
+            </span>
+          </div>
+          <div class="ship-line" title="{{localize 'SS1E.Ship.FireHint'}}">
+            <span class="ss1e-rollable" data-action="fire-broadside" data-side="port">💥 {{localize "SS1E.Ship.FirePort"}}</span>
+            <input type="number" class="xp-input" name="system.cannons.port" value="{{system.cannons.port}}" min="0" />
+            <span class="ss1e-rollable" data-action="fire-broadside" data-side="starboard">💥 {{localize "SS1E.Ship.FireStarboard"}}</span>
+            <input type="number" class="xp-input" name="system.cannons.starboard" value="{{system.cannons.starboard}}" min="0" />
+          </div>
+          <div class="ship-line" title="{{localize 'SS1E.Ship.HitCheckHint'}}">
+            <label>{{localize "SS1E.Ship.Superficial"}}</label>
+            <input type="number" class="xp-input" name="system.hits.superficial" value="{{system.hits.superficial}}" min="0" />
+            <span class="ss1e-rollable" data-action="roll-hit-check">⚔ {{localize "SS1E.Ship.HitCheck"}}</span>
+          </div>
+          <div class="ship-line">
+            <label>{{localize "SS1E.Ship.Critical"}}</label>
+            <span class="ship-stat-num">{{system.combat.criticalHits}}</span>
+            <span class="ship-hint">({{sinkAtText}})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- ── ROW 2 : Design budget | Duty Leads ── --}}
+    <div class="ship-row2">
+      <div class="box ship-design">
+        <div class="box-title">{{localize "SS1E.Ship.Design"}}</div>
+        <div class="ship-line">
+          <label>{{localize "SS1E.Ship.Points"}}</label>
+          <select name="system.points" data-dtype="Number">
+            {{#each pointOptions as |p|}}
+              <option value="{{p}}" {{#if (ss1e-eq p ../system.points)}}selected{{/if}}>{{p}}</option>
+            {{/each}}
+          </select>
+          <span class="ship-hint">{{localize "SS1E.Ship.PointsHint"}}</span>
+        </div>
+        <div class="ship-combat-grid">
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.MaxTrait"}}</label><span class="ship-stat-num">{{system.design.maxTrait}}</span></div>
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.MaxMods"}}</label><span class="ship-stat-num">{{system.design.maxMods}}</span></div>
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.MaxFlaws"}}</label><span class="ship-stat-num">{{system.design.maxFlaws}}</span></div>
+        </div>
+        <div class="ship-combat-grid" title="{{localize 'SS1E.Ship.BudgetFormula'}}">
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.Budget"}}</label><span class="ship-stat-num">{{system.design.budget}}</span></div>
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.Spent"}}</label><span class="ship-stat-num">{{system.design.spent}}</span></div>
+          <div class="ship-stat"><label>{{localize "SS1E.Ship.Remaining"}}</label><span class="ship-stat-num">{{system.design.remaining}}</span></div>
+        </div>
+        {{#if warnings.length}}
+          <ul class="ship-warnings">
+            {{#each warnings}}<li>{{this}}</li>{{/each}}
+          </ul>
+        {{else}}
+          <div class="ship-ok">✓ {{localize "SS1E.Ship.DesignOK"}}</div>
+        {{/if}}
+      </div>
+
+      <div class="box ship-duty">
+        <div class="box-title">{{localize "SS1E.Ship.DutyLeads"}}</div>
+        <table class="xp-log-table">
+          <thead><tr><th></th><th>{{localize "SS1E.Ship.Officer"}}</th><th>{{localize "SS1E.Ship.Rank"}}</th></tr></thead>
+          <tbody>
+            {{#each dutyRows as |d|}}
+              <tr>
+                <td class="ship-duty-role">{{d.role}}<br/><span class="ship-hint">{{d.trait}} · {{d.knack}}</span></td>
+                <td><input type="text" name="system.dutyLeads.{{d.key}}.name" value="{{d.name}}" /></td>
+                <td class="ship-num-cell"><input type="number" name="system.dutyLeads.{{d.key}}.rank" value="{{d.rank}}" min="0" max="5" /></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <div class="ship-hint">{{localize "SS1E.Ship.NoDuty"}}. {{localize "SS1E.Ship.DutyHint"}}</div>
+      </div>
+    </div>
+
+    {{!-- ── ROW 3 : Modifications | Flaws ── --}}
+    <div class="ship-row2">
+      <div class="box ship-mods">
+        <div class="box-title">{{localize "SS1E.Ship.Modifications"}} ({{system.design.modPts}} / {{system.design.maxMods}})</div>
+        {{> "systems/seventh-sea-1e/templates/actor/parts/ship-rows.hbs" rows=modRows options=modOptions field="modifications"}}
+        <button type="button" class="btn-add" data-action="ship-row-add" data-field="modifications">+ {{localize "SS1E.Ship.AddModification"}}</button>
+        <div class="ship-hint">{{localize "SS1E.Ship.FixedHint"}}</div>
+      </div>
+      <div class="box ship-flaws">
+        <div class="box-title">{{localize "SS1E.Ship.Flaws"}} ({{system.design.flawPts}} / {{system.design.maxFlaws}})</div>
+        {{> "systems/seventh-sea-1e/templates/actor/parts/ship-rows.hbs" rows=flawRows options=flawOptions field="flaws"}}
+        <button type="button" class="btn-add" data-action="ship-row-add" data-field="flaws">+ {{localize "SS1E.Ship.AddFlaw"}}</button>
+        <div class="ship-hint">{{localize "SS1E.Ship.FixedHint"}}</div>
+      </div>
+    </div>
+
+    {{!-- ── ROW 4 : Crew roster | Cargo + upkeep ── --}}
+    <div class="ship-row2">
+      <div class="box ship-crew">
+        <div class="box-title">{{localize "SS1E.Ship.Roster"}}</div>
+        <table class="xp-log-table">
+          <thead><tr><th>{{localize "SS1E.Ship.Position"}}</th><th>{{localize "SS1E.Ship.Name"}}</th><th>{{localize "SS1E.UI.Notes"}}</th><th></th></tr></thead>
+          <tbody>
+            {{#each system.crew.rows as |row i|}}
+              <tr>
+                <td><input type="text" name="system.crew.rows.{{i}}.role" value="{{row.role}}" /></td>
+                <td><input type="text" name="system.crew.rows.{{i}}.name" value="{{row.name}}" /></td>
+                <td><input type="text" name="system.crew.rows.{{i}}.notes" value="{{row.notes}}" /></td>
+                <td><a class="xp-delete" data-action="ship-row-delete" data-field="crew" data-row="{{i}}" title="{{localize 'SS1E.Ship.Remove'}}">×</a></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <button type="button" class="btn-add" data-action="ship-row-add" data-field="crew">+ {{localize "SS1E.Ship.AddCrew"}}</button>
+      </div>
+
+      <div class="box ship-cargo">
+        <div class="box-title">{{localize "SS1E.Ship.Manifest"}} ({{localize "SS1E.Ship.Cargo"}} {{system.cargoCap}})</div>
+        <textarea class="ss1e-bio-textarea" name="system.cargo.manifest" rows="5">{{system.cargo.manifest}}</textarea>
+        <div class="box-title ship-subtitle">{{localize "SS1E.Ship.Upkeep"}}</div>
+        <div class="ship-hint">{{localize "SS1E.Ship.UpkeepText"}}</div>
+        {{#if isOld}}<div class="ship-hint"><b>{{localize "SS1E.Ship.UpkeepOld"}}</b></div>{{/if}}
+      </div>
+    </div>
+
+    {{!-- ── Notes ──────────────────────────────────────── --}}
+    <div class="box ss1e-bio-box">
+      <div class="box-title">{{localize "SS1E.Ship.Notes"}}</div>
+      <textarea class="ss1e-bio-textarea" name="system.biography" rows="6">{{system.biography}}</textarea>
+    </div>
+
+  </div>
+</form>

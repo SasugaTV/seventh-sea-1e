@@ -584,6 +584,21 @@ export class SeventhSeaActorSheet extends ActorSheet {
     return this.actor.update({ "system.xpLog.entries": entries });
   }
 
+  /** Array fields the form edits row by row (rebuilt in _updateObject). */
+  get arrayPaths() {
+    return [
+      "system.defense.rows",
+      "system.reputation.entries",
+      "system.backgrounds.rows",
+      "system.accoutrements.rows",
+      "system.wealth.rows",
+      "system.contacts.rows",
+      "system.languages.rows",
+      "system.weapons.rows",
+      "system.xpLog.entries"
+    ];
+  }
+
   /* ------------------------------------------------------------------ */
   /*  Form submission — propagate skill renames to the underlying items  */
   /* ------------------------------------------------------------------ */
@@ -600,19 +615,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
 
     // Reconstruct arrays for Foundry V10+ compatibility
     const expanded = foundry.utils.expandObject(formData);
-    const arrayPaths = [
-      "system.defense.rows",
-      "system.reputation.entries",
-      "system.backgrounds.rows",
-      "system.accoutrements.rows",
-      "system.wealth.rows",
-      "system.contacts.rows",
-      "system.languages.rows",
-      "system.weapons.rows",
-      "system.xpLog.entries"
-    ];
-
-    for (const path of arrayPaths) {
+    for (const path of this.arrayPaths) {
       const formValue = foundry.utils.getProperty(expanded, path);
       // If the form has any data for this path, formValue will be an object with numeric keys
       if (formValue !== undefined && !Array.isArray(formValue)) {

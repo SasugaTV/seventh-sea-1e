@@ -1,0 +1,32 @@
+{{!-- Modification / Flaw rows. Params: rows, options, field ("modifications" | "flaws") --}}
+<table class="xp-log-table ship-rows-table">
+  <thead><tr><th></th><th>{{localize "SS1E.Ship.Cost"}}</th><th>{{localize "SS1E.UI.Notes"}}</th><th></th></tr></thead>
+  <tbody>
+    {{#each rows as |row|}}
+      <tr>
+        <td class="ship-row-pick">
+          <select class="ship-row-key" data-field="{{../field}}" data-row="{{row.idx}}">
+            <option value="" {{#if row.custom}}selected{{/if}}>{{localize "SS1E.Ship.Custom"}}</option>
+            {{#each ../options as |o|}}
+              <option value="{{o.key}}" {{#if (ss1e-eq o.key row.key)}}selected{{/if}}>{{o.label}}</option>
+            {{/each}}
+          </select>
+          {{#if row.custom}}
+            <input type="text" name="system.{{../field}}.rows.{{row.idx}}.name" value="{{row.name}}" placeholder="{{localize 'SS1E.Ship.Name'}}" />
+          {{else}}
+            <div class="ship-hint">{{row.desc}}</div>
+          {{/if}}
+        </td>
+        <td class="ship-num-cell">
+          {{#if row.custom}}
+            <input type="number" name="system.{{../field}}.rows.{{row.idx}}.cost" value="{{row.cost}}" min="0" />
+          {{else}}
+            {{row.cost}}
+          {{/if}}
+        </td>
+        <td><input type="text" name="system.{{../field}}.rows.{{row.idx}}.notes" value="{{row.notes}}" /></td>
+        <td><a class="xp-delete" data-action="ship-row-delete" data-field="{{../field}}" data-row="{{row.idx}}" title="{{localize 'SS1E.Ship.Remove'}}">×</a></td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
