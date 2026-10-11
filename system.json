@@ -35,8 +35,8 @@
     }
   },
   "grid": { "distance": 1, "units": "pace" },
-  "primaryTokenAttribute": "wounds.flesh",
-  "secondaryTokenAttribute": "wounds.dramatic",
+  "primaryTokenAttribute": "wounds.dramatic.track",
+  "secondaryTokenAttribute": "resources.dramaDice",
   "url":      "https://github.com/SasugaTV/seventh-sea-1e",
   "manifest": "https://github.com/SasugaTV/seventh-sea-1e/releases/latest/download/system.json",
   "download": "https://github.com/SasugaTV/seventh-sea-1e/releases/latest/download/seventh-sea-1e.zip",

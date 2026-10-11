@@ -14,6 +14,7 @@ import { SeventhSeaItemSheet }  from "./sheets/item-sheet.mjs";
 import { rollAndKeep, promptRollAndKeep } from "./dice/roll-and-keep.mjs";
 import { PhaseTracker, registerPhaseTracker } from "./apps/phase-tracker.mjs";
 import { SeventhSeaCombat } from "./combat/seventh-sea-combat.mjs";
+import { registerTokenBars } from "./helpers/token-bars.mjs";
 
 Hooks.once("init", function () {
   console.log("7th Sea 1e | Initializing");
@@ -45,6 +46,7 @@ Hooks.once("init", function () {
 
   registerHandlebarsHelpers();
   registerPhaseTracker();
+  registerTokenBars();
   return preloadHandlebarsTemplates();
 });
 

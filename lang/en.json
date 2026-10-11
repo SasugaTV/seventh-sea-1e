@@ -469,5 +469,9 @@
   "SS1E.PhaseTracker.HoldNotYourTurn": "Hold is available on this character's turn",
   "SS1E.PhaseTracker.UseHeld": "Use Held",
   "SS1E.PhaseTracker.UseHeldHint": "Use the Held Action now: act in this Phase, in Initiative order",
-  "SS1E.PhaseTracker.HeldPhase": "Held Actions (use or lose)"
+  "SS1E.PhaseTracker.HeldPhase": "Held Actions (use or lose)",
+  "SS1E.Settings.DramaticBarMode.Name": "Dramatic Wounds bar",
+  "SS1E.Settings.DramaticBarMode.Hint": "How the Dramatic Wounds token bar shows wounds. A gold tick marks Crippled (one column full); the bar turns red once Crippled.",
+  "SS1E.Settings.DramaticBarMode.Fill": "Fills up as wounds are taken (full = Knocked Out)",
+  "SS1E.Settings.DramaticBarMode.Drain": "Drains like a health bar (empty = Knocked Out)"
 }

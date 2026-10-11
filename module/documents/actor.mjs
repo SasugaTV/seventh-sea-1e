@@ -1,4 +1,5 @@
 import { SS1E } from "../helpers/config.mjs";
+import { prepareDramaticTrack, DEFAULT_BARS } from "../helpers/token-bars.mjs";
 
 /**
  * 7th Sea 1e Actor document
@@ -6,13 +7,25 @@ import { SS1E } from "../helpers/config.mjs";
  *   - Drama Dice max  = 10
  *   - Wound Check keep = Brawn
  *   - Composure Check keep = Panache
- *   - Dramatic Wound col max = Resolve
+ *   - Dramatic Wound col max = Resolve; wounds.dramatic.track = token bar (see helpers/token-bars.mjs)
  *   - Humiliation col max     = Panache
  *   - XP total = sum of system.xpLog.entries[].amount (entries auto-sum)
  *   - Reputation total = floor(|sum of entries| / 10)
  *   - Ships: see _prepareShipDerived
  */
 export class SeventhSeaActor extends Actor {
+
+  /** New actors get token bars that suit their type (Dramatic Wounds, Drama Dice, Brutes left). */
+  async _preCreate(data, options, user) {
+    if ((await super._preCreate(data, options, user)) === false) return false;
+    const bars = DEFAULT_BARS[this.type];
+    if (bars && !foundry.utils.hasProperty(data, "prototypeToken.bar1.attribute")) {
+      this.updateSource({
+        "prototypeToken.bar1.attribute": bars.bar1,
+        "prototypeToken.bar2.attribute": bars.bar2
+      });
+    }
+  }
 
   prepareDerivedData() {
     const sys = this.system;
@@ -56,7 +69,8 @@ export class SeventhSeaActor extends Actor {
 
     // Wounds — Brawn-driven
     if (sys.wounds?.check) sys.wounds.check.keep = brawn;
-    if (sys.wounds?.dramatic) sys.wounds.dramatic.max = resolve;
+    // Dramatic Wound column max = Resolve, plus the token-bar total across both columns.
+    prepareDramaticTrack(sys);
 
     // Composure — Panache-driven
     if (sys.composure?.check) sys.composure.check.keep = panache;
@@ -92,6 +106,7 @@ export class SeventhSeaActor extends Actor {
 
   _prepareMonsterDerived(sys) {
     sys.defense = sys.defense ?? { rows: [], bestPassive: 5, bestActive: 5 };
+    prepareDramaticTrack(sys);
   }
 
   /**
