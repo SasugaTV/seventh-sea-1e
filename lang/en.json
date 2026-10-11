@@ -475,5 +475,6 @@
   "SS1E.Settings.DramaticBarMode.Fill": "Fills up as wounds are taken (full = Knocked Out)",
   "SS1E.Settings.DramaticBarMode.Drain": "Drains like a health bar (empty = Knocked Out)",
   "SS1E.UI.NotePad": "Note Pad",
-  "SS1E.UI.NotePadPlaceholder": "Notes, reminders, anything else\u2026"
+  "SS1E.UI.NotePadPlaceholder": "Notes, reminders, anything else\u2026",
+  "SS1E.UI.CombatWeapons": "Combat & Weapons"
 }
