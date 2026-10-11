@@ -476,5 +476,16 @@
   "SS1E.Settings.DramaticBarMode.Drain": "Drains like a health bar (empty = Knocked Out)",
   "SS1E.UI.NotePad": "Note Pad",
   "SS1E.UI.NotePadPlaceholder": "Notes, reminders, anything else\u2026",
-  "SS1E.UI.CombatWeapons": "Combat & Weapons"
+  "SS1E.UI.CombatWeapons": "Combat & Weapons",
+  "SS1E.ChangeLog.Button": "Change History",
+  "SS1E.ChangeLog.ButtonHint": "Every saved change to this character, with date, time and who made it",
+  "SS1E.ChangeLog.Title": "Change History: {name}",
+  "SS1E.ChangeLog.Note": "Newest first. The most recent 500 changes are kept.",
+  "SS1E.ChangeLog.Empty": "No changes recorded yet. Changes are recorded from now on.",
+  "SS1E.ChangeLog.Added": "Added {item}",
+  "SS1E.ChangeLog.Removed": "Removed {item}",
+  "SS1E.ChangeLog.Name": "Name",
+  "SS1E.ChangeLog.Portrait": "Portrait",
+  "SS1E.ChangeLog.DramaDice": "Drama Dice",
+  "SS1E.ChangeLog.Flaw": "Flaw"
 }

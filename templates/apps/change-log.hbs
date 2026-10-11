@@ -1,0 +1,23 @@
+<div class="cl-wrap">
+  <p class="cl-note">{{localize "SS1E.ChangeLog.Note"}} ({{count}} / {{max}})</p>
+  <ol class="cl-list">
+    {{#each entries}}
+    <li class="cl-entry">
+      <div class="cl-head">
+        <time datetime="{{iso}}">{{when}}</time>
+        <span class="cl-user">{{user}}</span>
+        {{#if what}}<span class="cl-what">{{what}}</span>{{/if}}
+      </div>
+      {{#if changes.length}}
+      <ul class="cl-changes">
+        {{#each changes}}
+        <li><span class="cl-field">{{label}}:</span> <span class="cl-before">{{before}}</span> → <span class="cl-after">{{after}}</span></li>
+        {{/each}}
+      </ul>
+      {{/if}}
+    </li>
+    {{else}}
+    <li class="cl-empty">{{localize "SS1E.ChangeLog.Empty"}}</li>
+    {{/each}}
+  </ol>
+</div>

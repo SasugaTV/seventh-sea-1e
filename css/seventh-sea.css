@@ -1108,3 +1108,26 @@
 .ss1e-phase-tracker .pt-die.interrupt { box-shadow: 0 0 0 2px #2c6fa8; }
 .combatant .ss1e-dice .pt-die.interrupt { box-shadow: 0 0 0 1px #2c6fa8; }
 .seventh-sea-1e .box-initiative .init-use-held:not([disabled]) { background: #e0a33a; border-color: #8a5a0b; color: #2b1a05; }
+
+/* ── Change History window ────────────────────────── */
+.ss1e-change-log .window-content {
+    background-color: #e9d5a6;
+    background-image: url("parchment-bg.svg");
+    background-size: 600px 600px;
+    color: #3a2412;
+    padding: 0.5rem 0.75rem;
+}
+.ss1e-change-log .cl-wrap { display: flex; flex-direction: column; height: 100%; }
+.ss1e-change-log .cl-note { margin: 0 0 0.4rem; font-size: 0.8rem; font-style: italic; color: #6b4521; }
+.ss1e-change-log .cl-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+.ss1e-change-log .cl-entry { border-bottom: 1px dotted #c1a575; padding: 4px 0; }
+.ss1e-change-log .cl-head { display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap; font-size: 0.85rem; }
+.ss1e-change-log .cl-head time { font-weight: bold; }
+.ss1e-change-log .cl-user { color: #6b4521; }
+.ss1e-change-log .cl-what { font-weight: bold; color: #8b1a1a; }
+.ss1e-change-log .cl-changes { list-style: none; margin: 2px 0 0 0.8rem; padding: 0; font-size: 0.85rem; }
+.ss1e-change-log .cl-field { font-weight: bold; }
+.ss1e-change-log .cl-before { color: #8a7a5a; text-decoration: line-through; }
+.ss1e-change-log .cl-after { color: #3a2412; }
+.ss1e-change-log .cl-empty { font-style: italic; padding: 1rem 0; text-align: center; }
+.seventh-sea-1e .xp-log .cl-open { margin-left: 0.4rem; }

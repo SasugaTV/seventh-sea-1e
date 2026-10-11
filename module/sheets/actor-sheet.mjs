@@ -2,6 +2,7 @@ import { SS1E } from "../helpers/config.mjs";
 import { rollAndKeep, promptRollAndKeep } from "../dice/roll-and-keep.mjs";
 import { SeventhSeaCombat, findCombatant, entryOf } from "../combat/seventh-sea-combat.mjs";
 import { unspentTotal, hasHeld, canAct, HELD_PHASE } from "../combat/phase-rules.mjs";
+import { ChangeLogViewer } from "../helpers/change-log.mjs";
 
 /**
  * Unified Actor Sheet for Heroes, Villains, Brute Squads, and Monsters.
@@ -270,6 +271,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
       // XP Log management
       case "xp-add":                 return this._xpLogAdd();
       case "xp-delete":              return this._xpLogDelete(el);
+      case "open-change-log":        return ChangeLogViewer.open(this.actor);
       case "rename-skill":           return; // input blur handles it
     }
   }
