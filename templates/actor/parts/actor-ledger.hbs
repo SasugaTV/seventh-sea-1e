@@ -1,0 +1,60 @@
+{{!-- ── LEDGER drawer: Hero Points and XP accounts (replaces the old XP Log) ── --}}
+<details class="ss1e-items-drawer ss1e-ledger" open>
+  <summary>{{localize "SS1E.Ledger.Title"}} ·
+    <span class="ledger-sum">HP {{ledger.hpLeft}} · XP {{ledger.xpCurrent}} / {{ledger.xpEarned}}</span>
+  </summary>
+  <div class="ledger">
+
+    {{!-- Quick Add XP --}}
+    <div class="ledger-row ledger-quick">
+      <input type="number" class="ledger-in le-num" data-field="quick-amount" min="1" placeholder="0" />
+      <input type="text" class="ledger-in le-text" data-field="quick-reason" placeholder="{{localize 'SS1E.Ledger.ReasonOptional'}}" />
+      <button type="button" class="ledger-btn" data-action="ledger-add-xp"><i class="fa-solid fa-plus"></i> {{localize "SS1E.Ledger.AddXP"}}</button>
+    </div>
+
+    {{!-- Any entry: Debit/Credit, HP/XP, amount, reason --}}
+    <div class="ledger-row ledger-new">
+      <button type="button" class="ledger-toggle dir-{{ledger.new.dir}}" data-action="ledger-toggle-dir"
+              title="{{localize 'SS1E.Ledger.ToggleDirHint'}}">{{ledger.new.dirLabel}}</button>
+      <button type="button" class="ledger-toggle cur-{{ledger.new.cur}}" data-action="ledger-toggle-cur"
+              title="{{localize 'SS1E.Ledger.ToggleCurHint'}}">{{ledger.new.cur}}</button>
+      <input type="number" class="ledger-in le-num" data-field="new-amount" min="0" placeholder="0" />
+      <input type="text" class="ledger-in le-text" data-field="new-reason" value="{{ledger.new.reason}}" placeholder="{{localize 'SS1E.Ledger.Reason'}}" />
+      <button type="button" class="ledger-btn" data-action="ledger-add"><i class="fa-solid fa-check"></i> {{localize "SS1E.Ledger.AddEntry"}}</button>
+    </div>
+
+    <table class="ledger-table">
+      <thead><tr>
+        <th>{{localize "SS1E.Ledger.Date"}}</th><th></th>
+        <th>{{localize "SS1E.Ledger.Reason"}}</th><th>{{localize "SS1E.Ledger.Amount"}}</th><th></th>
+      </tr></thead>
+      <tbody>
+        {{#each ledger.rows}}
+        {{#if story}}
+        <tr class="ledger-story" data-entry="{{id}}">
+          <td class="le-date" title="{{full}}">{{date}}</td>
+          <td colspan="3" class="le-story">— {{reason}} —</td>
+          <td><a class="le-del" data-action="ledger-delete" title="{{localize 'SS1E.Ledger.Delete'}}">×</a></td>
+        </tr>
+        {{else}}
+        <tr class="ledger-entry dir-{{dir}} cur-{{cur}}" data-entry="{{id}}">
+          <td class="le-date" title="{{full}}">{{date}}</td>
+          <td class="le-cur">{{cur}}</td>
+          <td><input type="text" class="ledger-in le-edit" data-edit="reason" value="{{reason}}" /></td>
+          <td class="le-amt"><span class="le-sign">{{sign}}</span><input type="number" class="ledger-in le-edit le-num" data-edit="amount" min="0" value="{{amount}}" /></td>
+          <td><a class="le-del" data-action="ledger-delete" title="{{localize 'SS1E.Ledger.Delete'}}">×</a></td>
+        </tr>
+        {{/if}}
+        {{else}}
+        <tr><td colspan="5" class="ledger-empty">{{localize "SS1E.Ledger.Empty"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="ledger-tools">
+      <button type="button" class="btn-add" data-action="ledger-journal"><i class="fa-solid fa-book"></i> {{localize "SS1E.Ledger.Journal"}}</button>
+      <button type="button" class="btn-add" data-action="ledger-export"><i class="fa-solid fa-file-csv"></i> {{localize "SS1E.Ledger.Export"}}</button>
+      <button type="button" class="btn-add cl-open" data-action="open-change-log" title="{{localize 'SS1E.ChangeLog.ButtonHint'}}"><i class="fa-solid fa-scroll"></i> {{localize "SS1E.ChangeLog.Button"}}</button>
+    </div>
+  </div>
+</details>

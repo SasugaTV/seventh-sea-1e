@@ -3,6 +3,9 @@ import { rollAndKeep, promptRollAndKeep } from "../dice/roll-and-keep.mjs";
 import { SeventhSeaCombat, findCombatant, entryOf } from "../combat/seventh-sea-combat.mjs";
 import { unspentTotal, hasHeld, canAct, HELD_PHASE } from "../combat/phase-rules.mjs";
 import { ChangeLogViewer } from "../helpers/change-log.mjs";
+import { getLedger, hasLedger, totals, addEntries, editEntry, deleteEntry, KINDS } from "../ledger/ledger.mjs";
+import { exportActor } from "../ledger/campaign.mjs";
+import { JournalViewer } from "../ledger/journal-viewer.mjs";
 
 /**
  * Unified Actor Sheet for Heroes, Villains, Brute Squads, and Monsters.
@@ -97,6 +100,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
       ctx.initDice = (ctx.system.initiative?.keptDice ?? []).map(v => ({ v, cls: "" }));
     }
 
+    // Ledger (HP / XP accounts). Rows oldest first, like a bank statement.
+    ctx.ledger = this._ledgerContext();
+
     // Font scale for live ±
     ctx.fontScale = Number(ctx.system?.uiPrefs?.fontScale) || 1.0;
     return ctx;
@@ -107,6 +113,24 @@ export class SeventhSeaActorSheet extends ActorSheet {
   /* ------------------------------------------------------------------ */
   activateListeners(html) {
     super.activateListeners(html);
+
+    // Ledger inputs aren't sheet fields: edits go through the ledger (and its journal), and the
+    // typing boxes must not trigger the sheet's own save.
+    for (const input of html[0].querySelectorAll(".ss1e-ledger .ledger-in")) {
+      input.addEventListener("change", ev => {
+        ev.stopPropagation();
+        const field = input.dataset.edit;
+        const id = input.closest("[data-entry]")?.dataset.entry;
+        if (field && id) editEntry(this.actor, id, { [field]: field === "amount" ? Number(input.value) : input.value });
+      });
+      input.addEventListener("keydown", ev => {
+        if (ev.key !== "Enter") return;
+        ev.preventDefault();
+        if (input.dataset.edit) return input.blur();
+        if (input.dataset.field?.startsWith("quick")) return this._ledgerAddXP();
+        if (input.dataset.field?.startsWith("new")) return this._ledgerAdd();
+      });
+    }
 
     // Hovering a single-line text box shows its whole text (Backgrounds, Accoutrements, Contacts...),
     // kept current while typing. Boxes that already have a tooltip keep theirs.
@@ -272,6 +296,14 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "xp-add":                 return this._xpLogAdd();
       case "xp-delete":              return this._xpLogDelete(el);
       case "open-change-log":        return ChangeLogViewer.open(this.actor);
+      // Ledger
+      case "ledger-add-xp":          return this._ledgerAddXP();
+      case "ledger-add":             return this._ledgerAdd();
+      case "ledger-toggle-dir":      return this._ledgerToggle("dir");
+      case "ledger-toggle-cur":      return this._ledgerToggle("cur");
+      case "ledger-delete":          return this._ledgerDelete(el);
+      case "ledger-journal":         return JournalViewer.open({ title: this.actor.name, lines: getLedger(this.actor).journal });
+      case "ledger-export":          return exportActor(this.actor);
       case "rename-skill":           return; // input blur handles it
     }
   }
@@ -484,6 +516,72 @@ export class SeventhSeaActorSheet extends ActorSheet {
     const cb = findCombatant(this.actor);
     if (cb) return cb.combat.useHeld(cb.id);
   }
+  /* ------------------------------------------------------------------ */
+  /*  Ledger                                                             */
+  /* ------------------------------------------------------------------ */
+  _ledgerContext() {
+    const { entries } = getLedger(this.actor);
+    const t = totals(entries);
+    const L = k => game.i18n.localize(k);
+    const day = new Intl.DateTimeFormat(game.i18n.lang, { dateStyle: "short" });
+    const full = new Intl.DateTimeFormat(game.i18n.lang, { dateStyle: "medium", timeStyle: "short" });
+    // New-entry defaults: an empty ledger starts with "Starting HP" (credit, HP); after that a debit,
+    // in HP while there's HP left, else XP. The toggles override for this sheet until it closes.
+    const fresh = !entries.length;
+    const def = fresh ? { dir: "credit", cur: "HP", reason: L("SS1E.Ledger.StartingHP") }
+                      : { dir: "debit", cur: t.hpLeft > 0 ? "HP" : "XP", reason: "" };
+    const n = { ...def, ...(this._ledgerNew ?? {}) };
+    return {
+      started: hasLedger(this.actor), ...t,
+      new: { ...n, dirLabel: L(n.dir === "credit" ? "SS1E.Ledger.Credit" : "SS1E.Ledger.Debit") },
+      rows: entries.map(e => ({
+        ...e, story: e.kind === KINDS.story, sign: e.dir === "credit" ? "+" : "−",
+        date: day.format(new Date(e.t)), full: full.format(new Date(e.t))
+      }))
+    };
+  }
+
+  _ledgerField(name) {
+    return this.element[0].querySelector(`.ss1e-ledger [data-field="${name}"]`);
+  }
+
+  _ledgerToggle(which) {
+    const cur = this._ledgerContext().new;
+    const next = which === "dir" ? (cur.dir === "credit" ? "debit" : "credit") : (cur.cur === "HP" ? "XP" : "HP");
+    // Keep whatever was typed while the row re-renders.
+    this._ledgerNew = { ...this._ledgerNew, [which]: next, reason: this._ledgerField("new-reason")?.value ?? cur.reason };
+    return this.render(false);
+  }
+
+  async _ledgerAddXP() {
+    const amount = Number(this._ledgerField("quick-amount")?.value) || 0;
+    if (amount <= 0) return ui.notifications.warn(game.i18n.localize("SS1E.Ledger.NeedAmount"));
+    const reason = this._ledgerField("quick-reason")?.value.trim() || game.i18n.localize("SS1E.Ledger.XPAwarded");
+    return addEntries(this.actor, [{ dir: "credit", cur: "XP", amount, reason, kind: KINDS.awardXP }]);
+  }
+
+  async _ledgerAdd() {
+    const n = this._ledgerContext().new;
+    const amount = Number(this._ledgerField("new-amount")?.value);
+    const reason = this._ledgerField("new-reason")?.value.trim() ?? "";
+    if (!(amount >= 0) || this._ledgerField("new-amount")?.value === "") return ui.notifications.warn(game.i18n.localize("SS1E.Ledger.NeedAmount"));
+    if (!reason) return ui.notifications.warn(game.i18n.localize("SS1E.Ledger.NeedReason"));
+    const kind = reason === game.i18n.localize("SS1E.Ledger.StartingHP") && n.cur === "HP" && n.dir === "credit" ? KINDS.startingHP : KINDS.manual;
+    this._ledgerNew = null;
+    return addEntries(this.actor, [{ dir: n.dir, cur: n.cur, amount, reason, kind }]);
+  }
+
+  async _ledgerDelete(el) {
+    const id = el.closest("[data-entry]")?.dataset.entry;
+    const e = getLedger(this.actor).entries.find(x => x.id === id);
+    if (!e) return;
+    const ok = await foundry.applications.api.DialogV2.confirm({
+      window: { title: game.i18n.localize("SS1E.Ledger.Delete") },
+      content: `<p>${game.i18n.format("SS1E.Ledger.DeleteConfirm", { what: foundry.utils.escapeHTML(`${e.dir === "credit" ? "+" : "−"}${e.amount} ${e.cur} · ${e.reason}`) })}</p>`
+    });
+    if (ok) return deleteEntry(this.actor, id);
+  }
+
   async _rollDefense(el) {
     const idx = Number(el.dataset.row || "0");
     const def = this.actor.system.defense?.rows?.[idx];

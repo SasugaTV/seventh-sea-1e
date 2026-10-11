@@ -1131,3 +1131,87 @@
 .ss1e-change-log .cl-after { color: #3a2412; }
 .ss1e-change-log .cl-empty { font-style: italic; padding: 1rem 0; text-align: center; }
 .seventh-sea-1e .xp-log .cl-open { margin-left: 0.4rem; }
+
+/* ── Ledger drawer (HP / XP) ──────────────────────── */
+.seventh-sea-1e .ss1e-ledger .ledger-sum { font-weight: bold; color: #8b1a1a; }
+.seventh-sea-1e .ledger { padding: 4px 0; display: flex; flex-direction: column; gap: 6px; }
+.seventh-sea-1e .ledger-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.seventh-sea-1e .ledger-row .le-num { width: 4.5rem; flex: 0 0 auto; text-align: center; }
+.seventh-sea-1e .ledger-row .le-text { flex: 1 1 10rem; min-width: 8rem; }
+.seventh-sea-1e .ledger-btn,
+.seventh-sea-1e .ledger-toggle {
+    background: transparent;
+    border: 2px solid #3a2412;
+    color: #3a2412;
+    cursor: pointer;
+    padding: 2px 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    width: auto;
+    flex: 0 0 auto;
+    line-height: 1.5;
+}
+.seventh-sea-1e .ledger-btn:hover, .seventh-sea-1e .ledger-toggle:hover { background: rgba(255, 250, 235, 0.7); }
+.seventh-sea-1e .ledger-toggle { min-width: 4.5rem; font-weight: bold; }
+.seventh-sea-1e .ledger-toggle.dir-debit  { background: #8b1a1a; border-color: #8b1a1a; color: #fff; }
+.seventh-sea-1e .ledger-toggle.dir-credit { background: #2f6b34; border-color: #2f6b34; color: #fff; }
+.seventh-sea-1e .ledger-toggle.cur-HP { color: #6b4521; }
+.seventh-sea-1e .ledger-toggle.cur-XP { color: #1f4f7a; }
+.seventh-sea-1e .ledger-table { width: 100%; border-collapse: collapse; }
+.seventh-sea-1e .ledger-table th {
+    text-align: left; border-bottom: 1px solid #6b4521; padding: 2px 4px;
+    font-size: 0.8rem; font-variant: small-caps;
+}
+.seventh-sea-1e .ledger-table td { border-bottom: 1px dotted #c1a575; padding: 2px 4px; }
+.seventh-sea-1e .ledger-table .le-date { white-space: nowrap; font-size: 0.8rem; color: #6b4521; width: 1%; }
+.seventh-sea-1e .ledger-table .le-cur { font-weight: bold; font-size: 0.8rem; width: 1%; }
+.seventh-sea-1e .ledger-entry.cur-HP .le-cur { color: #6b4521; }
+.seventh-sea-1e .ledger-entry.cur-XP .le-cur { color: #1f4f7a; }
+.seventh-sea-1e .ledger-table .le-amt { white-space: nowrap; width: 1%; }
+.seventh-sea-1e .ledger-table .le-amt .le-num { width: 3.5rem; text-align: right; }
+.seventh-sea-1e .ledger-entry.dir-credit .le-sign, .seventh-sea-1e .ledger-entry.dir-credit .le-amt input { color: #2f6b34; font-weight: bold; }
+.seventh-sea-1e .ledger-entry.dir-debit  .le-sign, .seventh-sea-1e .ledger-entry.dir-debit  .le-amt input { color: #8b1a1a; font-weight: bold; }
+.seventh-sea-1e .ledger-table .le-edit { width: 100%; }
+.seventh-sea-1e .ledger-table .le-del { color: #8b1a1a; cursor: pointer; padding: 0 4px; }
+.seventh-sea-1e .ledger-table .le-del:hover { background: #8b1a1a; color: #fff; }
+.seventh-sea-1e .ledger-story td { background: rgba(139, 26, 26, 0.08); }
+.seventh-sea-1e .ledger-story .le-story { text-align: center; font-weight: bold; font-variant: small-caps; color: #8b1a1a; }
+.seventh-sea-1e .ledger-empty { font-style: italic; text-align: center; padding: 0.5rem; }
+.seventh-sea-1e .ledger-tools { display: flex; gap: 6px; flex-wrap: wrap; }
+.seventh-sea-1e .ledger-tools .btn-add {
+    background: transparent; border: 2px solid #3a2412; color: #3a2412; cursor: pointer;
+    padding: 2px 10px; font-family: inherit; font-size: 0.85rem; width: auto;
+}
+.seventh-sea-1e .ledger-tools .btn-add:hover { background: rgba(255, 250, 235, 0.7); }
+
+/* ── Campaign Sheet ──────────────────────────────── */
+.seventh-sea-1e.sheet.campaign .window-content {
+    background-color: #e9d5a6;
+    background-image: url("parchment-bg.svg");
+    background-size: 600px 600px;
+    color: #3a2412;
+    padding: 0.6rem;
+}
+.seventh-sea-1e .ss1e-campaign-sheet { display: flex; flex-direction: column; gap: 0.6rem; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-header { display: flex; align-items: center; gap: 0.6rem; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-img { width: 56px; height: 56px; border: 2px solid #3a2412; object-fit: cover; }
+.seventh-sea-1e .ss1e-campaign-sheet h1 { flex: 1; margin: 0; }
+.seventh-sea-1e .ss1e-campaign-sheet h1 input { width: 100%; font-size: 1.4rem; background: transparent; border: none; border-bottom: 1px solid #6b4521; color: #3a2412; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-gm-only { color: #8b1a1a; font-weight: bold; white-space: nowrap; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-actions button {
+    background: transparent; border: 2px solid #3a2412; color: #3a2412; cursor: pointer;
+    padding: 3px 10px; font-family: inherit; width: auto;
+}
+.seventh-sea-1e .ss1e-campaign-sheet .cs-actions button:hover { background: rgba(255, 250, 235, 0.7); }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-table { width: 100%; border-collapse: collapse; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-table th { text-align: left; border-bottom: 1px solid #6b4521; font-variant: small-caps; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-table td { border-bottom: 1px dotted #c1a575; padding: 2px 4px; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-table a { cursor: pointer; color: #6b4521; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-stories { margin: 0; padding-left: 1.2rem; }
+.seventh-sea-1e .ss1e-campaign-sheet .cs-empty { font-style: italic; }
+.ss1e-end-story { display: flex; flex-direction: column; gap: 0.5rem; }
+.ss1e-end-story label { display: flex; gap: 0.5rem; align-items: center; }
+.ss1e-end-story .es-row { display: grid; grid-template-columns: auto 1fr auto; }
+.ss1e-end-story .es-dd { font-size: 0.85em; opacity: 0.8; }
+.ss1e-journal-viewer .cl-before { text-decoration: line-through; }

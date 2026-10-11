@@ -12,6 +12,7 @@ export const preloadHandlebarsTemplates = async function () {
     "systems/seventh-sea-1e/templates/actor/parts/actor-biography.hbs",
     "systems/seventh-sea-1e/templates/actor/parts/actor-wounds.hbs",
     "systems/seventh-sea-1e/templates/actor/parts/actor-header.hbs",
-    "systems/seventh-sea-1e/templates/actor/parts/ship-rows.hbs"
+    "systems/seventh-sea-1e/templates/actor/parts/ship-rows.hbs",
+    "systems/seventh-sea-1e/templates/actor/parts/actor-ledger.hbs"
   ]);
 };

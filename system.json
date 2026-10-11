@@ -19,7 +19,8 @@
       "villain": {},
       "brute":   {},
       "monster": {},
-      "ship":    {}
+      "ship":    {},
+      "campaign": {}
     },
     "Item": {
       "skill":      {},

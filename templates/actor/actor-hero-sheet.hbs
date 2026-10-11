@@ -53,9 +53,13 @@
             <input type="text" class="income-num" name="system.resources.income" value="{{system.resources.income}}" />
 
             <label>{{localize "SS1E.UI.XP"}}</label>
+            {{#if ledger.started}}
+            <input type="number" class="xp-input" readonly value="{{system.resources.xp.value}}" title="{{localize 'SS1E.Ledger.XPCurrentHint'}}" />
+            {{else}}
             <input type="number" class="xp-input" name="system.resources.xp.value" value="{{system.resources.xp.value}}" />
+            {{/if}}
             <span>/</span>
-            <input type="number" class="xp-input" readonly value="{{system.resources.xp.total}}" title="{{localize 'SS1E.UI.XPTotalDerived'}}" />
+            <input type="number" class="xp-input" readonly value="{{system.resources.xp.total}}" title="{{#if ledger.started}}{{localize 'SS1E.Ledger.XPEarnedHint'}}{{else}}{{localize 'SS1E.UI.XPTotalDerived'}}{{/if}}" />
 
             <label>{{localize "SS1E.UI.DramaDice"}}</label>
             <div class="drama-dice-group" style="display: flex; align-items: center; gap: 4px;">
@@ -398,30 +402,7 @@
       </div>
     </details>
 
-    {{!-- ── XP LOG drawer ────────────────────── --}}
-    <details class="ss1e-items-drawer" open>
-      <summary>{{localize "SS1E.UI.XPLog"}} · <span class="xp-total-readout">{{system.resources.xp.total}}</span></summary>
-      <div class="xp-log">
-        <table class="xp-log-table">
-          <thead><tr>
-            <th>{{localize "SS1E.UI.XPLogLabel"}}</th>
-            <th>{{localize "SS1E.UI.XPLogAmount"}}</th>
-            <th></th>
-          </tr></thead>
-          <tbody>
-            {{#each system.xpLog.entries as |e i|}}
-              <tr data-row="{{i}}">
-                <td><input type="text"   class="rep-text" name="system.xpLog.entries.{{i}}.label"  value="{{e.label}}" /></td>
-                <td><input type="number" class="rep-num"  name="system.xpLog.entries.{{i}}.amount" value="{{e.amount}}" /></td>
-                <td><a class="xp-delete" data-action="xp-delete" data-row="{{i}}" title="{{localize 'SS1E.UI.DeleteEntry'}}">×</a></td>
-              </tr>
-            {{/each}}
-          </tbody>
-        </table>
-        <button type="button" class="btn-add" data-action="xp-add">+ {{localize "SS1E.UI.XPLogEntry"}}</button>
-        <button type="button" class="btn-add cl-open" data-action="open-change-log" title="{{localize 'SS1E.ChangeLog.ButtonHint'}}"><i class="fa-solid fa-scroll"></i> {{localize "SS1E.ChangeLog.Button"}}</button>
-      </div>
-    </details>
+    {{> "systems/seventh-sea-1e/templates/actor/parts/actor-ledger.hbs"}}
 
     {{!-- ── Biography ──────────────────────────────────────── --}}
     <div class="box ss1e-bio-box">

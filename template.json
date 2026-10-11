@@ -5,7 +5,8 @@
       "villain",
       "brute",
       "monster",
-      "ship"
+      "ship",
+      "campaign"
     ],
     "templates": {
       "common": {
@@ -614,6 +615,9 @@
         "manifest": ""
       },
       "phases": []
+    },
+    "campaign": {
+      "notes": ""
     }
   },
   "Item": {

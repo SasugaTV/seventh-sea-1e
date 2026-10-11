@@ -1,0 +1,43 @@
+<form class="{{cssClass}} ss1e-campaign-sheet" autocomplete="off">
+  <header class="cs-header">
+    <img class="cs-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <h1><input name="name" type="text" value="{{actor.name}}" /></h1>
+    <span class="cs-gm-only"><i class="fa-solid fa-lock"></i> {{localize "SS1E.Campaign.GMOnly"}}</span>
+  </header>
+
+  {{#if isGM}}
+  <div class="box cs-actions">
+    <button type="button" data-action="end-story"><i class="fa-solid fa-book-bookmark"></i> {{localize "SS1E.Campaign.EndStory"}}</button>
+    <button type="button" data-action="export-journals"><i class="fa-solid fa-file-csv"></i> {{localize "SS1E.Campaign.ExportJournals"}}</button>
+    <button type="button" data-action="export-ledgers"><i class="fa-solid fa-file-csv"></i> {{localize "SS1E.Campaign.ExportLedgers"}}</button>
+    <button type="button" data-action="catch-up" title="{{localize 'SS1E.Campaign.CatchUpHint'}}"><i class="fa-solid fa-rotate"></i> {{localize "SS1E.Campaign.CatchUp"}}</button>
+  </div>
+
+  <div class="box">
+    <div class="box-title">{{localize "SS1E.Campaign.GMJournal"}}</div>
+    <table class="cs-table">
+      <thead><tr><th>{{localize "SS1E.Campaign.Character"}}</th><th>{{localize "SS1E.Campaign.Lines"}}</th><th>{{localize "SS1E.Campaign.LastChange"}}</th><th></th></tr></thead>
+      <tbody>
+        {{#each journals}}
+        <tr>
+          <td>{{name}}</td><td>{{count}}</td><td>{{last}}</td>
+          <td><a data-action="view-journal" data-uuid="{{key}}" title="{{localize 'SS1E.Campaign.View'}}"><i class="fa-solid fa-book-open"></i></a></td>
+        </tr>
+        {{else}}
+        <tr><td colspan="4" class="cs-empty">{{localize "SS1E.Campaign.NoJournals"}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <div class="box-title">{{localize "SS1E.Campaign.Stories"}}</div>
+    <ol class="cs-stories">
+      {{#each stories}}<li><strong>{{title}}</strong> · {{when}} · +{{xp}} XP · {{who}} {{localize "SS1E.Campaign.Characters"}}</li>
+      {{else}}<li class="cs-empty">{{localize "SS1E.Campaign.NoStories"}}</li>{{/each}}
+    </ol>
+  </div>
+  {{else}}
+  <p class="cs-empty">{{localize "SS1E.Campaign.GMOnly"}}</p>
+  {{/if}}
+</form>

@@ -16,6 +16,8 @@ import { PhaseTracker, registerPhaseTracker } from "./apps/phase-tracker.mjs";
 import { SeventhSeaCombat } from "./combat/seventh-sea-combat.mjs";
 import { registerTokenBars } from "./helpers/token-bars.mjs";
 import { registerChangeLog } from "./helpers/change-log.mjs";
+import { registerCampaign } from "./ledger/campaign.mjs";
+import { SeventhSeaCampaignSheet } from "./sheets/campaign-sheet.mjs";
 
 Hooks.once("init", function () {
   console.log("7th Sea 1e | Initializing");
@@ -40,6 +42,9 @@ Hooks.once("init", function () {
   Actors.registerSheet("seventh-sea-1e", SeventhSeaShipSheet, {
     types: ["ship"], makeDefault: true, label: "SS1E.SheetLabels.Ship"
   });
+  Actors.registerSheet("seventh-sea-1e", SeventhSeaCampaignSheet, {
+    types: ["campaign"], makeDefault: true, label: "SS1E.SheetLabels.Campaign"
+  });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("seventh-sea-1e", SeventhSeaItemSheet, {
     makeDefault: true, label: "SS1E.SheetLabels.Item"
@@ -49,6 +54,7 @@ Hooks.once("init", function () {
   registerPhaseTracker();
   registerTokenBars();
   registerChangeLog();
+  registerCampaign();
   return preloadHandlebarsTemplates();
 });
 

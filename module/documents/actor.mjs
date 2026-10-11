@@ -1,5 +1,6 @@
 import { SS1E } from "../helpers/config.mjs";
 import { prepareDramaticTrack, DEFAULT_BARS } from "../helpers/token-bars.mjs";
+import { prepareLedgerTotals } from "../ledger/ledger.mjs";
 
 /**
  * 7th Sea 1e Actor document
@@ -66,6 +67,8 @@ export class SeventhSeaActor extends Actor {
       const sum = sys.xpLog.entries.reduce((acc, e) => acc + (Number(e?.amount) || 0), 0);
       sys.resources.xp.total = sum;
     }
+    // Once the character has a Ledger, XP current / earned come from it instead (read-only).
+    prepareLedgerTotals(this, sys);
 
     // Wounds — Brawn-driven
     if (sys.wounds?.check) sys.wounds.check.keep = brawn;

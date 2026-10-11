@@ -1,0 +1,20 @@
+<div class="cl-wrap">
+  <p class="cl-note">{{#if gmCopy}}{{localize "SS1E.Ledger.GMJournalNote"}}{{else}}{{localize "SS1E.Ledger.JournalNote"}}{{/if}} ({{count}})</p>
+  <ol class="cl-list">
+    {{#each lines}}
+    <li class="cl-entry">
+      <div class="cl-head">
+        <time datetime="{{iso}}">{{when}}</time>
+        <span class="cl-user">{{user}}</span>
+        <span class="cl-what">{{op}}</span>
+      </div>
+      <ul class="cl-changes">
+        {{#if was}}<li><span class="cl-before">{{was}}</span>{{#if now}} → <span class="cl-after">{{now}}</span>{{/if}}</li>
+        {{else}}<li><span class="cl-after">{{now}}</span></li>{{/if}}
+      </ul>
+    </li>
+    {{else}}
+    <li class="cl-empty">{{localize "SS1E.Ledger.JournalEmpty"}}</li>
+    {{/each}}
+  </ol>
+</div>
