@@ -441,7 +441,9 @@
 .seventh-sea-1e .ss1e-bio-drawer {
     border: 2px solid #3a2412;
     padding: 0.4rem 0.6rem;
-    background: #fff;
+    background: rgba(255, 250, 235, 0.55);
+    box-shadow: 0 1px 0 rgba(58, 36, 18, 0.15);
+    color: #3a2412;
 }
 .seventh-sea-1e .ss1e-items-drawer summary,
 .seventh-sea-1e .ss1e-bio-drawer summary {
@@ -461,18 +463,20 @@
 .seventh-sea-1e .oi-section h3 { font-size: 0.9rem; margin: 0; }
 .seventh-sea-1e .oi-add {
     background: transparent; border: 1px solid #6b4521; cursor: pointer;
-    padding: 0 4px; font-size: 0.75rem;
+    padding: 0 4px; font-size: 0.75rem; color: #3a2412;
+    width: auto; flex: 0 0 auto; line-height: 1.2;
 }
+.seventh-sea-1e .oi-add:hover { background: rgba(255, 250, 235, 0.7); }
 .seventh-sea-1e .oi-section ol { list-style: none; padding: 0; margin: 4px 0; }
 .seventh-sea-1e .oi-section li {
     display: flex; align-items: center; gap: 4px;
     font-size: 0.8rem;
-    border-bottom: 1px dotted #888;
+    border-bottom: 1px dotted #c1a575;
     padding: 2px 0;
 }
 .seventh-sea-1e .oi-section li a { color: #3a2412; cursor: pointer; flex: 1; }
 .seventh-sea-1e .oi-section li a:hover { color: #8b1a1a; }
-.seventh-sea-1e .oi-cost { color: #444; font-size: 0.75rem; }
+.seventh-sea-1e .oi-cost { color: #6b4521; font-size: 0.75rem; }
 
 /* ── Brute / Monster legacy ───────────────────────── */
 .seventh-sea-1e .ss1e-brute-sheet,
@@ -732,8 +736,19 @@
 }
 .seventh-sea-1e .xp-delete:hover { background: #8b1a1a; color: #fff; }
 .seventh-sea-1e .xp-total-readout { font-weight: bold; color: #8b1a1a; }
+.seventh-sea-1e .xp-log .btn-add {
+    background: transparent;
+    border: 2px solid #3a2412;
+    color: #3a2412;
+    cursor: pointer;
+    padding: 4px 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    width: auto;
+}
+.seventh-sea-1e .xp-log .btn-add:hover { background: rgba(255, 250, 235, 0.7); }
 
-/* ── Left stack (Traits + Initiative) ─────────────── */
+/* ── Left stack (Traits) ──────────────────────────── */
 .seventh-sea-1e .left-stack {
     flex: 0 0 220px;
     display: flex;
@@ -761,6 +776,41 @@
     width: 3rem;
     text-align: center;
 }
+
+/* ── Initiative strip over Weapons ────────────────────
+   The stack stretches to the row height that Defense and Wounds set;
+   Weapons takes whatever is left under Initiative and only pushes the
+   row taller once its rows need more room. */
+.seventh-sea-1e .weapons-stack {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.seventh-sea-1e .weapons-stack > .weapons-box { flex: 1 1 auto; }
+.seventh-sea-1e .weapons-stack > .box-initiative {
+    flex: 0 0 auto;
+    padding: 0.2rem 0.6rem;
+    /* Matches Reputation -> Contacts (0.6rem row gap - 0.1rem). A margin,
+       not a flex gap, so it holds even if the stack isn't laid out as flex. */
+    margin: 0 0 0.5rem 0;
+}
+.seventh-sea-1e .weapons-stack .box-initiative .init-row { margin: 0; flex-wrap: nowrap; }
+.seventh-sea-1e .weapons-stack .box-initiative .init-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding-right: 6px;
+    border-right: 1px solid #6b4521;
+    white-space: nowrap;
+}
+.seventh-sea-1e .weapons-stack .box-initiative .ss1e-rollable { flex: 0 0 auto; white-space: nowrap; }
+/* Ten 28px dice + gaps, kept on one line. */
+.seventh-sea-1e .weapons-stack .box-initiative .initiative-kept-dice {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    min-width: calc(10 * 28px + 9 * 4px);
+    min-height: 28px;
+}
+.seventh-sea-1e .weapons-stack .box-initiative label { white-space: nowrap; }
 
 /* ── Initiative kept-dice display ─────────────────── */
 .seventh-sea-1e .initiative-kept-dice {

@@ -13,7 +13,7 @@
       <button type="button" class="strip-btn primary" data-action="generic-roll">🎲 {{localize "SS1E.UI.GenericRoll"}}</button>
     </div>
 
-    {{!-- ── ROW 1 : Traits+Initiative (left) | Char Info + XP+Drama (right) ── --}}
+    {{!-- ── ROW 1 : Traits (left) | Char Info + XP+Drama (right) ── --}}
     <div class="row row1">
       <div class="left-stack">
         <div class="box box-traits">
@@ -24,22 +24,6 @@
               <span class="dots ss1e-dot-tracker" data-path="system.traits.{{key}}.value" data-max="7" data-gap="5" data-current="{{trait.value}}"></span>
             </div>
           {{/each}}
-        </div>
-
-        <div class="box box-initiative">
-          <div class="box-title">{{localize "SS1E.UI.Initiative"}}</div>
-          <div class="init-row">
-            <span class="ss1e-rollable" data-action="roll-initiative" title="{{localize 'SS1E.UI.RollInitiative'}}">⚔ {{localize "SS1E.UI.RollInitiative"}}</span>
-            <div class="initiative-kept-dice">
-              {{#each system.initiative.keptDice}}
-                <span class="init-die">{{this}}</span>
-              {{/each}}
-            </div>
-          </div>
-          <div class="init-row">
-            <label>{{localize "SS1E.UI.Tracked"}}</label>
-            <input type="number" class="init-tracked" name="system.initiative.value" value="{{system.initiative.value}}" />
-          </div>
         </div>
       </div>
 
@@ -202,10 +186,25 @@
     {{!-- ── CHARACTER NAME TITLE ABOVE WEAPONS ROW ─────────────────── --}}
     <div class="ss1e-charname-title">{{actor.name}}</div>
 
-    {{!-- ── ROW 3 : Weapons | Defense | Wounds + Composure ──────────── --}}
+    {{!-- ── ROW 3 : Initiative over Weapons | Defense | Wounds + Composure ──────────── --}}
     <div class="civil-skills">
       <div id="cs-rows">
         <div class="cs-row cs-row-wd">
+
+          <div class="weapons-stack">
+            <div class="box box-initiative">
+              <div class="init-row">
+                <span class="init-title">{{localize "SS1E.UI.Initiative"}}</span>
+                <span class="ss1e-rollable" data-action="roll-initiative" title="{{localize 'SS1E.UI.RollInitiative'}}">⚔ {{localize "SS1E.UI.RollInitiative"}}</span>
+                <div class="initiative-kept-dice">
+                  {{#each system.initiative.keptDice}}
+                    <span class="init-die">{{this}}</span>
+                  {{/each}}
+                </div>
+                <label>{{localize "SS1E.UI.Tracked"}}</label>
+                <input type="number" class="init-tracked" name="system.initiative.value" value="{{system.initiative.value}}" />
+              </div>
+            </div>
 
           <div class="box cs-cell weapons-box">
             <div class="box-title">{{localize "SS1E.UI.Weapons"}}
@@ -256,6 +255,7 @@
             </div>
             {{/each}}
             <button type="button" class="defense-add-btn weapon-add-btn" data-action="weapon-add">{{localize "SS1E.UI.AddWeapon"}}</button>
+          </div>
           </div>
 
           <div class="box cs-cell defense-box">
