@@ -107,6 +107,19 @@ export class SeventhSeaActorSheet extends ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // Hovering a single-line text box shows its whole text (Backgrounds, Accoutrements, Contacts...),
+    // kept current while typing. Boxes that already have a tooltip keep theirs.
+    for (const input of html[0].querySelectorAll('input[type="text"]')) {
+      if (input.title || input.dataset.tooltip || input.dataset.tooltipText) continue;
+      // data-tooltip-text shows the value as plain text (not HTML, not a translation key).
+      const sync = () => {
+        if (input.value.trim()) input.dataset.tooltipText = input.value;
+        else delete input.dataset.tooltipText;
+      };
+      sync();
+      input.addEventListener("input", sync);
+    }
+
     // Apply user's saved font scale to the sheet root
     const scale = Number(this.actor.system?.uiPrefs?.fontScale) || 1.0;
     html[0].style.setProperty("--ss1e-font-scale", String(scale));
