@@ -207,6 +207,14 @@
                 {{else}}
                 <input type="number" class="init-tracked" name="system.initiative.value" value="{{system.initiative.value}}" />
                 {{/if}}
+                {{#if initInCombat}}
+                <button type="button" class="init-hold" data-action="hold-initiative" {{#unless initMyTurn}}disabled{{/unless}}
+                        title="{{#if initMyTurn}}{{localize 'SS1E.PhaseTracker.HoldHint'}}{{else}}{{localize 'SS1E.PhaseTracker.HoldNotYourTurn'}}{{/if}}"><i class="fa-solid fa-hand"></i> {{localize "SS1E.PhaseTracker.Hold"}}</button>
+                {{#if initHolding}}
+                <button type="button" class="init-hold init-use-held" data-action="use-held-initiative" {{#unless initCanUseHeld}}disabled{{/unless}}
+                        title="{{localize 'SS1E.PhaseTracker.UseHeldHint'}}"><i class="fa-solid fa-hand-point-right"></i> {{localize "SS1E.PhaseTracker.UseHeld"}}</button>
+                {{/if}}
+                {{/if}}
               </div>
             </div>
 

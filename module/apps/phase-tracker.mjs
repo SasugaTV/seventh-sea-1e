@@ -6,7 +6,7 @@
  * The GM can show the grid to players or keep it private (world setting).
  */
 
-import { SeventhSeaCombat, SYS, entryOf } from "../combat/seventh-sea-combat.mjs";
+import { SeventhSeaCombat, SYS, entryOf, announcePhaseEvents } from "../combat/seventh-sea-combat.mjs";
 import * as R from "../combat/phase-rules.mjs";
 
 const VISIBLE = "phaseTrackerVisible";
@@ -46,7 +46,8 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
       rollAll:       PhaseTracker.#rollAll,
       rollOne:       PhaseTracker.#rollOne,
       toggleDie:     PhaseTracker.#toggleDie,
-      interrupt:     PhaseTracker.#interrupt
+      interrupt:     PhaseTracker.#interrupt,
+      useHeld:       PhaseTracker.#useHeld
     }
   };
 
@@ -99,6 +100,7 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
         tie: R.isTied(e, sorted, phase), defeated: e.defeated,
         canEdit: mine, canRoll: cb.isOwner && !e.dice.length,
         canInterrupt: mine && phase > 0 && e.dice.filter(d => !d.spent && d.v > phase).length >= 2,
+        canUseHeld: mine && phase > 0 && phase < R.HELD_PHASE && R.hasHeld(e, phase) && !R.canAct(e, phase),
         cells: Array.from({ length: R.PHASES }, (_, k) => ({
           n: k + 1, current: k + 1 === phase, dice: dice.filter(d => d.v === k + 1)
         }))
@@ -108,6 +110,7 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     return {
       ...base,
       round: combat.round, phase, started: combat.started,
+      heldPhase: phase === R.HELD_PHASE,
       canAct: combat.started && phase > 0 && (isGM || ownsCurrent),
       cols: R.PHASES + 3,
       phases: Array.from({ length: R.PHASES }, (_, k) => ({ n: k + 1, current: k + 1 === phase, past: k + 1 < phase })),
@@ -136,6 +139,9 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   static #interrupt(event, target) {
     return PhaseTracker.#combat()?.interrupt(PhaseTracker.#rowId(target));
   }
+  static #useHeld(event, target) {
+    return PhaseTracker.#combat()?.useHeld(PhaseTracker.#rowId(target));
+  }
 }
 
 /* -------------------------------------------- */
@@ -154,7 +160,8 @@ function decorateCombatTracker(app, element) {
     title.querySelector(".ss1e-phase")?.remove();
     const span = document.createElement("span");
     span.className = "ss1e-phase";
-    span.textContent = phase > 0 ? ` · ${loc("SS1E.PhaseTracker.Phase")} ${phase}` : ` · ${loc("SS1E.PhaseTracker.Rolling")}`;
+    span.textContent = phase === R.HELD_PHASE ? ` · ${loc("SS1E.PhaseTracker.HeldPhase")}`
+      : phase > 0 ? ` · ${loc("SS1E.PhaseTracker.Phase")} ${phase}` : ` · ${loc("SS1E.PhaseTracker.Rolling")}`;
     title.append(span);
   }
 
@@ -237,6 +244,7 @@ export function registerPhaseTracker() {
   });
 
   Hooks.on("renderCombatTracker", decorateCombatTracker);
+  Hooks.on("updateCombat", announcePhaseEvents);
   for (const h of ["updateCombat", "createCombat", "deleteCombat", "createCombatant", "updateCombatant", "deleteCombatant"]) {
     Hooks.on(h, () => PhaseTracker.refresh());
   }

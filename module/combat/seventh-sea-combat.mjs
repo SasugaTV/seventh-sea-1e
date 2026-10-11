@@ -7,6 +7,8 @@
  * - Turn order is re-sorted for the current Phase, and whoever acts now is always at the top
  *   (turn 0). Next Turn spends their die; when nobody is left in a Phase, the next Phase in
  *   which anyone can act starts; after Phase 10 a new Round begins and everyone re-rolls.
+ * - Held dice wait quietly (house rule, see phase-rules.mjs): their owner comes up on their own
+ *   next die, on Use Held Action, or in Phase 10 to use it or lose it.
  * - Every step snapshots the dice into flags.seventh-sea-1e.history so Previous Turn can undo it.
  * - All state changes run on the active GM; players' clients ask through a user query.
  */
@@ -16,6 +18,21 @@ import * as R from "./phase-rules.mjs";
 export const SYS = "seventh-sea-1e";
 const HISTORY = 30;
 const QUERY = `${SYS}.phase`;
+
+/**
+ * Update option carrying a phase event (currently only "useHeld"). Every client turns it into a
+ * hook, so modules can react on all screens:
+ *   Hooks.on("seventhSea.useHeld", (combat, combatant) => { ... })
+ */
+const EVENT_OPTION = "ss1eEvent";
+export const EVENT_HOOK = type => `seventhSea.${type}`;
+
+/** Fire event hooks on every client when an encounter update carries one. */
+export function announcePhaseEvents(combat, changed, options) {
+  const ev = options?.[EVENT_OPTION];
+  if (!ev?.type || !(combat instanceof SeventhSeaCombat)) return;
+  Hooks.callAll(EVENT_HOOK(ev.type), combat, combat.combatants.get(ev.combatantId) ?? null);
+}
 
 /** Panache drives the number of Action Dice and tie-breaks. Brute Squads use Threat Rating (GMG). */
 export function actorPanache(actor) {
@@ -98,7 +115,7 @@ export class SeventhSeaCombat extends Combat {
    * Write Round, Phase and every Combatant's dice in one update, so Foundry re-sorts once and fires
    * its turn events (marker, sounds, hooks) for the new top of the order.
    */
-  async #commit(round, phase, entries, { history = true } = {}) {
+  async #commit(round, phase, entries, { history = true, event = null } = {}) {
     if (!game.user.isGM) throw new Error("7th Sea | Phase changes must run on a GM client");
     const byId = new Map(entries.map(e => [e.id, e]));
     const combatants = this.combatants.map(cb => {
@@ -113,7 +130,10 @@ export class SeventhSeaCombat extends Combat {
     });
     const flags = { phase };
     if (history) flags.history = [...(this.flags?.[SYS]?.history ?? []), this.#snapshot()].slice(-HISTORY);
-    return this.update({ round, turn: phase > 0 ? 0 : null, combatants, flags: { [SYS]: flags } }, { diff: false });
+    // `event` rides along with the update so every client can announce it (see EVENT_HOOK).
+    const options = { diff: false };
+    if (event) options[EVENT_OPTION] = event;
+    return this.update({ round, turn: phase > 0 ? 0 : null, combatants, flags: { [SYS]: flags } }, options);
   }
 
   #entries() { return this.combatants.contents.map(entryOf); }
@@ -240,20 +260,25 @@ export class SeventhSeaCombat extends Combat {
     });
   }
 
+  /** Use a Held Action now: the combatant joins this Phase's order with their lowest held die. */
+  async useHeld(combatantId) {
+    if (!game.user.isGM) return this.#ask({ op: "useHeld", combatantId });
+    return this.#editEntry(combatantId, e => R.release(e, this.phase), { type: "useHeld", combatantId });
+  }
+
   /** Interrupt: trade two later dice for one in the current Phase. */
   async interrupt(combatantId) {
     if (!game.user.isGM) return this.#ask({ op: "interrupt", combatantId });
     return this.#editEntry(combatantId, e => R.interrupt(e, this.phase));
   }
 
-  async #editEntry(combatantId, fn) {
+  async #editEntry(combatantId, fn, event = null) {
     const entries = this.#entries();
     const e = entries.find(x => x.id === combatantId);
     if (!e || !fn(e)) return this;
     // The Phase may have emptied out; if so move on to the next one with someone in it.
     const phase = this.phase > 0 ? R.nextActivePhase(entries, this.phase) : 0;
-    if (phase === null) return this.#commit(this.round, this.phase, entries);
-    return this.#commit(this.round, phase, entries);
+    return this.#commit(this.round, phase ?? this.phase, entries, { event });
   }
 
   /* -------------------------------------------- */
@@ -288,6 +313,10 @@ export class SeventhSeaCombat extends Combat {
       case "interrupt":
         if (!owns(combatantId)) return false;
         await combat.interrupt(combatantId);
+        return true;
+      case "useHeld":
+        if (!owns(combatantId)) return false;
+        await combat.useHeld(combatantId);
         return true;
       default:
         return false; // nextRound / undo stay GM-only

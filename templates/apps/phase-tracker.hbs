@@ -4,7 +4,7 @@
     <span class="pt-round">{{#if started}}{{localize "SS1E.PhaseTracker.Round"}} {{round}}{{else}}{{localize "SS1E.PhaseTracker.NotStarted"}}{{/if}}</span>
     {{#if started}}
     <span class="pt-phase">
-      {{#if phase}}{{localize "SS1E.PhaseTracker.Phase"}} {{phase}} / 10{{else}}{{localize "SS1E.PhaseTracker.Rolling"}}{{/if}}
+      {{#if heldPhase}}{{localize "SS1E.PhaseTracker.HeldPhase"}}{{else if phase}}{{localize "SS1E.PhaseTracker.Phase"}} {{phase}} / 10{{else}}{{localize "SS1E.PhaseTracker.Rolling"}}{{/if}}
     </span>
     {{/if}}
     <span class="pt-controls">
@@ -57,6 +57,7 @@
         <td class="pt-total">{{#if hasDice}}{{total}}{{/if}}</td>
         <td class="pt-row-ctl">
           {{#if canRoll}}<a data-action="rollOne" title="{{localize 'SS1E.PhaseTracker.RollFor'}}"><i class="fa-solid fa-dice"></i></a>{{/if}}
+          {{#if canUseHeld}}<a data-action="useHeld" title="{{localize 'SS1E.PhaseTracker.UseHeldHint'}}"><i class="fa-solid fa-hand-point-right"></i></a>{{/if}}
           {{#if canInterrupt}}<a data-action="interrupt" title="{{localize 'SS1E.PhaseTracker.Interrupt'}}"><i class="fa-solid fa-bolt"></i></a>{{/if}}
         </td>
       </tr>

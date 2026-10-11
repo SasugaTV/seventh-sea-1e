@@ -443,7 +443,7 @@
   "SS1E.PhaseTracker.Total": "Init.",
   "SS1E.PhaseTracker.TotalHint": "Initiative Total: the sum of unspent Action Dice",
   "SS1E.PhaseTracker.Tie": "Tied on Initiative Total and Panache: flip a coin",
-  "SS1E.PhaseTracker.Held": "Held Action: usable in any later Phase",
+  "SS1E.PhaseTracker.Held": "Held Action: waits until used; after Phase 10 it must be used or it is lost",
   "SS1E.PhaseTracker.InterruptDie": "Interrupt: cannot be used to attack",
   "SS1E.PhaseTracker.RollFor": "Roll Action Dice",
   "SS1E.PhaseTracker.Interrupt": "Interrupt: trade two later dice for one in this Phase",
@@ -465,5 +465,9 @@
   "SS1E.Combat.ActionDiceFor": "Action Dice: {name}",
   "SS1E.Combat.NeedGM": "A GM must be logged in to advance the Phase.",
   "SS1E.UI.Henchman": "Henchman",
-  "SS1E.UI.HenchmanHint": "A Henchman, not a full Villain. In a tied Phase, Villains act before Henchmen."
+  "SS1E.UI.HenchmanHint": "A Henchman, not a full Villain. In a tied Phase, Villains act before Henchmen.",
+  "SS1E.PhaseTracker.HoldNotYourTurn": "Hold is available on this character's turn",
+  "SS1E.PhaseTracker.UseHeld": "Use Held",
+  "SS1E.PhaseTracker.UseHeldHint": "Use the Held Action now: act in this Phase, in Initiative order",
+  "SS1E.PhaseTracker.HeldPhase": "Held Actions (use or lose)"
 }

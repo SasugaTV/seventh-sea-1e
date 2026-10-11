@@ -1,7 +1,7 @@
 import { SS1E } from "../helpers/config.mjs";
 import { rollAndKeep, promptRollAndKeep } from "../dice/roll-and-keep.mjs";
 import { SeventhSeaCombat, findCombatant, entryOf } from "../combat/seventh-sea-combat.mjs";
-import { unspentTotal } from "../combat/phase-rules.mjs";
+import { unspentTotal, hasHeld, canAct, HELD_PHASE } from "../combat/phase-rules.mjs";
 
 /**
  * Unified Actor Sheet for Heroes, Villains, Brute Squads, and Monsters.
@@ -75,13 +75,23 @@ export class SeventhSeaActorSheet extends ActorSheet {
     ctx.initInCombat = !!combatant;
     if (combatant) {
       const phase = combatant.combat.phase;
-      const dice  = entryOf(combatant).dice;
+      const entry = entryOf(combatant);
+      const dice  = entry.dice;
       ctx.initDice = dice.map(d => ({
         v: d.v,
         cls: [d.spent && "spent", !d.spent && phase > 0 && d.v < phase && "held",
               !d.spent && d.v === phase && "now", d.interrupt && "interrupt"].filter(Boolean).join(" ")
       }));
       ctx.initTotal = dice.length ? unspentTotal(dice) : "";
+      // Hold is live only on this actor's own turn in a running Phase.
+      const combat = combatant.combat;
+      ctx.initMyTurn = combat.started && phase > 0 && !!combat.combatant
+        && combat.getCombatantsByActor(this.actor).includes(combat.combatant)
+        && (game.user.isGM || combat.combatant.isOwner);
+      // Holding an action: offer to use it now (the Held Actions step after Phase 10 brings holders up on its own).
+      ctx.initHolding = hasHeld(entry, phase);
+      ctx.initCanUseHeld = ctx.initHolding && phase < HELD_PHASE && !canAct(entry, phase)
+        && (game.user.isGM || combatant.isOwner);
     } else {
       ctx.initDice = (ctx.system.initiative?.keptDice ?? []).map(v => ({ v, cls: "" }));
     }
@@ -220,6 +230,8 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "roll-wound-check":       return this._rollWoundCheck();
       case "roll-composure-check":   return this._rollComposureCheck();
       case "roll-initiative":        return this._rollInitiative();
+      case "hold-initiative":        return this._holdInitiative();
+      case "use-held-initiative":    return this._useHeldInitiative();
       case "roll-defense":           return this._rollDefense(el);
       case "generic-roll":           return promptRollAndKeep({ actor: this.actor });
       // Drama Dice +/-
@@ -444,6 +456,18 @@ export class SeventhSeaActorSheet extends ActorSheet {
         }
       }
     }
+  }
+  /** Hold: keep the die and sit out the rest of this Phase (players are routed to the GM). */
+  async _holdInitiative() {
+    const combat = findCombatant(this.actor)?.combat;
+    if (combat?.combatant && combat.getCombatantsByActor(this.actor).includes(combat.combatant)) {
+      return combat.holdTurn();
+    }
+  }
+  /** Use a Held Action now: join the current Phase's order. */
+  async _useHeldInitiative() {
+    const cb = findCombatant(this.actor);
+    if (cb) return cb.combat.useHeld(cb.id);
   }
   async _rollDefense(el) {
     const idx = Number(el.dataset.row || "0");

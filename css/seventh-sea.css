@@ -1076,3 +1076,35 @@
     box-shadow: none;
 }
 .seventh-sea-1e .init-tracked[readonly] { color: #8b1a1a; font-weight: bold; }
+
+/* Hold button in the sheet's Initiative box (in an encounter only). */
+.seventh-sea-1e .box-initiative .init-hold {
+    flex: 0 0 auto;
+    width: auto;
+    background: transparent;
+    border: 2px solid #3a2412;
+    color: #3a2412;
+    cursor: pointer;
+    padding: 0 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+.seventh-sea-1e .box-initiative .init-hold:hover:not([disabled]) { background: #8b1a1a; border-color: #8b1a1a; color: #fff; }
+.seventh-sea-1e .box-initiative .init-hold[disabled] { opacity: 0.35; cursor: default; }
+
+/* Held Action dice: solid amber everywhere (sheet, Phase Tracker, Combat sidebar), so it's obvious
+   at a glance who is holding. Interrupt dice get a blue ring so the two never look alike. */
+.seventh-sea-1e .initiative-kept-dice .init-die.held,
+.ss1e-phase-tracker .pt-die.held,
+.combatant .ss1e-dice .pt-die.held {
+    background: #e0a33a;
+    border: 2px solid #8a5a0b;
+    border-style: solid;
+    color: #2b1a05;
+}
+.seventh-sea-1e .initiative-kept-dice .init-die.interrupt,
+.ss1e-phase-tracker .pt-die.interrupt { box-shadow: 0 0 0 2px #2c6fa8; }
+.combatant .ss1e-dice .pt-die.interrupt { box-shadow: 0 0 0 1px #2c6fa8; }
+.seventh-sea-1e .box-initiative .init-use-held:not([disabled]) { background: #e0a33a; border-color: #8a5a0b; color: #2b1a05; }
