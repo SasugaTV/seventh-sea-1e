@@ -12,6 +12,8 @@ import { SeventhSeaActorSheet } from "./sheets/actor-sheet.mjs";
 import { SeventhSeaShipSheet }  from "./sheets/ship-sheet.mjs";
 import { SeventhSeaItemSheet }  from "./sheets/item-sheet.mjs";
 import { rollAndKeep, promptRollAndKeep } from "./dice/roll-and-keep.mjs";
+import { PhaseTracker, registerPhaseTracker } from "./apps/phase-tracker.mjs";
+import { SeventhSeaCombat } from "./combat/seventh-sea-combat.mjs";
 
 Hooks.once("init", function () {
   console.log("7th Sea 1e | Initializing");
@@ -20,7 +22,8 @@ Hooks.once("init", function () {
     SeventhSeaActor, SeventhSeaItem,
     rollAndKeep, promptRollAndKeep,
     config: SS1E,
-    migrateActor: _migrateActor
+    migrateActor: _migrateActor,
+    PhaseTracker, SeventhSeaCombat
   };
   CONFIG.SS1E = SS1E;
   CONFIG.Combat.initiative = { formula: "1d10", decimals: 2 };
@@ -41,6 +44,7 @@ Hooks.once("init", function () {
   });
 
   registerHandlebarsHelpers();
+  registerPhaseTracker();
   return preloadHandlebarsTemplates();
 });
 

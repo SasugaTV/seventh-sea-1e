@@ -410,7 +410,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
         "system.initiative.advKept": result.advKept,
         "system.initiative.advUnkept": result.advUnkept,
         "system.initiative.advPips": result.advPips,
-        "system.initiative.keptDice": keptDice
+        "system.initiative.keptDice": keptDice,
+        // Changes on every roll, so a repeat of the same dice still reaches the Phase Tracker.
+        "system.initiative.rolledAt": Date.now()
       });
     }
   }

@@ -1,0 +1,80 @@
+<div class="pt-wrap">
+  {{#if hasCombat}}
+  <header class="pt-head">
+    <span class="pt-round">{{#if started}}{{localize "SS1E.PhaseTracker.Round"}} {{round}}{{else}}{{localize "SS1E.PhaseTracker.NotStarted"}}{{/if}}</span>
+    {{#if started}}
+    <span class="pt-phase">
+      {{#if phase}}{{localize "SS1E.PhaseTracker.Phase"}} {{phase}} / 10{{else}}{{localize "SS1E.PhaseTracker.Rolling"}}{{/if}}
+    </span>
+    {{/if}}
+    <span class="pt-controls">
+      {{#if isGM}}
+      <button type="button" data-action="undo" title="{{localize 'SS1E.PhaseTracker.Undo'}}"><i class="fa-solid fa-rotate-left"></i></button>
+      {{/if}}
+      {{#if canAct}}
+      <button type="button" data-action="hold" title="{{localize 'SS1E.PhaseTracker.HoldHint'}}"><i class="fa-solid fa-hand"></i> {{localize "SS1E.PhaseTracker.Hold"}}</button>
+      <button type="button" data-action="act" class="pt-hot" title="{{localize 'SS1E.PhaseTracker.ActHint'}}"><i class="fa-solid fa-forward-step"></i> {{localize "SS1E.PhaseTracker.Act"}}</button>
+      {{else if isGM}}{{#if started}}
+      <button type="button" data-action="act" class="pt-hot" title="{{localize 'SS1E.PhaseTracker.BeginPhasesHint'}}"><i class="fa-solid fa-forward-step"></i> {{localize "SS1E.PhaseTracker.BeginPhases"}}</button>
+      {{/if}}{{/if}}
+      {{#if isGM}}
+      <button type="button" data-action="newRound" title="{{localize 'SS1E.PhaseTracker.NewRoundHint'}}">{{localize "SS1E.PhaseTracker.NewRound"}}</button>
+      <button type="button" data-action="toggleVisible" class="{{#if visible}}pt-on{{/if}}"
+              title="{{#if visible}}{{localize 'SS1E.PhaseTracker.PlayersShown'}}{{else}}{{localize 'SS1E.PhaseTracker.PlayersHidden'}}{{/if}}">
+        <i class="fa-solid {{#if visible}}fa-eye{{else}}fa-eye-slash{{/if}}"></i> {{localize "SS1E.PhaseTracker.Players"}}
+      </button>
+      {{/if}}
+    </span>
+  </header>
+
+  <div class="pt-scroll">
+  <table class="pt-grid">
+    <thead>
+      <tr>
+        <th class="pt-name">{{localize "SS1E.PhaseTracker.Name"}}</th>
+        {{#each phases}}<th class="pt-ph {{#if current}}current{{/if}} {{#if past}}past{{/if}}">{{n}}</th>{{/each}}
+        <th class="pt-total" title="{{localize 'SS1E.PhaseTracker.TotalHint'}}">{{localize "SS1E.PhaseTracker.Total"}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rows}}
+      <tr class="pt-row {{#if acting}}acting{{/if}} {{#if current}}next{{/if}} {{#unless hasDice}}nodice{{/unless}} {{#if defeated}}defeated{{/if}}" data-id="{{id}}">
+        <td class="pt-name">
+          <img src="{{img}}" alt="" />
+          <span class="pt-label">{{name}}</span>
+          {{#if tie}}<span class="pt-tie" title="{{localize 'SS1E.PhaseTracker.Tie'}}">⚖</span>{{/if}}
+        </td>
+        {{#each cells}}
+        <td class="pt-cell {{#if current}}current{{/if}}">
+          {{#each dice}}
+          <span class="pt-die {{#if spent}}spent{{/if}} {{#if held}}held{{/if}} {{#if now}}now{{/if}} {{#if interrupt}}interrupt{{/if}}"
+                {{#if ../../canEdit}}data-action="toggleDie" data-die="{{i}}"{{/if}}
+                title="{{#if interrupt}}{{localize 'SS1E.PhaseTracker.InterruptDie'}}{{else if held}}{{localize 'SS1E.PhaseTracker.Held'}}{{/if}}">{{v}}</span>
+          {{/each}}
+        </td>
+        {{/each}}
+        <td class="pt-total">{{#if hasDice}}{{total}}{{/if}}</td>
+        <td class="pt-row-ctl">
+          {{#if canRoll}}<a data-action="rollOne" title="{{localize 'SS1E.PhaseTracker.RollFor'}}"><i class="fa-solid fa-dice"></i></a>{{/if}}
+          {{#if canInterrupt}}<a data-action="interrupt" title="{{localize 'SS1E.PhaseTracker.Interrupt'}}"><i class="fa-solid fa-bolt"></i></a>{{/if}}
+        </td>
+      </tr>
+      {{else}}
+      <tr><td class="pt-empty" colspan="{{cols}}">{{localize "SS1E.PhaseTracker.Empty"}}</td></tr>
+      {{/each}}
+    </tbody>
+  </table>
+  </div>
+
+  {{#if isGM}}
+  <footer class="pt-foot">
+    <button type="button" data-action="rollAll"><i class="fa-solid fa-users"></i> {{localize "SS1E.PhaseTracker.RollAll"}}</button>
+    <button type="button" data-action="rollNPCs"><i class="fa-solid fa-dice"></i> {{localize "SS1E.PhaseTracker.RollNPCs"}}</button>
+  </footer>
+  {{/if}}
+
+  {{else}}
+  <p class="pt-empty">{{localize "SS1E.PhaseTracker.NoCombat"}}</p>
+  {{/if}}
+</div>

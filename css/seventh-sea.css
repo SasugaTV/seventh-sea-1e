@@ -938,3 +938,128 @@
 .seventh-sea-1e .ship-rows-table td { vertical-align: top; }
 .seventh-sea-1e .ship-subtitle { margin-top: 0.5rem; }
 .seventh-sea-1e .ss1e-ship-sheet .ss1e-bio-textarea { width: 100%; }
+
+/* ── Phase Tracker window ─────────────────────────── */
+.ss1e-phase-tracker .window-content {
+    background-color: #e9d5a6;
+    background-image: url("parchment-bg.svg");
+    background-size: 600px 600px;
+    color: #3a2412;
+    padding: 0.5rem;
+}
+.ss1e-phase-tracker .pt-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+}
+.ss1e-phase-tracker .pt-round { font-weight: bold; }
+.ss1e-phase-tracker .pt-phase { font-weight: bold; color: #8b1a1a; font-size: 1.1rem; }
+.ss1e-phase-tracker .pt-controls { margin-left: auto; display: flex; gap: 4px; }
+.ss1e-phase-tracker button {
+    background: transparent;
+    border: 2px solid #3a2412;
+    color: #3a2412;
+    cursor: pointer;
+    padding: 2px 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    width: auto;
+    line-height: 1.4;
+}
+.ss1e-phase-tracker button:hover:not([disabled]) { background: rgba(255, 250, 235, 0.7); }
+.ss1e-phase-tracker button[disabled] { opacity: 0.4; cursor: default; }
+.ss1e-phase-tracker button.pt-on { background: #3a2412; color: #fdf6e3; }
+.ss1e-phase-tracker button.pt-hot { background: #8b1a1a; border-color: #8b1a1a; color: #fff; }
+
+.ss1e-phase-tracker .pt-scroll { overflow-x: auto; }
+.ss1e-phase-tracker .pt-grid {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 250, 235, 0.55);
+    border: 2px solid #3a2412;
+}
+.ss1e-phase-tracker .pt-grid th {
+    font-size: 0.8rem;
+    font-variant: small-caps;
+    border-bottom: 1px solid #6b4521;
+    padding: 2px 4px;
+    color: #3a2412;
+    background: none;
+    text-shadow: none;
+}
+.ss1e-phase-tracker .pt-grid td {
+    border-bottom: 1px dotted #c1a575;
+    padding: 3px 2px;
+}
+.ss1e-phase-tracker .pt-ph { width: 2.1rem; text-align: center; }
+.ss1e-phase-tracker .pt-ph.past { color: #a08a6a; }
+.ss1e-phase-tracker .pt-ph.current { background: #8b1a1a; color: #fff; }
+.ss1e-phase-tracker .pt-cell { text-align: center; vertical-align: middle; }
+.ss1e-phase-tracker .pt-cell.current { background: rgba(139, 26, 26, 0.12); }
+.ss1e-phase-tracker th.pt-name, .ss1e-phase-tracker td.pt-name { text-align: left; min-width: 10rem; }
+.ss1e-phase-tracker td.pt-name { display: flex; align-items: center; gap: 6px; }
+.ss1e-phase-tracker td.pt-name img { width: 28px; height: 28px; border: 1px solid #6b4521; object-fit: cover; flex: 0 0 auto; }
+.ss1e-phase-tracker .pt-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ss1e-phase-tracker .pt-tie { color: #8b1a1a; font-weight: bold; cursor: help; }
+.ss1e-phase-tracker .pt-total { text-align: center; font-weight: bold; width: 2.6rem; }
+.ss1e-phase-tracker .pt-row-ctl { white-space: nowrap; text-align: right; }
+.ss1e-phase-tracker .pt-row-ctl a { color: #6b4521; margin: 0 2px; cursor: pointer; }
+.ss1e-phase-tracker .pt-row-ctl a:hover { color: #8b1a1a; }
+.ss1e-phase-tracker .pt-empty { text-align: center; font-style: italic; padding: 0.8rem; }
+
+/* Rows: who can act now, who acts first, who hasn't rolled. */
+.ss1e-phase-tracker .pt-row.acting { background: rgba(255, 250, 235, 0.75); }
+.ss1e-phase-tracker .pt-row.next td.pt-name { box-shadow: inset 4px 0 0 #8b1a1a; font-weight: bold; }
+.ss1e-phase-tracker .pt-row.nodice { opacity: 0.6; }
+
+/* Dice: same coin style as the sheet's kept dice. */
+.ss1e-phase-tracker .pt-die {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin: 1px;
+    border-radius: 50%;
+    border: 2px solid #3a2412;
+    background: rgba(255, 250, 235, 0.9);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #3a2412;
+}
+.ss1e-phase-tracker .pt-die[data-action] { cursor: pointer; }
+.ss1e-phase-tracker .pt-die.now { background: #8b1a1a; border-color: #8b1a1a; color: #fff; }
+.ss1e-phase-tracker .pt-die.held { border-style: dashed; border-color: #8b1a1a; color: #8b1a1a; }
+.ss1e-phase-tracker .pt-die.interrupt { box-shadow: 0 0 0 2px #d4a017; }
+.ss1e-phase-tracker .pt-die.spent {
+    background: transparent;
+    border-color: #a08a6a;
+    color: #a08a6a;
+    text-decoration: line-through;
+    box-shadow: none;
+}
+.ss1e-phase-tracker .pt-foot { display: flex; gap: 6px; margin-top: 0.5rem; flex-wrap: wrap; }
+
+/* ── Combat sidebar: Phase label, dice under names ── */
+#combat .ss1e-phase, .combat-sidebar .ss1e-phase { color: #e0a33a; }
+.combatant .ss1e-dice { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 2px; }
+.combatant .ss1e-dice .pt-die {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1;
+}
+.combatant .ss1e-dice .pt-die.now { background: #8b1a1a; border-color: #8b1a1a; color: #fff; }
+.combatant .ss1e-dice .pt-die.held { border-style: dashed; color: #e0a33a; }
+.combatant .ss1e-dice .pt-die.interrupt { box-shadow: 0 0 0 1px #d4a017; }
+.combatant .ss1e-dice .pt-die.spent { opacity: 0.35; text-decoration: line-through; }
+.combatant.ss1e-waiting { opacity: 0.55; }
+.ss1e-phase-tracker .pt-row.defeated { opacity: 0.4; text-decoration: line-through; }

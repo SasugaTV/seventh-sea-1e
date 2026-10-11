@@ -462,7 +462,8 @@
       "villainy": {
         "value": 0
       },
-      "henchmenLimit": 0
+      "henchmenLimit": 0,
+      "henchman": false
     },
     "brute": {
       "templates": [
