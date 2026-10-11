@@ -44,6 +44,21 @@ export function entryOf(c) {
   };
 }
 
+/**
+ * The actor's Combatant in a 7th Sea encounter: the encounter shown in the Combat sidebar first,
+ * then the active one, then any started one. Null when the actor isn't fighting.
+ */
+export function findCombatant(actor) {
+  if (!actor) return null;
+  const combats = [game.combat, game.combats.active, ...game.combats.filter(c => c.started)];
+  for (const combat of combats) {
+    if (!(combat instanceof SeventhSeaCombat)) continue;
+    const cb = combat.getCombatantsByActor(actor)[0];
+    if (cb) return cb;
+  }
+  return null;
+}
+
 export class SeventhSeaCombat extends Combat {
 
   /** Current Phase: 0 while Action Dice are being rolled, then 1-10. */
@@ -143,7 +158,7 @@ export class SeventhSeaCombat extends Combat {
     // Clear the dice shown on Hero/Villain sheets so last Round's roll doesn't linger.
     for (const cb of this.combatants) {
       const a = cb.actor;
-      if (a?.system.initiative?.keptDice?.length) await a.update({ "system.initiative.keptDice": [] });
+      if (a?.system.initiative?.keptDice?.length) await a.update({ "system.initiative.keptDice": [], "system.initiative.value": 0 });
     }
     return this;
   }
@@ -192,7 +207,10 @@ export class SeventhSeaCombat extends Combat {
       }, { messageMode: messageMode ?? (cb.hidden ? "gm" : undefined) });
       const values = roll.dice[0].results.map(r => r.result).sort((a, b) => a - b);
       await this.setDice(cb.id, values, n);
-      if (actor?.system.initiative && actor.isOwner) await actor.update({ "system.initiative.keptDice": values });
+      // Mirror onto the sheet so it matches once the actor leaves the encounter view.
+      if (actor?.system.initiative && actor.isOwner) {
+        await actor.update({ "system.initiative.keptDice": values, "system.initiative.value": R.unspentTotal(values.map(v => R.newDie(v))) });
+      }
     }
     return this;
   }

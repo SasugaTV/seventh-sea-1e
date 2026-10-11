@@ -241,23 +241,39 @@ export function registerPhaseTracker() {
     Hooks.on(h, () => PhaseTracker.refresh());
   }
 
-  // A sheet roll (Roll Initiative on a Hero/Villain) lands in the encounter. If the actor's token is
-  // on the active encounter's scene but not yet in it, the GM adds it.
+  // Open sheets show the encounter's dice and total, so redraw them when a Combatant changes.
+  for (const h of ["createCombatant", "updateCombatant", "deleteCombatant"]) {
+    Hooks.on(h, cb => { if (cb.actor?.sheet?.rendered) cb.actor.sheet.render(false); });
+  }
+
+  // A sheet roll from an actor that isn't fighting yet: if its token is on the active encounter's
+  // scene, the GM adds it. (Actors already in an encounter write their dice there themselves.)
   Hooks.on("updateActor", async (actor, changes) => {
     if (!game.users.activeGM?.isSelf) return;
     if (!foundry.utils.hasProperty(changes, "system.initiative.rolledAt")) return;
-    const dice = actor.system.initiative?.keptDice ?? [];
-    const rolledAt = actor.system.initiative?.rolledAt ?? Date.now();
-    const combats = game.combats.filter(c => c instanceof SeventhSeaCombat && c.getCombatantsByActor(actor).length);
-    for (const combat of combats) {
-      for (const cb of combat.getCombatantsByActor(actor)) await combat.setDice(cb.id, dice, undefined, rolledAt);
-    }
-    if (combats.length) return;
+    if (game.combats.some(c => c instanceof SeventhSeaCombat && c.getCombatantsByActor(actor).length)) return;
     const combat = game.combats.active;
     if (!(combat instanceof SeventhSeaCombat)) return;
     const token = actor.isToken ? actor.token : combat.scene?.tokens.find(t => t.actorId === actor.id);
     if (!token || (combat.scene && token.parent !== combat.scene)) return;
     const [cb] = await combat.createEmbeddedDocuments("Combatant", [{ tokenId: token.id, sceneId: token.parent.id, actorId: actor.id }]);
-    if (cb) await combat.setDice(cb.id, dice, undefined, rolledAt);
+    const init = actor.system.initiative ?? {};
+    if (cb) await combat.setDice(cb.id, init.keptDice ?? [], undefined, init.rolledAt ?? Date.now());
+  });
+
+  // Ending an encounter clears the initiative shown on its actors' sheets.
+  Hooks.on("deleteCombat", async combat => {
+    if (!(combat instanceof SeventhSeaCombat)) return;
+    for (const cb of combat.combatants) if (cb.actor?.sheet?.rendered) cb.actor.sheet.render(false);
+    if (!game.users.activeGM?.isSelf) return;
+    const seen = new Set();
+    for (const cb of combat.combatants) {
+      const a = cb.actor;
+      if (!a?.system.initiative || seen.has(a.uuid)) continue;
+      seen.add(a.uuid);
+      // An actor still fighting in another encounter keeps its dice.
+      if (game.combats.some(c => c !== combat && c.getCombatantsByActor(a).length)) continue;
+      await a.update({ "system.initiative.keptDice": [], "system.initiative.value": 0 });
+    }
   });
 }

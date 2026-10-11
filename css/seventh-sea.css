@@ -1063,3 +1063,16 @@
 .combatant .ss1e-dice .pt-die.spent { opacity: 0.35; text-decoration: line-through; }
 .combatant.ss1e-waiting { opacity: 0.55; }
 .ss1e-phase-tracker .pt-row.defeated { opacity: 0.4; text-decoration: line-through; }
+
+/* Sheet Initiative dice while in an encounter: same states as the Combat tracker. */
+.seventh-sea-1e .initiative-kept-dice .init-die.now { background: #8b1a1a; border-color: #8b1a1a; color: #fff; }
+.seventh-sea-1e .initiative-kept-dice .init-die.held { border-style: dashed; border-color: #8b1a1a; color: #8b1a1a; }
+.seventh-sea-1e .initiative-kept-dice .init-die.interrupt { box-shadow: 0 0 0 2px #d4a017; }
+.seventh-sea-1e .initiative-kept-dice .init-die.spent {
+    background: transparent;
+    border-color: #a08a6a;
+    color: #a08a6a;
+    text-decoration: line-through;
+    box-shadow: none;
+}
+.seventh-sea-1e .init-tracked[readonly] { color: #8b1a1a; font-weight: bold; }

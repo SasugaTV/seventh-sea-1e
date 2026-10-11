@@ -1,5 +1,7 @@
 import { SS1E } from "../helpers/config.mjs";
 import { rollAndKeep, promptRollAndKeep } from "../dice/roll-and-keep.mjs";
+import { SeventhSeaCombat, findCombatant, entryOf } from "../combat/seventh-sea-combat.mjs";
+import { unspentTotal } from "../combat/phase-rules.mjs";
 
 /**
  * Unified Actor Sheet for Heroes, Villains, Brute Squads, and Monsters.
@@ -66,6 +68,23 @@ export class SeventhSeaActorSheet extends ActorSheet {
     // Weapons box mode: game mode shows names as clickable roll targets,
     // edit mode swaps them for text inputs. Sheet-local UI state.
     ctx.weaponsEdit = !!this._weaponsEdit;
+
+    // Initiative. In a 7th Sea encounter the encounter is the source of truth, so the sheet shows
+    // the same dice (spent ones struck out) and Initiative Total as the Combat tracker.
+    const combatant = findCombatant(this.actor);
+    ctx.initInCombat = !!combatant;
+    if (combatant) {
+      const phase = combatant.combat.phase;
+      const dice  = entryOf(combatant).dice;
+      ctx.initDice = dice.map(d => ({
+        v: d.v,
+        cls: [d.spent && "spent", !d.spent && phase > 0 && d.v < phase && "held",
+              !d.spent && d.v === phase && "now", d.interrupt && "interrupt"].filter(Boolean).join(" ")
+      }));
+      ctx.initTotal = dice.length ? unspentTotal(dice) : "";
+    } else {
+      ctx.initDice = (ctx.system.initiative?.keptDice ?? []).map(v => ({ v, cls: "" }));
+    }
 
     // Font scale for live ±
     ctx.fontScale = Number(ctx.system?.uiPrefs?.fontScale) || 1.0;
@@ -403,7 +422,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
         .map(r => r.result)
         .sort((a, b) => a - b);
 
+      const rolledAt = Date.now();
       await this.actor.update({
+        "system.initiative.value": keptDice.reduce((a, v) => a + v, 0),
         "system.initiative.dice": result.usedRoll,
         "system.initiative.keep": result.usedKeep,
         "system.initiative.trait": result.trait,
@@ -411,9 +432,17 @@ export class SeventhSeaActorSheet extends ActorSheet {
         "system.initiative.advUnkept": result.advUnkept,
         "system.initiative.advPips": result.advPips,
         "system.initiative.keptDice": keptDice,
-        // Changes on every roll, so a repeat of the same dice still reaches the Phase Tracker.
-        "system.initiative.rolledAt": Date.now()
+        // Changes on every roll, so a repeat of the same dice still reaches the encounter.
+        "system.initiative.rolledAt": rolledAt
       });
+      // Already in an encounter: write the dice there directly (owners may update their own
+      // Combatant, so no GM is needed). Otherwise the GM adds the actor to the active encounter.
+      for (const combat of game.combats) {
+        if (!(combat instanceof SeventhSeaCombat)) continue;
+        for (const cb of combat.getCombatantsByActor(this.actor)) {
+          if (cb.isOwner) await combat.setDice(cb.id, keptDice, undefined, rolledAt);
+        }
+      }
     }
   }
   async _rollDefense(el) {

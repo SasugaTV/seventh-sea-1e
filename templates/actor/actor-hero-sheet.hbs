@@ -197,12 +197,16 @@
                 <span class="init-title">{{localize "SS1E.UI.Initiative"}}</span>
                 <span class="ss1e-rollable" data-action="roll-initiative" title="{{localize 'SS1E.UI.RollInitiative'}}">⚔ {{localize "SS1E.UI.RollInitiative"}}</span>
                 <div class="initiative-kept-dice">
-                  {{#each system.initiative.keptDice}}
-                    <span class="init-die">{{this}}</span>
+                  {{#each initDice}}
+                    <span class="init-die {{cls}}">{{v}}</span>
                   {{/each}}
                 </div>
                 <label>{{localize "SS1E.UI.Tracked"}}</label>
+                {{#if initInCombat}}
+                <input type="number" class="init-tracked" value="{{initTotal}}" readonly title="{{localize 'SS1E.PhaseTracker.TotalHint'}}" />
+                {{else}}
                 <input type="number" class="init-tracked" name="system.initiative.value" value="{{system.initiative.value}}" />
+                {{/if}}
               </div>
             </div>
 
