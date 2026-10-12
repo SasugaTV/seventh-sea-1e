@@ -127,7 +127,6 @@ export class SeventhSeaActorSheet extends ActorSheet {
         if (ev.key !== "Enter") return;
         ev.preventDefault();
         if (input.dataset.edit) return input.blur();
-        if (input.dataset.field?.startsWith("quick")) return this._ledgerAddXP();
         if (input.dataset.field?.startsWith("new")) return this._ledgerAdd();
       });
     }
@@ -297,10 +296,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "xp-delete":              return this._xpLogDelete(el);
       case "open-change-log":        return ChangeLogViewer.open(this.actor);
       // Ledger
-      case "ledger-add-xp":          return this._ledgerAddXP();
       case "ledger-add":             return this._ledgerAdd();
       case "ledger-toggle-dir":      return this._ledgerToggle("dir");
-      case "ledger-toggle-cur":      return this._ledgerToggle("cur");
+      case "ledger-set-cur":         return this._ledgerSetCur(el.dataset.cur);
       case "ledger-delete":          return this._ledgerDelete(el);
       case "ledger-journal":         return JournalViewer.open({ title: this.actor.name, lines: getLedger(this.actor).journal });
       case "ledger-export":          return exportActor(this.actor);
@@ -525,15 +523,14 @@ export class SeventhSeaActorSheet extends ActorSheet {
     const L = k => game.i18n.localize(k);
     const day = new Intl.DateTimeFormat(game.i18n.lang, { dateStyle: "short" });
     const full = new Intl.DateTimeFormat(game.i18n.lang, { dateStyle: "medium", timeStyle: "short" });
-    // New-entry defaults: an empty ledger starts with "Starting HP" (credit, HP); after that a debit,
-    // in HP while there's HP left, else XP. The toggles override for this sheet until it closes.
+    // One entry row for both accounts. Defaults: XP; Credit on an empty ledger, else Debit. Switching
+    // an empty ledger to HP offers "Starting HP". The switches hold for this sheet until it closes.
     const fresh = !entries.length;
-    const def = fresh ? { dir: "credit", cur: "HP", reason: L("SS1E.Ledger.StartingHP") }
-                      : { dir: "debit", cur: t.hpLeft > 0 ? "HP" : "XP", reason: "" };
-    const n = { ...def, ...(this._ledgerNew ?? {}) };
+    const n = { dir: fresh ? "credit" : "debit", cur: "XP", reason: "", ...(this._ledgerNew ?? {}) };
+    if (fresh && n.cur === "HP" && n.dir === "credit" && !n.reason) n.reason = L("SS1E.Ledger.StartingHP");
     return {
       started: hasLedger(this.actor), ...t,
-      new: { ...n, dirLabel: L(n.dir === "credit" ? "SS1E.Ledger.Credit" : "SS1E.Ledger.Debit") },
+      new: { ...n, isXP: n.cur === "XP", dirLabel: L(n.dir === "credit" ? "SS1E.Ledger.Credit" : "SS1E.Ledger.Debit") },
       rows: entries.map(e => ({
         ...e, story: e.kind === KINDS.story, sign: e.dir === "credit" ? "+" : "−",
         date: day.format(new Date(e.t)), full: full.format(new Date(e.t))
@@ -545,19 +542,22 @@ export class SeventhSeaActorSheet extends ActorSheet {
     return this.element[0].querySelector(`.ss1e-ledger [data-field="${name}"]`);
   }
 
-  _ledgerToggle(which) {
-    const cur = this._ledgerContext().new;
-    const next = which === "dir" ? (cur.dir === "credit" ? "debit" : "credit") : (cur.cur === "HP" ? "XP" : "HP");
-    // Keep whatever was typed while the row re-renders.
-    this._ledgerNew = { ...this._ledgerNew, [which]: next, reason: this._ledgerField("new-reason")?.value ?? cur.reason };
+  /** Keep what was typed while the entry row re-renders after a switch. */
+  _ledgerKeepTyped(changes) {
+    const typed = this._ledgerField("new-reason")?.value ?? "";
+    const auto = game.i18n.localize("SS1E.Ledger.StartingHP");
+    this._ledgerNew = { ...this._ledgerNew, ...changes, reason: typed === auto ? "" : typed };
     return this.render(false);
   }
 
-  async _ledgerAddXP() {
-    const amount = Number(this._ledgerField("quick-amount")?.value) || 0;
-    if (amount <= 0) return ui.notifications.warn(game.i18n.localize("SS1E.Ledger.NeedAmount"));
-    const reason = this._ledgerField("quick-reason")?.value.trim() || game.i18n.localize("SS1E.Ledger.XPAwarded");
-    return addEntries(this.actor, [{ dir: "credit", cur: "XP", amount, reason, kind: KINDS.awardXP }]);
+  _ledgerToggle(which) {
+    const cur = this._ledgerContext().new;
+    return this._ledgerKeepTyped({ dir: cur.dir === "credit" ? "debit" : "credit" });
+  }
+
+  _ledgerSetCur(cur) {
+    if (cur !== "XP" && cur !== "HP") return;
+    return this._ledgerKeepTyped({ cur });
   }
 
   async _ledgerAdd() {
@@ -566,7 +566,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
     const reason = this._ledgerField("new-reason")?.value.trim() ?? "";
     if (!(amount >= 0) || this._ledgerField("new-amount")?.value === "") return ui.notifications.warn(game.i18n.localize("SS1E.Ledger.NeedAmount"));
     if (!reason) return ui.notifications.warn(game.i18n.localize("SS1E.Ledger.NeedReason"));
-    const kind = reason === game.i18n.localize("SS1E.Ledger.StartingHP") && n.cur === "HP" && n.dir === "credit" ? KINDS.startingHP : KINDS.manual;
+    const kind = n.dir !== "credit" ? KINDS.manual
+      : n.cur === "XP" ? KINDS.awardXP
+      : reason === game.i18n.localize("SS1E.Ledger.StartingHP") ? KINDS.startingHP : KINDS.manual;
     this._ledgerNew = null;
     return addEntries(this.actor, [{ dir: n.dir, cur: n.cur, amount, reason, kind }]);
   }

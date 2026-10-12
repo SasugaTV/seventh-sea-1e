@@ -5,19 +5,14 @@
   </summary>
   <div class="ledger">
 
-    {{!-- Quick Add XP --}}
-    <div class="ledger-row ledger-quick">
-      <input type="number" class="ledger-in le-num" data-field="quick-amount" min="1" placeholder="0" />
-      <input type="text" class="ledger-in le-text" data-field="quick-reason" placeholder="{{localize 'SS1E.Ledger.ReasonOptional'}}" />
-      <button type="button" class="ledger-btn" data-action="ledger-add-xp"><i class="fa-solid fa-plus"></i> {{localize "SS1E.Ledger.AddXP"}}</button>
-    </div>
-
-    {{!-- Any entry: Debit/Credit, HP/XP, amount, reason --}}
+    {{!-- One entry row for both accounts: XP | HP switch (XP default), Debit/Credit, amount, reason --}}
     <div class="ledger-row ledger-new">
+      <span class="ledger-cur-switch" title="{{localize 'SS1E.Ledger.ToggleCurHint'}}">
+        <button type="button" class="{{#if ledger.new.isXP}}on{{/if}}" data-action="ledger-set-cur" data-cur="XP">XP</button>
+        <button type="button" class="{{#unless ledger.new.isXP}}on{{/unless}}" data-action="ledger-set-cur" data-cur="HP">HP</button>
+      </span>
       <button type="button" class="ledger-toggle dir-{{ledger.new.dir}}" data-action="ledger-toggle-dir"
               title="{{localize 'SS1E.Ledger.ToggleDirHint'}}">{{ledger.new.dirLabel}}</button>
-      <button type="button" class="ledger-toggle cur-{{ledger.new.cur}}" data-action="ledger-toggle-cur"
-              title="{{localize 'SS1E.Ledger.ToggleCurHint'}}">{{ledger.new.cur}}</button>
       <input type="number" class="ledger-in le-num" data-field="new-amount" min="0" placeholder="0" />
       <input type="text" class="ledger-in le-text" data-field="new-reason" value="{{ledger.new.reason}}" placeholder="{{localize 'SS1E.Ledger.Reason'}}" />
       <button type="button" class="ledger-btn" data-action="ledger-add"><i class="fa-solid fa-check"></i> {{localize "SS1E.Ledger.AddEntry"}}</button>
