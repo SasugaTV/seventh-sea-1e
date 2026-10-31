@@ -7,6 +7,8 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-31
+
 ### Added
 - **Ship** actor type and sheet, from the 1st Edition Players' Guide "Ship Design"
   (pp. 194-199) and the Game Masters' Guide "Naval Battles":
@@ -22,6 +24,21 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
     (Finesse to hit, then cannon dice), Hit Check, and Panache Phase roll.
     Flaws that stop dice exploding switch off explosions automatically.
   - Duty Leads, crew roster, cargo manifest, upkeep reminders, notes.
+
+- **Phase-based combat**: Action Dice drive Foundry's Combat tracker through the
+  ten phases (tie-breaks: Panache, then Hero/Villain/Henchman/Brute, then first roller).
+  Sheet initiative mirrors the encounter and clears when combat ends.
+- **Held actions**: Hold / Use Held on sheets, amber held dice, and a Held Actions
+  step; using one fires the `seventhSea.useHeld` hook for modules.
+- **Dramatic Wounds token bar** with a Crippled tick and wound colours.
+- **Ledger** (HP/XP) with an append-only journal, Campaign Sheet and End Story;
+  one entry row with an XP | HP switch.
+- **Change History**: every saved change to a character is recorded.
+- Hero sheet: parchment drawers, Initiative strip, "Combat & Weapons" box,
+  hover a text box to see its full text, Note Pad under Bio.
+
+### Fixed
+- A lang key clash that blanked every label on the sheets.
 
 ## [0.1.0] - Initial release
 

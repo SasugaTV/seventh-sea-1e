@@ -2,7 +2,7 @@
   "id": "seventh-sea-1e",
   "title": "7th Sea (1st Edition)",
   "description": "An unofficial Foundry VTT game system for AEG's 7th Sea 1st Edition. Implements the Roll & Keep dice mechanic, Heroes/Villains/Brute Squads/Monsters, Traits, Skills & Knacks, Advantages, Backgrounds, Swordsman Schools, and Sorceries.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "compatibility": { "minimum": "12", "verified": "14" },
   "authors": [
     { "name": "SasugaTV", "url": "https://github.com/SasugaTV", "email": "jeremyglassford@gmail.com" }
