@@ -7,6 +7,29 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-22
+
+### Added
+- **Combat Reflexes** (Players' Guide p.131): a character with the Advantage can click
+  one Action Die on their sheet to reroll it, keeping the new roll. Once per Round, before
+  anyone has acted; the GM's client checks it and it can be undone.
+- **Brute Squad roll** on the Brute sheet ("Roll Squad"): one die per Brute taking part,
+  keep the Threat Rating (or all dice if fewer Brutes roll), with +/- dice rolled, +/- dice
+  kept, +/- pips, optional TN and called Raises, and a live pool preview.
+- **Compact Phase Tracker**: a small "Now acting / Up next" view (with Act, Hold, Undo and
+  Roll All), switched per user from the tracker's header.
+
+### Changed
+- Phase Tracker: Roll All / Roll NPCs moved to the top; the window scrolls, so a large
+  encounter can no longer hide them.
+- Phase Tracker stays on screen during an encounter: it opens on load and when an
+  encounter starts, and its X minimizes it while an encounter exists.
+- Wound Checks roll against the character's current Flesh Wounds instead of a TN dropdown.
+- Brute sheet: Threat Rating and Brutes remaining are dot trackers; tidier layout.
+
+### Fixed
+- Brute sheet "Take a Hit" button did nothing; it now removes one Brute.
+
 ## [0.2.0] - 2026-10-31
 
 ### Added
