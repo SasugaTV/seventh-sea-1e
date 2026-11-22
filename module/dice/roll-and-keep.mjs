@@ -344,7 +344,11 @@ export async function promptRollAndKeep({
   defaultAdvUnkept = 0,
   defaultAdvPips = 0,
   defaultFreeRaises = 0,
-  defaultExplode = true
+  defaultExplode = true,
+  // A TN that isn't chosen from the dropdown (e.g. Wound Checks roll against Flesh Wounds):
+  // a function read at roll time, and the label shown in its place.
+  fixedTN = null,
+  fixedTNLabel = ""
 } = {}) {
 
   const traits = actor ? [
@@ -420,7 +424,11 @@ export async function promptRollAndKeep({
         <label>${game.i18n.localize("SS1E.Dialog.Keep")}</label>
         ${numSelect("keep", defaultKeep)}
       </div>
+${fixedTN ? `
       <div class="form-group">
+        <label>${game.i18n.localize("SS1E.Dialog.TN")}</label>
+        <span class="ss1e-fixed-tn"><strong>${Number(fixedTN()) || 0}</strong> ${foundry.utils.escapeHTML(fixedTNLabel)}</span>
+      </div>` : `      <div class="form-group">
         <label>${game.i18n.localize("SS1E.Dialog.TN")}</label>
         <select name="tn">
           <option value="5">5 Mundane</option>
@@ -432,7 +440,7 @@ export async function promptRollAndKeep({
           <option value="35">35 Never Done Before</option>
           <option value="40">40 Never To Be Done Again</option>
         </select>
-      </div>
+      </div>`}
       <div class="form-group">
         <label>Called Raises</label>
         ${numSelect("raises", 0)}
@@ -481,7 +489,7 @@ export async function promptRollAndKeep({
               roll:  Number(fd.roll),
               keep:  Number(fd.keep),
               bonus: advP + (freeR * 5) + (split ? 0 : (html[0]._capBonus || 0)),
-              tn:    Number(fd.tn),
+              tn:    fixedTN ? (Number(fixedTN()) || 0) : Number(fd.tn),
               raises: Number(fd.raises),
               flavor: knack ? game.i18n.format("SS1E.Chat.KnackRoll", { knack }) : "",
               exploding

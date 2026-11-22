@@ -251,7 +251,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
     // Flush any pending input changes (e.g. the number the user just typed)
     // before mutating the actor's array fields, otherwise the click race
     // makes the button feel "stuck".
-    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete", "weapon-add", "weapons-toggle-mode", "weapon-notes"];
+    const needsFlush = ["xp-add", "xp-delete", "defense-add", "defense-delete", "weapon-add", "weapons-toggle-mode", "weapon-notes", "roll-wound-check"];
     if (needsFlush.includes(action)) {
       try { await this.submit({ preventClose: true, preventRender: true }); }
       catch (_) { /* nothing to submit */ }
@@ -451,6 +451,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
     return promptRollAndKeep({
       actor: this.actor,
       defaultRoll: brawn, defaultKeep: brawn,
+      // 1e: the Wound Check's TN is the character's current Flesh Wounds.
+      fixedTN: () => Number(this.actor.system.wounds?.flesh?.value) || 0,
+      fixedTNLabel: game.i18n.localize("SS1E.Dialog.FleshWoundsTN"),
       title: game.i18n.format("SS1E.Chat.WoundCheckFor", { name: this.actor.name })
     });
   }
