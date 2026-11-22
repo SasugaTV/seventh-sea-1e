@@ -10,10 +10,13 @@ import { SeventhSeaCombat, SYS, entryOf, announcePhaseEvents } from "../combat/s
 import * as R from "../combat/phase-rules.mjs";
 
 const VISIBLE = "phaseTrackerVisible";
+const COMPACT = "phaseTrackerCompact";   // per-user: small "Now / Up next" window
+const WIDTH = { full: 760, compact: 300 };
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 function playersCanSee() { return !!game.settings.get(SYS, VISIBLE); }
+function isCompact() { return !!game.settings.get(SYS, COMPACT); }
 
 /** The encounter shown in the Combat sidebar, if it runs on 7th Sea Phases. */
 function viewedCombat() {
@@ -47,7 +50,8 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
       rollOne:       PhaseTracker.#rollOne,
       toggleDie:     PhaseTracker.#toggleDie,
       interrupt:     PhaseTracker.#interrupt,
-      useHeld:       PhaseTracker.#useHeld
+      useHeld:       PhaseTracker.#useHeld,
+      toggleCompact: PhaseTracker.#toggleCompact
     }
   };
 
@@ -61,7 +65,7 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!game.user.isGM && !playersCanSee()) {
       return ui.notifications.info(game.i18n.localize("SS1E.PhaseTracker.HiddenFromPlayers"));
     }
-    this.#instance ??= new this();
+    this.#instance ??= new this({ position: { width: isCompact() ? WIDTH.compact : WIDTH.full } });
     return this.#instance.render({ force: true });
   }
 
@@ -79,7 +83,7 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext() {
     const combat = viewedCombat();
     const isGM = game.user.isGM;
-    const base = { isGM, visible: playersCanSee(), hasCombat: !!combat };
+    const base = { isGM, visible: playersCanSee(), hasCombat: !!combat, compact: isCompact() };
     if (!combat) return base;
 
     const phase = combat.phase;
@@ -107,8 +111,18 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
       };
     });
 
+    // Compact view: who is acting now and the next few in line.
+    const byId = new Map(rows.map(r => [r.id, r]));
+    const queue = R.upcoming(entries, phase, 4).map(q => {
+      const r = byId.get(q.id);
+      return { ...q, name: r.name, img: r.img, total: r.total };
+    });
+    const nowActing = current && queue[0]?.id === current.id ? queue.shift() : null;
+    const unrolled = rows.filter(r => !r.hasDice && !r.defeated).length;
+
     return {
       ...base,
+      nowActing, upNext: queue.slice(0, 3), unrolled,
       round: combat.round, phase, started: combat.started,
       heldPhase: phase === R.HELD_PHASE,
       canAct: combat.started && phase > 0 && (isGM || ownsCurrent),
@@ -129,6 +143,15 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
   static #rollAll()  { return PhaseTracker.#combat()?.rollAll(); }
 
   static #toggleVisible() { return game.settings.set(SYS, VISIBLE, !playersCanSee()); }
+
+  static async #toggleCompact() {
+    await game.settings.set(SYS, COMPACT, !isCompact());
+    const app = PhaseTracker.#instance;
+    if (!app) return;
+    app.setPosition({ width: isCompact() ? WIDTH.compact : WIDTH.full, height: "auto" });
+    await app.render();
+    app.setPosition({ height: "auto" });
+  }
 
   static #rollOne(event, target) {
     return PhaseTracker.#combat()?.rollInitiative([PhaseTracker.#rowId(target)]);
@@ -227,6 +250,10 @@ export function registerPhaseTracker() {
   game.settings.register(SYS, VISIBLE, {
     scope: "world", config: false, type: Boolean, default: false,
     onChange: v => PhaseTracker.onVisibilityChange(v)
+  });
+
+  game.settings.register(SYS, COMPACT, {
+    scope: "client", config: false, type: Boolean, default: false
   });
 
   Hooks.on("getSceneControlButtons", controls => {

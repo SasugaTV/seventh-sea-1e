@@ -1042,6 +1042,19 @@
     box-shadow: none;
 }
 .ss1e-phase-tracker .pt-rolls { display: flex; gap: 6px; margin-bottom: 0.4rem; flex-wrap: wrap; }
+/* Compact view: Now / Up next */
+.ss1e-phase-tracker .pt-compact .pt-head { flex-wrap: nowrap; }
+.ss1e-phase-tracker .pt-compact .pt-phase { font-size: 0.95rem; }
+.ss1e-phase-tracker .pt-compact .pt-rolls { margin: 0.5rem 0 0; }
+.ss1e-phase-tracker .pt-now, .ss1e-phase-tracker .pt-next { margin-bottom: 0.4rem; }
+.ss1e-phase-tracker .pt-cap { display: block; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #6b4521; }
+.ss1e-phase-tracker .pt-who { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+.ss1e-phase-tracker .pt-who img { width: 24px; height: 24px; border: 1px solid #6b4521; object-fit: cover; flex: 0 0 auto; }
+.ss1e-phase-tracker .pt-who .pt-label { flex: 1 1 auto; min-width: 0; }
+.ss1e-phase-tracker .pt-who.big { font-size: 1.15rem; font-weight: bold; padding: 4px 6px; background: rgba(139, 26, 26, 0.12); box-shadow: inset 4px 0 0 #8b1a1a; }
+.ss1e-phase-tracker .pt-who.big img { width: 40px; height: 40px; }
+.ss1e-phase-tracker .pt-who.pt-none { font-style: italic; color: #6b4521; }
+.ss1e-phase-tracker .pt-badge { flex: 0 0 auto; min-width: 1.5rem; text-align: center; border: 1px solid #3a2412; border-radius: 50%; font-size: 0.8rem; font-weight: bold; }
 
 /* ── Combat sidebar: Phase label, dice under names ── */
 #combat .ss1e-phase, .combat-sidebar .ss1e-phase { color: #e0a33a; }

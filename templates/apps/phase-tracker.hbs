@@ -1,5 +1,46 @@
 <div class="pt-wrap">
   {{#if hasCombat}}
+  {{#if compact}}
+  <div class="pt-compact">
+    <header class="pt-head">
+      <span class="pt-phase">{{#if started}}{{localize "SS1E.PhaseTracker.Round"}} {{round}} · {{#if heldPhase}}{{localize "SS1E.PhaseTracker.HeldPhase"}}{{else if phase}}{{localize "SS1E.PhaseTracker.Phase"}} {{phase}}{{else}}{{localize "SS1E.PhaseTracker.Rolling"}}{{/if}}{{else}}{{localize "SS1E.PhaseTracker.NotStarted"}}{{/if}}</span>
+      <span class="pt-controls">
+        {{#if isGM}}<button type="button" data-action="undo" title="{{localize 'SS1E.PhaseTracker.Undo'}}"><i class="fa-solid fa-rotate-left"></i></button>{{/if}}
+        <button type="button" data-action="toggleCompact" title="{{localize 'SS1E.PhaseTracker.ExpandHint'}}"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+      </span>
+    </header>
+
+    <div class="pt-now">
+      <span class="pt-cap">{{localize "SS1E.PhaseTracker.Now"}}</span>
+      {{#if nowActing}}
+      <div class="pt-who big"><img src="{{nowActing.img}}" alt="" /><span class="pt-label">{{nowActing.name}}</span></div>
+      {{else}}
+      <div class="pt-who big pt-none">{{#if started}}{{#if phase}}—{{else}}{{localize "SS1E.PhaseTracker.Rolling"}}{{/if}}{{else}}{{localize "SS1E.PhaseTracker.NotStarted"}}{{/if}}</div>
+      {{/if}}
+    </div>
+
+    <div class="pt-next">
+      <span class="pt-cap">{{localize "SS1E.PhaseTracker.UpNext"}}</span>
+      {{#each upNext}}
+      <div class="pt-who"><img src="{{img}}" alt="" /><span class="pt-label">{{name}}</span><span class="pt-badge" title="{{localize 'SS1E.PhaseTracker.Phase'}} {{phase}}">{{phase}}</span></div>
+      {{else}}
+      <div class="pt-who pt-none">{{localize "SS1E.PhaseTracker.NobodyNext"}}</div>
+      {{/each}}
+    </div>
+
+    <div class="pt-rolls">
+      {{#if canAct}}
+      <button type="button" data-action="hold" title="{{localize 'SS1E.PhaseTracker.HoldHint'}}"><i class="fa-solid fa-hand"></i> {{localize "SS1E.PhaseTracker.Hold"}}</button>
+      <button type="button" data-action="act" class="pt-hot" title="{{localize 'SS1E.PhaseTracker.ActHint'}}"><i class="fa-solid fa-forward-step"></i> {{localize "SS1E.PhaseTracker.Act"}}</button>
+      {{else if isGM}}{{#if started}}
+      <button type="button" data-action="act" class="pt-hot" title="{{localize 'SS1E.PhaseTracker.BeginPhasesHint'}}"><i class="fa-solid fa-forward-step"></i> {{localize "SS1E.PhaseTracker.BeginPhases"}}</button>
+      {{/if}}{{/if}}
+      {{#if isGM}}{{#if unrolled}}
+      <button type="button" data-action="rollAll"><i class="fa-solid fa-users"></i> {{localize "SS1E.PhaseTracker.RollAll"}} ({{unrolled}})</button>
+      {{/if}}{{/if}}
+    </div>
+  </div>
+  {{else}}
   <header class="pt-head">
     <span class="pt-round">{{#if started}}{{localize "SS1E.PhaseTracker.Round"}} {{round}}{{else}}{{localize "SS1E.PhaseTracker.NotStarted"}}{{/if}}</span>
     {{#if started}}
@@ -24,6 +65,7 @@
         <i class="fa-solid {{#if visible}}fa-eye{{else}}fa-eye-slash{{/if}}"></i> {{localize "SS1E.PhaseTracker.Players"}}
       </button>
       {{/if}}
+      <button type="button" data-action="toggleCompact" title="{{localize 'SS1E.PhaseTracker.CompactHint'}}"><i class="fa-solid fa-down-left-and-up-right-to-center"></i></button>
     </span>
   </header>
 
@@ -75,6 +117,7 @@
   </table>
   </div>
 
+  {{/if}}
   {{else}}
   <p class="pt-empty">{{localize "SS1E.PhaseTracker.NoCombat"}}</p>
   {{/if}}

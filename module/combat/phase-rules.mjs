@@ -166,3 +166,21 @@ export function endTurn(entries, phase, mode = "act") {
   }
   return nextActivePhase(entries, phase);
 }
+
+/**
+ * Who acts next, in order, assuming everyone simply acts (nobody Holds, Interrupts or uses a held
+ * die early). Returns up to `n` {id, phase}. Before Phase 1 (`phase` 0) it starts from the first
+ * Phase anyone can act in. Works on copies; `entries` is not changed.
+ */
+export function upcoming(entries, phase, n = 4) {
+  const sim = entries.map(e => ({ ...e, dice: e.dice.map(d => ({ ...d })) }));
+  let p = phase > 0 ? phase : nextActivePhase(sim, 1);
+  const out = [];
+  while (p !== null && out.length < n) {
+    const cur = sortEntries(sim, p)[0];
+    if (!cur || !canAct(cur, p)) break;
+    out.push({ id: cur.id, phase: p });
+    p = endTurn(sim, p, "act");
+  }
+  return out;
+}
