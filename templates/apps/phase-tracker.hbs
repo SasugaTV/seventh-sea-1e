@@ -27,6 +27,13 @@
     </span>
   </header>
 
+  {{#if isGM}}
+  <div class="pt-rolls">
+    <button type="button" data-action="rollAll"><i class="fa-solid fa-users"></i> {{localize "SS1E.PhaseTracker.RollAll"}}</button>
+    <button type="button" data-action="rollNPCs"><i class="fa-solid fa-dice"></i> {{localize "SS1E.PhaseTracker.RollNPCs"}}</button>
+  </div>
+  {{/if}}
+
   <div class="pt-scroll">
   <table class="pt-grid">
     <thead>
@@ -67,13 +74,6 @@
     </tbody>
   </table>
   </div>
-
-  {{#if isGM}}
-  <footer class="pt-foot">
-    <button type="button" data-action="rollAll"><i class="fa-solid fa-users"></i> {{localize "SS1E.PhaseTracker.RollAll"}}</button>
-    <button type="button" data-action="rollNPCs"><i class="fa-solid fa-dice"></i> {{localize "SS1E.PhaseTracker.RollNPCs"}}</button>
-  </footer>
-  {{/if}}
 
   {{else}}
   <p class="pt-empty">{{localize "SS1E.PhaseTracker.NoCombat"}}</p>

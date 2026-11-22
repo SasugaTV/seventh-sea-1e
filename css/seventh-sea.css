@@ -946,6 +946,7 @@
     background-size: 600px 600px;
     color: #3a2412;
     padding: 0.5rem;
+    overflow-y: auto;   /* long encounters scroll instead of clipping */
 }
 .ss1e-phase-tracker .pt-head {
     display: flex;
@@ -1040,7 +1041,7 @@
     text-decoration: line-through;
     box-shadow: none;
 }
-.ss1e-phase-tracker .pt-foot { display: flex; gap: 6px; margin-top: 0.5rem; flex-wrap: wrap; }
+.ss1e-phase-tracker .pt-rolls { display: flex; gap: 6px; margin-bottom: 0.4rem; flex-wrap: wrap; }
 
 /* ── Combat sidebar: Phase label, dice under names ── */
 #combat .ss1e-phase, .combat-sidebar .ss1e-phase { color: #e0a33a; }
