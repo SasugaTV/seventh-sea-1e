@@ -1,7 +1,7 @@
 import { SS1E } from "../helpers/config.mjs";
 import { rollAndKeep, promptRollAndKeep } from "../dice/roll-and-keep.mjs";
-import { SeventhSeaCombat, findCombatant, entryOf } from "../combat/seventh-sea-combat.mjs";
-import { unspentTotal, hasHeld, canAct, HELD_PHASE } from "../combat/phase-rules.mjs";
+import { SeventhSeaCombat, findCombatant, entryOf, hasCombatReflexes } from "../combat/seventh-sea-combat.mjs";
+import { unspentTotal, hasHeld, canAct, HELD_PHASE, canReflexReroll } from "../combat/phase-rules.mjs";
 import { ChangeLogViewer } from "../helpers/change-log.mjs";
 import { getLedger, hasLedger, totals, addEntries, editEntry, deleteEntry, KINDS } from "../ledger/ledger.mjs";
 import { exportActor } from "../ledger/campaign.mjs";
@@ -82,10 +82,14 @@ export class SeventhSeaActorSheet extends ActorSheet {
       const phase = combatant.combat.phase;
       const entry = entryOf(combatant);
       const dice  = entry.dice;
-      ctx.initDice = dice.map(d => ({
-        v: d.v,
+      // Combat Reflexes: the owner may click one die to reroll it (once per Round, before anyone acts).
+      const reflexOk = hasCombatReflexes(this.actor) && (game.user.isGM || combatant.isOwner);
+      const all = combatant.combat.combatants.contents.map(entryOf);
+      ctx.initDice = dice.map((d, i) => ({
+        v: d.v, i,
+        reflex: reflexOk && canReflexReroll(entry, i, all),
         cls: [d.spent && "spent", !d.spent && phase > 0 && d.v < phase && "held",
-              !d.spent && d.v === phase && "now", d.interrupt && "interrupt"].filter(Boolean).join(" ")
+              !d.spent && d.v === phase && "now", d.interrupt && "interrupt", d.reflex && "rerolled"].filter(Boolean).join(" ")
       }));
       ctx.initTotal = dice.length ? unspentTotal(dice) : "";
       // Hold is live only on this actor's own turn in a running Phase.
@@ -270,6 +274,7 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "roll-initiative":        return this._rollInitiative();
       case "hold-initiative":        return this._holdInitiative();
       case "use-held-initiative":    return this._useHeldInitiative();
+      case "reflex-reroll":          return this._reflexReroll(el);
       case "roll-defense":           return this._rollDefense(el);
       case "generic-roll":           return promptRollAndKeep({ actor: this.actor });
       // Brute Squads
@@ -515,6 +520,28 @@ export class SeventhSeaActorSheet extends ActorSheet {
     if (combat?.combatant && combat.getCombatantsByActor(this.actor).includes(combat.combatant)) {
       return combat.holdTurn();
     }
+  }
+  /** Combat Reflexes (PG p.131): reroll one Action Die and keep the new roll. */
+  async _reflexReroll(el) {
+    const cb = findCombatant(this.actor);
+    if (!cb) return;
+    const index = Number(el.dataset.die);
+    const entry = entryOf(cb);
+    const die = entry.dice[index];
+    if (!die || !canReflexReroll(entry, index, cb.combat.combatants.contents.map(entryOf))) {
+      return ui.notifications.warn(game.i18n.localize("SS1E.Reflex.NotNow"));
+    }
+    const ok = await foundry.applications.api.DialogV2.confirm({
+      window: { title: game.i18n.localize("SS1E.Reflex.Title") },
+      content: `<p>${game.i18n.format("SS1E.Reflex.Confirm", { v: die.v })}</p>`
+    });
+    if (!ok) return;
+    const roll = await new Roll("1d10").evaluate();
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor: this.actor, token: cb.token, alias: cb.name }),
+      flavor: game.i18n.format("SS1E.Reflex.Flavor", { name: foundry.utils.escapeHTML(cb.name), old: die.v })
+    });
+    return cb.combat.reflexReroll(cb.id, index, roll.total);
   }
   /** Use a Held Action now: join the current Phase's order. */
   async _useHeldInitiative() {

@@ -184,3 +184,27 @@ export function upcoming(entries, phase, n = 4) {
   }
   return out;
 }
+
+/* -------------------------------------------- */
+/*  Combat Reflexes (Players' Guide p.131)       */
+/* -------------------------------------------- */
+
+/** "After initiative is rolled": the Round is underway once anyone has spent a die. */
+export function roundUnderway(entries) {
+  return entries.some(e => e.dice.some(d => d.spent));
+}
+
+/** Whether this combatant may still reroll die `index` this Round (once per Round). */
+export function canReflexReroll(e, index, entries) {
+  const d = e.dice[index];
+  return !!d && !d.spent && !d.interrupt && !e.dice.some(x => x.reflex) && !roundUnderway(entries);
+}
+
+/** Replace die `index` with `value` (the new roll must be kept). Mutates `e`; false if not allowed. */
+export function reflexReroll(e, index, value, entries) {
+  const v = Math.floor(Number(value));
+  if (!(v >= 1 && v <= 10) || !canReflexReroll(e, index, entries)) return false;
+  Object.assign(e.dice[index], { v, reflex: true, release: null });
+  e.dice.sort((a, b) => a.v - b.v);
+  return true;
+}

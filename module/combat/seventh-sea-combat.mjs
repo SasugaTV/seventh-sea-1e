@@ -49,6 +49,11 @@ export function actorRank(actor) {
 }
 
 /** Plain rules entry for a Combatant. */
+/** Has the Combat Reflexes Advantage (an advantage Item of that name). */
+export function hasCombatReflexes(actor) {
+  return !!actor?.items?.some(i => i.type === "advantage" && /combat\s*reflexes/i.test(i.name));
+}
+
 export function entryOf(c) {
   const f = c.flags?.[SYS] ?? {};
   return {
@@ -272,6 +277,27 @@ export class SeventhSeaCombat extends Combat {
     return this.#editEntry(combatantId, e => R.interrupt(e, this.phase));
   }
 
+  /**
+   * Combat Reflexes: reroll one Action Die (the caller has rolled `value`), keep the new roll.
+   * Once per Round, only before anyone has acted. Nobody has acted yet, so the Phase restarts at
+   * the first one anyone can act in (the new die may be lower than the old start).
+   */
+  async reflexReroll(combatantId, index, value) {
+    if (!game.user.isGM) return this.#ask({ op: "reflexReroll", combatantId, index, value });
+    const cb = this.combatants.get(combatantId);
+    if (!hasCombatReflexes(cb?.actor)) return this;
+    const entries = this.#entries();
+    const e = entries.find(x => x.id === combatantId);
+    if (!e || !R.reflexReroll(e, index, value, entries)) return this;
+    const phase = this.phase > 0 ? (R.nextActivePhase(entries, 1) ?? this.phase) : 0;
+    await this.#commit(this.round, phase, entries);
+    const values = e.dice.map(d => d.v);
+    if (cb.actor?.system.initiative) {
+      await cb.actor.update({ "system.initiative.keptDice": values, "system.initiative.value": R.unspentTotal(e.dice) });
+    }
+    return this;
+  }
+
   async #editEntry(combatantId, fn, event = null) {
     const entries = this.#entries();
     const e = entries.find(x => x.id === combatantId);
@@ -296,7 +322,7 @@ export class SeventhSeaCombat extends Combat {
   }
 
   /** GM side of #ask. Players may end or hold their own turn and adjust their own dice. */
-  static async _handleQuery({ combatId, op, combatantId, index }, { user }) {
+  static async _handleQuery({ combatId, op, combatantId, index, value }, { user }) {
     const combat = game.combats.get(combatId);
     if (!combat) return false;
     const owns = id => !!combat.combatants.get(id)?.testUserPermission(user, "OWNER");
@@ -317,6 +343,10 @@ export class SeventhSeaCombat extends Combat {
       case "useHeld":
         if (!owns(combatantId)) return false;
         await combat.useHeld(combatantId);
+        return true;
+      case "reflexReroll":
+        if (!owns(combatantId)) return false;
+        await combat.reflexReroll(combatantId, index, value);
         return true;
       default:
         return false; // nextRound / undo stay GM-only
