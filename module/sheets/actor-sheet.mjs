@@ -6,6 +6,7 @@ import { ChangeLogViewer } from "../helpers/change-log.mjs";
 import { getLedger, hasLedger, totals, addEntries, editEntry, deleteEntry, KINDS } from "../ledger/ledger.mjs";
 import { exportActor } from "../ledger/campaign.mjs";
 import { JournalViewer } from "../ledger/journal-viewer.mjs";
+import { promptBruteRoll } from "../dice/brute-roll.mjs";
 
 /**
  * Unified Actor Sheet for Heroes, Villains, Brute Squads, and Monsters.
@@ -271,6 +272,9 @@ export class SeventhSeaActorSheet extends ActorSheet {
       case "use-held-initiative":    return this._useHeldInitiative();
       case "roll-defense":           return this._rollDefense(el);
       case "generic-roll":           return promptRollAndKeep({ actor: this.actor });
+      // Brute Squads
+      case "roll-brutes":            return promptBruteRoll(this.actor);
+      case "brute-take-hit":         return this.actor.update({ "system.brutes.value": Math.max(0, (Number(this.actor.system.brutes?.value) || 0) - 1) });
       // Drama Dice +/-
       case "drama-adjust":           return this._dramaAdjust(el);
       // Font scale

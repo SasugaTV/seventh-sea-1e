@@ -7,7 +7,7 @@
             </h1>
             <div class="header-row">
                 <label>{{localize "SS1E.UI.Threat"}}</label>
-                <input type="number" name="system.threat" value="{{system.threat}}" min="1" max="5" />
+                <span class="dots ss1e-dot-tracker" data-path="system.threat" data-max="5" data-current="{{system.threat}}"></span>
                 <label>{{localize "SS1E.UI.TN"}}</label>
                 <input type="number" name="system.tn" value="{{system.tn}}" min="5" step="5" />
                 <label>{{localize "SS1E.UI.Weapon"}}</label>
@@ -15,10 +15,11 @@
             </div>
             <div class="header-row resources">
                 <label>{{localize "SS1E.UI.BrutesRemaining"}}</label>
-                <input type="number" name="system.brutes.value" value="{{system.brutes.value}}" min="0" max="{{system.brutes.max}}" />
-                <span>/</span>
-                <input type="number" name="system.brutes.max" value="{{system.brutes.max}}" min="0" />
-                <button class="brute-take-hit">{{localize "SS1E.UI.TakeHit"}}</button>
+                <span class="dots ss1e-dot-tracker" data-path="system.brutes.value" data-max="{{system.brutes.max}}" data-current="{{system.brutes.value}}"></span>
+                <span>{{system.brutes.value}} /</span>
+                <input type="number" name="system.brutes.max" value="{{system.brutes.max}}" min="0" max="20" title="{{localize 'SS1E.BruteRoll.SquadSize'}}" />
+                <button type="button" data-action="brute-take-hit">{{localize "SS1E.UI.TakeHit"}}</button>
+                <button type="button" data-action="roll-brutes" class="brute-roll"><i class="fa-solid fa-dice"></i> {{localize "SS1E.BruteRoll.Button"}}</button>
             </div>
         </div>
     </header>
