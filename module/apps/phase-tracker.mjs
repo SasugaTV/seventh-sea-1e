@@ -73,11 +73,36 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
     if (this.#instance?.rendered) this.#instance.render();
   }
 
+  /**
+   * Keep the tracker on screen while there is an encounter: open it (without un-minimizing a
+   * tracker that is already up) for the GM, and for players when the GM shares it.
+   */
+  static ensureOpen() {
+    if (!viewedCombat()) return;
+    if (!game.user.isGM && !playersCanSee()) return;
+    if (this.#instance?.rendered) return this.refresh();
+    return this.open();
+  }
+
+  /** The window's X minimizes while an encounter exists; it only really closes when none is left. */
+  async close(options = {}) {
+    if (!options.force && viewedCombat() && this.rendered) {
+      if (!this.minimized) await this.minimize();
+      return this;
+    }
+    return super.close(options);
+  }
+
+  static closeIfNoCombat() {
+    if (!viewedCombat()) return this.#instance?.close({ force: true });
+    return this.refresh();
+  }
+
   /** Visibility setting changed: update the toolbar and open/close the grid for players. */
   static onVisibilityChange(visible) {
     ui.controls?.render();
     if (game.user.isGM) return this.refresh();
-    return visible ? this.open() : this.#instance?.close();
+    return visible ? this.ensureOpen() : this.#instance?.close({ force: true });
   }
 
   async _prepareContext() {
@@ -272,9 +297,13 @@ export function registerPhaseTracker() {
 
   Hooks.on("renderCombatTracker", decorateCombatTracker);
   Hooks.on("updateCombat", announcePhaseEvents);
-  for (const h of ["updateCombat", "createCombat", "deleteCombat", "createCombatant", "updateCombatant", "deleteCombatant"]) {
+  for (const h of ["updateCombat", "createCombatant", "updateCombatant", "deleteCombatant"]) {
     Hooks.on(h, () => PhaseTracker.refresh());
   }
+  // Always on screen during an encounter (minimized at worst); gone when the last one ends.
+  Hooks.once("ready", () => PhaseTracker.ensureOpen());
+  for (const h of ["createCombat", "combatStart"]) Hooks.on(h, () => PhaseTracker.ensureOpen());
+  Hooks.on("deleteCombat", () => PhaseTracker.closeIfNoCombat());
 
   // Open sheets show the encounter's dice and total, so redraw them when a Combatant changes.
   for (const h of ["createCombatant", "updateCombatant", "deleteCombatant"]) {
