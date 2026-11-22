@@ -481,6 +481,16 @@
 /* ── Brute / Monster legacy ───────────────────────── */
 .seventh-sea-1e .ss1e-brute-sheet,
 .seventh-sea-1e .ss1e-monster-sheet { padding: 0.5rem; }
+.seventh-sea-1e .ss1e-brute-sheet .sheet-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 0.5rem; }
+.seventh-sea-1e .ss1e-brute-sheet .profile-img { width: 96px; height: 96px; flex: 0 0 96px; object-fit: cover; }
+.seventh-sea-1e .ss1e-brute-sheet .header-fields { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row label { font-weight: bold; margin: 0 0 0 6px; white-space: nowrap; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row label:first-child { margin-left: 0; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row input[type="number"] { width: 3.5rem; flex: 0 0 auto; text-align: center; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row input[type="text"] { flex: 1 1 10rem; min-width: 8rem; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row button { width: auto; flex: 0 0 auto; padding: 0 10px; line-height: 1.8; }
+.seventh-sea-1e .ss1e-brute-sheet .header-row .dots { display: inline-flex; align-items: center; }
 
 /* ── Chat cards (unchanged) ───────────────────────── */
 .ss1e-roll-card {

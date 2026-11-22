@@ -171,11 +171,16 @@ export class PhaseTracker extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #toggleCompact() {
     await game.settings.set(SYS, COMPACT, !isCompact());
-    const app = PhaseTracker.#instance;
-    if (!app) return;
-    app.setPosition({ width: isCompact() ? WIDTH.compact : WIDTH.full, height: "auto" });
-    await app.render();
-    app.setPosition({ height: "auto" });
+    return PhaseTracker.#instance?.render();
+  }
+
+  /** Resize when the view switches (button, setting, or first open); leave manual resizes alone. */
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    const mode = context.compact ? "compact" : "full";
+    if (this._sizedFor === mode) return;
+    this._sizedFor = mode;
+    this.setPosition({ width: WIDTH[mode], height: "auto" });
   }
 
   static #rollOne(event, target) {
